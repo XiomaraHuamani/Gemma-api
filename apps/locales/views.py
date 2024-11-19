@@ -1,4 +1,6 @@
 from rest_framework import viewsets
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Zona, Metraje, TipoDescuento, PrecioBase, Descuento, Local, ReciboArras, Cliente
 from .serializers import (
@@ -38,11 +40,25 @@ class PrecioBaseViewSet(viewsets.ModelViewSet):
 #     serializer_class = DescuentoSerializer
 
 
-class DescuentoViewSet(viewsets.ModelViewSet):
+# class DescuentoViewSet(viewsets.ModelViewSet):
+#     """
+#     ViewSet para manejar operaciones CRUD en Descuento.
+#     """
+#     queryset = Descuento.objects.all()
+#     serializer_class = DescuentoSerializer
+#     filter_backends = [DjangoFilterBackend]
+#     filterset_fields = ['zona__codigo'] 
+#     permission_classes = [AllowAny] 
+
+class DescuentoViewSet(ModelViewSet):
+    """
+    ViewSet para manejar las operaciones CRUD en Descuento.
+    """
     queryset = Descuento.objects.all()
     serializer_class = DescuentoSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['zona__codigo'] 
+    permission_classes = [AllowAny] 
 
 
 
