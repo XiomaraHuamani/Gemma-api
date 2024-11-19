@@ -63,8 +63,12 @@ class DescuentoViewSet(ModelViewSet):
 
 
 class LocalViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet para manejar las operaciones CRUD en Descuento.
+    """
     queryset = Local.objects.all()
     serializer_class = LocalSerializer
+    permission_classes = [AllowAny] 
 
 
 class ReciboArrasViewSet(viewsets.ModelViewSet):

@@ -22,6 +22,11 @@ class Zona(models.Model):
 
     def __str__(self):
         return f"{self.nombre} - Código: {self.codigo} - Línea: {self.get_linea_base_display()}"
+    
+    def clean(self):
+        if not self.codigo.isupper():
+            raise ValidationError("El código de la zona debe estar en mayúsculas.")
+
 
 
 class Metraje(models.Model):
@@ -29,6 +34,7 @@ class Metraje(models.Model):
     area = models.CharField(max_length=50, help_text="Área total en metros cuadrados (ejemplo: '12.5 m²')")
     altura = models.CharField(max_length=50, help_text="Altura en metros (ejemplo: '4.5 m')")
     perimetro = models.CharField(max_length=50, help_text="Perímetro en metros (ejemplo: '2.5 x 5')")
+    image = models.ImageField(upload_to='metraje_images/', blank=True, null=True, help_text="Cargar una imagen para el metraje")
 
     def __str__(self):
         return f"Área: {self.area} - Altura: {self.altura} - Perímetro: {self.perimetro}"
@@ -73,8 +79,11 @@ class Descuento(models.Model):
         verbose_name_plural = "Descuentos"
 
     def clean(self):
+        if self.monto and self.porcentaje:
+            raise ValidationError("Debe especificar solo uno: monto o porcentaje.")
         if not self.monto and not self.porcentaje:
-            raise ValidationError("Debe especificar al menos un monto o un porcentaje para el descuento.")
+            raise ValidationError("Debe especificar al menos un monto o porcentaje para el descuento.")
+
 
     def calcular_monto_descuento(self):
         try:
