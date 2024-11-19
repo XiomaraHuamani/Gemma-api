@@ -1,15 +1,25 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import ZonaViewSet, MetrajeViewSet, PrecioBaseViewSet, DescuentoViewSet, LocalViewSet, ReciboArrasViewSet, ClienteViewSet
+from .views import (
+    ZonaViewSet,
+    MetrajeViewSet,
+    TipoDescuentoViewSet,
+    PrecioBaseViewSet,
+    DescuentoViewSet,
+    LocalViewSet,
+    ReciboArrasViewSet,
+    ClienteViewSet,
+)
 
 router = DefaultRouter()
-router.register(r'zona', ZonaViewSet)
-router.register(r'metraje', MetrajeViewSet)
-router.register(r'precio_base', PrecioBaseViewSet)
-router.register(r'descuento', DescuentoViewSet)
-router.register(r'local', LocalViewSet)
-router.register(r'recibo_arras', ReciboArrasViewSet)
-router.register(r'cliente', ClienteViewSet)
+router.register(r'zonas', ZonaViewSet)
+router.register(r'metrajes', MetrajeViewSet)
+router.register(r'tipos-descuento', TipoDescuentoViewSet)
+router.register(r'precios-base', PrecioBaseViewSet)
+router.register(r'descuentos', DescuentoViewSet)
+router.register(r'locales', LocalViewSet)
+router.register(r'recibos-arras', ReciboArrasViewSet)
+router.register(r'clientes', ClienteViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
