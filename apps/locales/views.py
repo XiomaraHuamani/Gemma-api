@@ -1,8 +1,10 @@
 from rest_framework import viewsets
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Zona, Metraje, TipoDescuento, PrecioBase, Descuento, Local, ReciboArras, Cliente, VentaCredito, VentaContado, Pago
+from .models import Zona, Metraje, TipoDescuento, PrecioBase, Descuento, Local, ReciboArras, Cliente, VentaCredito, VentaContado, Pago, Categoria
 from .serializers import (
     ZonaSerializer,
     MetrajeSerializer,
@@ -14,7 +16,9 @@ from .serializers import (
     ClienteSerializer,
     VentaCreditoSerializer, 
     VentaContadoSerializer, 
-    PagoSerializer
+    PagoSerializer,
+    CategoriaSerializer,
+    TipoDescuentoSerializer
 )
 
 
@@ -22,41 +26,44 @@ class ZonaViewSet(viewsets.ModelViewSet):
     queryset = Zona.objects.all()
     serializer_class = ZonaSerializer
 
+class CategoriaViewSet(ModelViewSet):
+    queryset = Categoria.objects.all()
+    serializer_class = CategoriaSerializer
 
 class MetrajeViewSet(viewsets.ModelViewSet):
     queryset = Metraje.objects.all()
     serializer_class = MetrajeSerializer
 
-
-class TipoDescuentoViewSet(viewsets.ModelViewSet):
-    queryset = TipoDescuento.objects.all()
+class TipoDescuentoViewSet(ModelViewSet):
+    queryset = TipoDescuento.objects.select_related('categoria').all()
     serializer_class = TipoDescuentoSerializer
-
 
 class PrecioBaseViewSet(viewsets.ModelViewSet):
     queryset = PrecioBase.objects.all()
     serializer_class = PrecioBaseSerializer
 
+# class DescuentoViewSet(ModelViewSet):
+#     """
+#     ViewSet para manejar las operaciones CRUD en Descuento.
+#     """
+#     queryset = Descuento.objects.select_related('categoria').all()
+#     serializer_class = DescuentoSerializer
+#     filter_backends = [DjangoFilterBackend]
+#     permission_classes = [AllowAny]
+
 class DescuentoViewSet(ModelViewSet):
-    """
-    ViewSet para manejar las operaciones CRUD en Descuento.
-    """
-    queryset = Descuento.objects.all()
+    queryset = Descuento.objects.select_related('categoria', 'tipo_descuento', 'metraje')
     serializer_class = DescuentoSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['zona__codigo'] 
-    permission_classes = [AllowAny] 
 
-
-
-class LocalViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet para manejar las operaciones CRUD en Descuento.
-    """
-    queryset = Local.objects.all()
+class LocalViewSet(ModelViewSet):
+    queryset = Local.objects.select_related('zona', 'metraje').all()
     serializer_class = LocalSerializer
-    permission_classes = [AllowAny] 
 
+class TipoDescuentoPorCategoriaView(APIView):
+    def get(self, request, categoria_id):
+        tipos_descuento = TipoDescuento.objects.filter(categoria_id=categoria_id)
+        serializer = TipoDescuentoSerializer(tipos_descuento, many=True)
+        return Response(serializer.data)
 
 class ReciboArrasViewSet(ModelViewSet):
     """

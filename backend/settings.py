@@ -66,7 +66,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'mssql',
-        'NAME': 'prueba_gemma',
+        'NAME': 'prueba',
         'USER': 'sa',
         'PASSWORD': 'Escuela9780ntt',
         'HOST': '147.79.110.180',

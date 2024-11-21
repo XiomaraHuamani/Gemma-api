@@ -1,17 +1,23 @@
 from rest_framework import serializers
-from .models import Zona, Metraje, TipoDescuento, PrecioBase, Descuento, Local, ReciboArras, Cliente, Pago, VentaContado, VentaCredito
+from .models import Zona, Metraje, TipoDescuento, PrecioBase, Descuento, Local, ReciboArras, Cliente, Pago, VentaContado, VentaCredito, Categoria
 from decimal import Decimal
 
 
 class ZonaSerializer(serializers.ModelSerializer):
-    display_name = serializers.SerializerMethodField()
+    categoria_nombre = serializers.CharField(source='categoria.nombre', read_only=True)
 
     class Meta:
         model = Zona
-        fields = ['id', 'codigo', 'nombre', 'linea_base', 'display_name']
+        fields = ['id', 'categoria', 'categoria_nombre', 'codigo', 'linea_base']
 
     def get_display_name(self, obj):
         return f"{obj.nombre} - Código: {obj.codigo} - Línea: {obj.get_linea_base_display()}"
+    
+
+class CategoriaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Categoria
+        fields = ['id', 'nombre']
 
 
 class MetrajeSerializer(serializers.ModelSerializer):
@@ -21,10 +27,11 @@ class MetrajeSerializer(serializers.ModelSerializer):
 
 
 class TipoDescuentoSerializer(serializers.ModelSerializer):
+    categoria_nombre = serializers.CharField(source='categoria.nombre', read_only=True)
+
     class Meta:
         model = TipoDescuento
-        fields = '__all__'
-
+        fields = ['id', 'nombre', 'descripcion', 'condiciones', 'categoria', 'categoria_nombre']
 
 class PrecioBaseSerializer(serializers.ModelSerializer):
     class Meta:
@@ -33,34 +40,32 @@ class PrecioBaseSerializer(serializers.ModelSerializer):
 
 
 class DescuentoSerializer(serializers.ModelSerializer):
-    zona = serializers.PrimaryKeyRelatedField(
-        queryset=Zona.objects.all(),
-        write_only=True
+    categoria_nombre = serializers.CharField(source='categoria.nombre', read_only=True)
+    tipo_descuento = serializers.PrimaryKeyRelatedField(
+        queryset=TipoDescuento.objects.none()  # Inicialmente vacío
     )
-    zona_detail = ZonaSerializer(source='zona', read_only=True)
 
     class Meta:
         model = Descuento
-        fields = '__all__'
+        fields = ['id', 'categoria', 'categoria_nombre', 'tipo_descuento', 'metraje', 'monto', 'porcentaje']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'categoria' in self.initial_data:
+            try:
+                categoria_id = self.initial_data['categoria']
+                self.fields['tipo_descuento'].queryset = TipoDescuento.objects.filter(categoria_id=categoria_id)
+            except ValueError:
+                pass
 
 
 class LocalSerializer(serializers.ModelSerializer):
-    precio_base = serializers.SerializerMethodField()
-    descuento = serializers.SerializerMethodField()
-    precio_final = serializers.SerializerMethodField()
+    zona_nombre = serializers.CharField(source='zona.nombre', read_only=True)
+    metraje_area = serializers.CharField(source='metraje.area', read_only=True)
 
     class Meta:
         model = Local
-        fields = '__all__'
-
-    def get_precio_base(self, obj):
-        return obj.obtener_precio_base()
-
-    def get_descuento(self, obj):
-        return obj.obtener_descuento()
-
-    def get_precio_final(self, obj):
-        return obj.calcular_precio_final()
+        fields = ['id', 'zona', 'zona_nombre', 'metraje', 'metraje_area', 'estado', 'precio']
 
 
 class ReciboArrasSerializer(serializers.ModelSerializer):

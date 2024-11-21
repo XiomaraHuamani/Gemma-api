@@ -12,12 +12,13 @@ class Zona(models.Model):
     ]
 
     id = models.AutoField(primary_key=True)
-    nombre = models.CharField(max_length=50)
-    codigo = models.CharField(
-        max_length=10,
-        unique=True,
-        help_text="Código único de 10 dígitos para la zona"
+    categoria = models.ForeignKey(
+        'Categoria',
+        on_delete=models.CASCADE,
+        related_name='zonas',
+        help_text="Categoría asociada a esta zona"
     )
+    codigo = models.CharField(max_length=10, unique=True, help_text="Código único de 10 dígitos para la zona")
     linea_base = models.CharField(
         max_length=15,
         choices=LINEA_BASE_CHOICES,
@@ -26,11 +27,16 @@ class Zona(models.Model):
     )
 
     def __str__(self):
-        return f"{self.nombre} - Código: {self.codigo} - Línea: {self.get_linea_base_display()}"
+        return f"{self.categoria.nombre} - Código: {self.codigo}"
+        
 
-    def clean(self):
-        if not self.codigo.isupper():
-            raise ValidationError("El código de la zona debe estar en mayúsculas.")
+
+class Categoria(models.Model):
+    id = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=100, unique=True, help_text="Nombre único para la categoría de zona")
+
+    def __str__(self):
+        return self.nombre
 
 
 
@@ -56,9 +62,15 @@ class TipoDescuento(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
     descripcion = models.TextField(blank=True, null=True)
     condiciones = models.TextField(blank=True, null=True)
+    categoria = models.ForeignKey(
+        'Categoria',
+        on_delete=models.CASCADE,
+        related_name='tipo_descuentos',  # Relación inversa específica para TipoDescuento
+        help_text="Categoría asociada al tipo de descuento"
+    )
 
     def __str__(self):
-        return self.nombre
+        return f"{self.nombre} - {self.categoria.nombre}"
 
 
 class PrecioBase(models.Model):
@@ -83,14 +95,39 @@ class PrecioBase(models.Model):
 
 class Descuento(models.Model):
     id = models.AutoField(primary_key=True)
-    tipo_descuento = models.ForeignKey(TipoDescuento, on_delete=models.CASCADE, related_name='descuentos')
-    zona = models.ForeignKey(Zona, on_delete=models.CASCADE, related_name='descuentos')
-    metraje = models.ForeignKey(Metraje, on_delete=models.CASCADE, related_name='descuentos')
-    monto = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True, help_text="Monto de descuento opcional")
-    porcentaje = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, help_text="Porcentaje de descuento opcional")
+    tipo_descuento = models.ForeignKey(
+        TipoDescuento, 
+        on_delete=models.CASCADE, 
+        related_name='descuentos'
+    )
+    categoria = models.ForeignKey(
+        'Categoria',
+        on_delete=models.CASCADE,
+        related_name='descuentos',  # Cambiado para evitar conflicto
+        help_text="Categoría asociada a esta zona"
+    )
+    metraje = models.ForeignKey(
+        Metraje, 
+        on_delete=models.CASCADE, 
+        related_name='descuentos'
+    )
+    monto = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        blank=True, 
+        null=True, 
+        help_text="Monto de descuento opcional"
+    )
+    porcentaje = models.DecimalField(
+        max_digits=5, 
+        decimal_places=2, 
+        blank=True, 
+        null=True, 
+        help_text="Porcentaje de descuento opcional"
+    )
 
     class Meta:
-        unique_together = ('zona', 'metraje', 'tipo_descuento')
+        unique_together = ('categoria', 'metraje', 'tipo_descuento')  # Ajustado correctamente
         verbose_name = "Descuento"
         verbose_name_plural = "Descuentos"
 
@@ -100,17 +137,8 @@ class Descuento(models.Model):
         if not self.monto and not self.porcentaje:
             raise ValidationError("Debe especificar al menos un monto o porcentaje para el descuento.")
 
-    def calcular_monto_descuento(self):
-        try:
-            precio_base = PrecioBase.objects.select_related('zona', 'metraje').get(zona=self.zona, metraje=self.metraje)
-            if self.porcentaje:
-                return precio_base.precio * (self.porcentaje / 100)
-            return self.monto or 0
-        except PrecioBase.DoesNotExist:
-            return 0
-
     def __str__(self):
-        return f"Descuento {self.tipo_descuento} en {self.zona} para {self.metraje}"
+        return f"{self.categoria.nombre} - {self.tipo_descuento.nombre} - {self.metraje.area}"
 
 
 
@@ -123,23 +151,14 @@ class Local(models.Model):
         choices=[('disponible', 'Disponible'), ('separado', 'Separado'), ('vendido', 'Vendido')],
         default='disponible'
     )
-
-    def obtener_precio_base(self):
-        try:
-            return PrecioBase.objects.select_related('zona', 'metraje').get(zona=self.zona, metraje=self.metraje).precio
-        except PrecioBase.DoesNotExist:
-            return None
-
-    def obtener_descuento(self):
-        return Descuento.objects.filter(zona=self.zona, metraje=self.metraje).aggregate(total_descuento=Sum('monto'))['total_descuento'] or 0
-
-    def calcular_precio_final(self):
-        precio_base = self.obtener_precio_base() or 0
-        descuento = self.obtener_descuento()
-        return precio_base - descuento
+    precio = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        help_text="Precio del local (editable por el usuario)"
+    )
 
     def __str__(self):
-        return f"Local {self.id} - {self.zona.nombre} - {self.metraje.area} - Estado: {self.estado}"
+        return f"Local {self.id} - Zona: {self.zona.nombre} - Precio: {self.precio}"
 
 
 class ReciboArras(models.Model):
@@ -391,6 +410,7 @@ class Pago(models.Model):
     def save(self, *args, **kwargs):
         self.aplicar_monto_separacion()
         super().save(*args, **kwargs)
+
 
     def __str__(self):
         return f"Pago relacionado al recibo {self.recibo_arras.serie}"
