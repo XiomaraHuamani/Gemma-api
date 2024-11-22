@@ -41,23 +41,13 @@ class PrecioBaseSerializer(serializers.ModelSerializer):
 
 class DescuentoSerializer(serializers.ModelSerializer):
     categoria_nombre = serializers.CharField(source='categoria.nombre', read_only=True)
-    tipo_descuento = serializers.PrimaryKeyRelatedField(
-        queryset=TipoDescuento.objects.none()  # Inicialmente vacío
-    )
+    tipo_descuento_nombre = serializers.CharField(source='tipo_descuento.nombre', read_only=True)
+    descuento_aplicado = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
 
     class Meta:
         model = Descuento
-        fields = ['id', 'categoria', 'categoria_nombre', 'tipo_descuento', 'metraje', 'monto', 'porcentaje']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if 'categoria' in self.initial_data:
-            try:
-                categoria_id = self.initial_data['categoria']
-                self.fields['tipo_descuento'].queryset = TipoDescuento.objects.filter(categoria_id=categoria_id)
-            except ValueError:
-                pass
-
+        fields = ['id', 'categoria', 'categoria_nombre', 'tipo_descuento', 'tipo_descuento_nombre', 
+                'metraje', 'monto', 'porcentaje', 'descuento_aplicado']
 
 class LocalSerializer(serializers.ModelSerializer):
     zona_nombre = serializers.CharField(source='zona.nombre', read_only=True)
@@ -66,6 +56,7 @@ class LocalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Local
         fields = ['id', 'zona', 'zona_nombre', 'metraje', 'metraje_area', 'estado', 'precio']
+
 
 
 class ReciboArrasSerializer(serializers.ModelSerializer):

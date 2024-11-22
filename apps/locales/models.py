@@ -3,7 +3,6 @@ from django.core.exceptions import ValidationError
 from django.db.models import Sum
 from decimal import Decimal
 
-
 class Zona(models.Model):
     LINEA_BASE_CHOICES = [
         ('primera_linea', 'Primera Línea'),
@@ -96,56 +95,73 @@ class PrecioBase(models.Model):
 class Descuento(models.Model):
     id = models.AutoField(primary_key=True)
     tipo_descuento = models.ForeignKey(
-        TipoDescuento, 
-        on_delete=models.CASCADE, 
+        TipoDescuento,
+        on_delete=models.PROTECT,  # Evita la eliminación accidental
         related_name='descuentos'
     )
     categoria = models.ForeignKey(
         'Categoria',
-        on_delete=models.CASCADE,
-        related_name='descuentos',  # Cambiado para evitar conflicto
-        help_text="Categoría asociada a esta zona"
+        on_delete=models.PROTECT,  # Evita eliminar categorías con descuentos asociados
+        related_name='descuentos',
+        help_text="Categoría asociada al descuento"
     )
     metraje = models.ForeignKey(
-        Metraje, 
-        on_delete=models.CASCADE, 
+        Metraje,
+        on_delete=models.CASCADE,
         related_name='descuentos'
     )
     monto = models.DecimalField(
-        max_digits=10, 
-        decimal_places=2, 
-        blank=True, 
-        null=True, 
+        max_digits=10,
+        decimal_places=2,
+        blank=True,
+        null=True,
         help_text="Monto de descuento opcional"
     )
     porcentaje = models.DecimalField(
-        max_digits=5, 
-        decimal_places=2, 
-        blank=True, 
-        null=True, 
+        max_digits=5,
+        decimal_places=2,
+        blank=True,
+        null=True,
         help_text="Porcentaje de descuento opcional"
     )
 
     class Meta:
-        unique_together = ('categoria', 'metraje', 'tipo_descuento')  # Ajustado correctamente
+        unique_together = ('categoria', 'metraje', 'tipo_descuento')  # Asegura unicidad
         verbose_name = "Descuento"
         verbose_name_plural = "Descuentos"
 
     def clean(self):
+        """
+        Validaciones personalizadas.
+        """
         if self.monto and self.porcentaje:
-            raise ValidationError("Debe especificar solo uno: monto o porcentaje.")
+            raise ValidationError("Solo puede especificar un monto o un porcentaje, no ambos.")
         if not self.monto and not self.porcentaje:
-            raise ValidationError("Debe especificar al menos un monto o porcentaje para el descuento.")
+            raise ValidationError("Debe especificar al menos un monto o un porcentaje para el descuento.")
+
+    @property
+    def descuento_aplicado(self):
+        """
+        Calcula el descuento basado en el monto o porcentaje.
+        """
+        if self.monto:
+            return self.monto
+        if self.porcentaje:
+            precio_base = PrecioBase.objects.filter(metraje=self.metraje, zona=self.categoria).first()
+            if precio_base:
+                return precio_base.precio * (self.porcentaje / 100)
+        return 0
 
     def __str__(self):
         return f"{self.categoria.nombre} - {self.tipo_descuento.nombre} - {self.metraje.area}"
 
 
 
+
 class Local(models.Model):
     id = models.AutoField(primary_key=True)
     zona = models.ForeignKey(Zona, on_delete=models.CASCADE, related_name='locales')
-    metraje = models.ForeignKey(Metraje, on_delete=models.CASCADE, help_text="Rango de metraje del local")
+    metraje = models.ForeignKey(Metraje, on_delete=models.CASCADE, related_name='locales')
     estado = models.CharField(
         max_length=10,
         choices=[('disponible', 'Disponible'), ('separado', 'Separado'), ('vendido', 'Vendido')],
@@ -154,11 +170,31 @@ class Local(models.Model):
     precio = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        help_text="Precio del local (editable por el usuario)"
+        blank=True,
+        null=True,
+        help_text="Precio del local"
     )
 
-    def __str__(self):
-        return f"Local {self.id} - Zona: {self.zona.nombre} - Precio: {self.precio}"
+    def save(self, *args, **kwargs):
+        # Si no hay un precio definido, obtenerlo de PrecioBase
+        if not self.precio:
+            try:
+                precio_base = PrecioBase.objects.get(zona=self.zona, metraje=self.metraje)
+                self.precio = precio_base.precio
+            except PrecioBase.DoesNotExist:
+                raise ValueError("No hay un precio base definido para esta combinación de zona y metraje.")
+        super().save(*args, **kwargs)
+
+    def clean(self):
+        # Validar que el precio sea coherente con el precio base
+        if self.precio:
+            try:
+                precio_base = PrecioBase.objects.get(zona=self.zona, metraje=self.metraje)
+                if self.precio != precio_base.precio:
+                    raise ValidationError(f"El precio ingresado ({self.precio}) no coincide con el precio base ({precio_base.precio}).")
+            except PrecioBase.DoesNotExist:
+                raise ValidationError("No hay un precio base definido para esta combinación de zona y metraje.")
+
 
 
 class ReciboArras(models.Model):

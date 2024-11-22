@@ -31,8 +31,7 @@ router.register(r'ventas-credito', VentaCreditoViewSet, basename='venta-credito'
 router.register(r'ventas-contado', VentaContadoViewSet, basename='venta-contado')
 router.register(r'pagos', PagoViewSet, basename='pago')
 
-path('tipo-descuento-por-categoria/<int:categoria_id>/', TipoDescuentoPorCategoriaView.as_view(), name='tipo-descuento-por-categoria'),
-
 urlpatterns = [
     path('', include(router.urls)),
+    path('tipo-descuento-por-categoria/<int:categoria_id>/', TipoDescuentoPorCategoriaView.as_view(), name='tipo-descuento-por-categoria'),
 ]

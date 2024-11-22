@@ -52,18 +52,44 @@ class PrecioBaseViewSet(viewsets.ModelViewSet):
 #     permission_classes = [AllowAny]
 
 class DescuentoViewSet(ModelViewSet):
-    queryset = Descuento.objects.select_related('categoria', 'tipo_descuento', 'metraje')
+    queryset = Descuento.objects.select_related('categoria', 'tipo_descuento', 'metraje').all()
     serializer_class = DescuentoSerializer
+
+    def get_serializer_context(self):
+        """
+        Incluye el contexto de la solicitud en el serializador.
+        """
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+
 
 class LocalViewSet(ModelViewSet):
     queryset = Local.objects.select_related('zona', 'metraje').all()
     serializer_class = LocalSerializer
 
+    def perform_create(self, serializer):
+        """
+        Personalización del proceso de creación para manejar el precio.
+        """
+        serializer.save()
+
+    def perform_update(self, serializer):
+        """
+        Personalización del proceso de actualización para manejar el precio.
+        """
+        serializer.save()
+
+
 class TipoDescuentoPorCategoriaView(APIView):
     def get(self, request, categoria_id):
+        """
+        Devuelve los tipos de descuento asociados a una categoría específica.
+        """
         tipos_descuento = TipoDescuento.objects.filter(categoria_id=categoria_id)
         serializer = TipoDescuentoSerializer(tipos_descuento, many=True)
         return Response(serializer.data)
+
 
 class ReciboArrasViewSet(ModelViewSet):
     """
