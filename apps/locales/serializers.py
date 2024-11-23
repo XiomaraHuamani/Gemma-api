@@ -50,12 +50,15 @@ class DescuentoSerializer(serializers.ModelSerializer):
                 'metraje', 'monto', 'porcentaje', 'descuento_aplicado']
 
 class LocalSerializer(serializers.ModelSerializer):
-    zona_nombre = serializers.CharField(source='zona.nombre', read_only=True)
+    zona_nombre = serializers.CharField(source='zona.codigo', read_only=True)
     metraje_area = serializers.CharField(source='metraje.area', read_only=True)
+    precio_monto = serializers.DecimalField(
+        source='precio.precio', max_digits=10, decimal_places=2, read_only=True
+    )
 
     class Meta:
         model = Local
-        fields = ['id', 'zona', 'zona_nombre', 'metraje', 'metraje_area', 'estado', 'precio']
+        fields = ['id', 'zona', 'zona_nombre', 'metraje', 'metraje_area', 'estado', 'precio', 'precio_monto']
 
 
 

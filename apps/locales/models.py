@@ -27,7 +27,7 @@ class Zona(models.Model):
 
     def __str__(self):
         return f"{self.categoria.nombre} - Código: {self.codigo}"
-        
+
 
 
 class Categoria(models.Model):
@@ -74,21 +74,14 @@ class TipoDescuento(models.Model):
 
 class PrecioBase(models.Model):
     id = models.AutoField(primary_key=True)
-    zona = models.ForeignKey(Zona, on_delete=models.CASCADE, related_name='precios_base')
-    metraje = models.ForeignKey(Metraje, on_delete=models.CASCADE, related_name='precios_base')
     precio = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        help_text="Precio base para la combinación de zona y metraje"
+        help_text="Monto del precio base"
     )
 
-    class Meta:
-        unique_together = ('zona', 'metraje')
-        verbose_name = "Precio Base"
-        verbose_name_plural = "Precios Base"
-
     def __str__(self):
-        return f"Precio base en {self.zona} para {self.metraje}: {self.precio}"
+        return f"ID: {self.id} - Precio: {self.precio}"
 
 
 
@@ -167,35 +160,18 @@ class Local(models.Model):
         choices=[('disponible', 'Disponible'), ('separado', 'Separado'), ('vendido', 'Vendido')],
         default='disponible'
     )
-    precio = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        blank=True,
+    precio = models.ForeignKey(
+        PrecioBase,
+        on_delete=models.SET_NULL,
+        related_name='locales',
         null=True,
-        help_text="Precio del local"
+        help_text="Selecciona un precio base o ajusta manualmente"
     )
 
-    def save(self, *args, **kwargs):
-        # Si no hay un precio definido, obtenerlo de PrecioBase
-        if not self.precio:
-            try:
-                precio_base = PrecioBase.objects.get(zona=self.zona, metraje=self.metraje)
-                self.precio = precio_base.precio
-            except PrecioBase.DoesNotExist:
-                raise ValueError("No hay un precio base definido para esta combinación de zona y metraje.")
-        super().save(*args, **kwargs)
-
-    def clean(self):
-        # Validar que el precio sea coherente con el precio base
-        if self.precio:
-            try:
-                precio_base = PrecioBase.objects.get(zona=self.zona, metraje=self.metraje)
-                if self.precio != precio_base.precio:
-                    raise ValidationError(f"El precio ingresado ({self.precio}) no coincide con el precio base ({precio_base.precio}).")
-            except PrecioBase.DoesNotExist:
-                raise ValidationError("No hay un precio base definido para esta combinación de zona y metraje.")
-
-
+    # def __str__(self):
+    #     return f"Local ID: {self.id} - Zona: {self.zona.codigo} - Precio: {self.precio.precio if self.precio else 'No asignado'}"
+    def __str__():
+        return 
 
 class ReciboArras(models.Model):
     id = models.AutoField(primary_key=True)  # Clave primaria auto incremental
