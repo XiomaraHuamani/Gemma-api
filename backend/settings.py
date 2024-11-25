@@ -20,6 +20,8 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'apps.locales',
+    'apps.blogs',
+    'apps.users',
 ]
 
 MIDDLEWARE = [
