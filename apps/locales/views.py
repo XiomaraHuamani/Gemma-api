@@ -38,7 +38,7 @@ class TipoDescuentoViewSet(ModelViewSet):
     queryset = TipoDescuento.objects.select_related('categoria').all()
     serializer_class = TipoDescuentoSerializer
 
-class PrecioBaseViewSet(viewsets.ModelViewSet):
+class PrecioBaseViewSet(ModelViewSet):
     queryset = PrecioBase.objects.all()
     serializer_class = PrecioBaseSerializer
 
@@ -65,20 +65,8 @@ class DescuentoViewSet(ModelViewSet):
 
 
 class LocalViewSet(ModelViewSet):
-    queryset = Local.objects.select_related('zona', 'metraje').all()
+    queryset = Local.objects.select_related('zona', 'metraje', 'precio_base').all()
     serializer_class = LocalSerializer
-
-    def perform_create(self, serializer):
-        """
-        Personalización del proceso de creación para manejar el precio.
-        """
-        serializer.save()
-
-    def perform_update(self, serializer):
-        """
-        Personalización del proceso de actualización para manejar el precio.
-        """
-        serializer.save()
 
 
 class TipoDescuentoPorCategoriaView(APIView):

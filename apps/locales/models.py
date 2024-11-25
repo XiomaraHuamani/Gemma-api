@@ -77,8 +77,12 @@ class PrecioBase(models.Model):
     precio = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        help_text="Monto del precio base"
+        help_text="Coloca el monto del local"
     )
+
+    class Meta:
+        verbose_name = "Precio Base"
+        verbose_name_plural = "Precios Base"
 
     def __str__(self):
         return f"ID: {self.id} - Precio: {self.precio}"
@@ -151,6 +155,9 @@ class Descuento(models.Model):
 
 
 
+from django.db import models
+from django.core.exceptions import ValidationError
+
 class Local(models.Model):
     id = models.AutoField(primary_key=True)
     zona = models.ForeignKey(Zona, on_delete=models.CASCADE, related_name='locales')
@@ -160,18 +167,43 @@ class Local(models.Model):
         choices=[('disponible', 'Disponible'), ('separado', 'Separado'), ('vendido', 'Vendido')],
         default='disponible'
     )
-    precio = models.ForeignKey(
-        PrecioBase,
+    precio_base = models.ForeignKey(
+        'PrecioBase',
         on_delete=models.SET_NULL,
-        related_name='locales',
         null=True,
-        help_text="Selecciona un precio base o ajusta manualmente"
+        blank=True,
+        related_name='locales',
+        help_text="Relación con el precio base"
     )
 
-    # def __str__(self):
-    #     return f"Local ID: {self.id} - Zona: {self.zona.codigo} - Precio: {self.precio.precio if self.precio else 'No asignado'}"
-    def __str__():
-        return 
+    class Meta:
+        # Restricción única a nivel de base de datos
+        constraints = [
+            models.UniqueConstraint(
+                fields=['zona', 'metraje'],
+                name='unique_local_per_zona_metraje'
+            )
+        ]
+
+    def clean(self):
+        """
+        Validación personalizada para evitar duplicados en zona y metraje.
+        """
+        if Local.objects.filter(zona=self.zona, metraje=self.metraje).exclude(id=self.id).exists():
+            raise ValidationError(
+                f"Ya existe un local registrado para la zona '{self.zona}' y el metraje '{self.metraje}'."
+            )
+
+    def save(self, *args, **kwargs):
+        # Llama a las validaciones personalizadas antes de guardar
+        self.clean()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Local ID: {self.id} - Zona: {self.zona.codigo}"
+
+
+
 
 class ReciboArras(models.Model):
     id = models.AutoField(primary_key=True)  # Clave primaria auto incremental

@@ -36,7 +36,8 @@ class TipoDescuentoSerializer(serializers.ModelSerializer):
 class PrecioBaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = PrecioBase
-        fields = '__all__'
+        fields = ['id', 'precio']
+
 
 
 class DescuentoSerializer(serializers.ModelSerializer):
@@ -49,17 +50,24 @@ class DescuentoSerializer(serializers.ModelSerializer):
         fields = ['id', 'categoria', 'categoria_nombre', 'tipo_descuento', 'tipo_descuento_nombre', 
                 'metraje', 'monto', 'porcentaje', 'descuento_aplicado']
 
+
 class LocalSerializer(serializers.ModelSerializer):
-    zona_nombre = serializers.CharField(source='zona.codigo', read_only=True)
-    metraje_area = serializers.CharField(source='metraje.area', read_only=True)
-    precio_monto = serializers.DecimalField(
-        source='precio.precio', max_digits=10, decimal_places=2, read_only=True
+    precio_base_id = serializers.PrimaryKeyRelatedField(
+        queryset=PrecioBase.objects.all(),
+        source='precio_base',
+        write_only=True,
+        required=False
+    )
+    precio_base_monto = serializers.DecimalField(
+        source='precio_base.precio',
+        max_digits=10,
+        decimal_places=2,
+        read_only=True
     )
 
     class Meta:
         model = Local
-        fields = ['id', 'zona', 'zona_nombre', 'metraje', 'metraje_area', 'estado', 'precio', 'precio_monto']
-
+        fields = ['id', 'zona', 'metraje', 'estado', 'precio_base_id', 'precio_base_monto']
 
 
 class ReciboArrasSerializer(serializers.ModelSerializer):

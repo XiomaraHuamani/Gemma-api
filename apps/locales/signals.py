@@ -5,12 +5,6 @@ from .models import PrecioBase, Local
 @receiver(post_save, sender=PrecioBase)
 def update_local_prices(sender, instance, **kwargs):
     """
-    Actualiza los precios en Local cuando se modifica un PrecioBase.
+    Actualiza los precios de todos los locales al último precio base registrado.
     """
-    # Obtener los locales que coincidan con la zona y el metraje del PrecioBase
-    locales_relacionados = Local.objects.filter(zona=instance.zona, metraje=instance.metraje)
-    
-    # Actualizar el precio de cada local
-    for local in locales_relacionados:
-        local.precio = instance.precio
-        local.save()
+    Local.objects.all().update(precio=instance.precio)
