@@ -5,3 +5,4 @@ from .serializers import BlogSerializer
 class BlogViewSet(ModelViewSet):
     queryset = Blog.objects.all().order_by('-created_at')
     serializer_class = BlogSerializer
+    lookup_field = 'slug' 
