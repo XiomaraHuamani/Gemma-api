@@ -16,7 +16,7 @@ class RoleViewSet(ModelViewSet):
     """
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
-    permission_classes = [AllowAny]  # Solo administradores pueden gestionar roles
+    permission_classes = [AllowAny] 
 
     def perform_create(self, serializer):
         """
@@ -31,7 +31,7 @@ class UserViewSet(ModelViewSet):
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [AllowAny]  # Solo usuarios autenticados pueden acceder
+    permission_classes = [AllowAny]  
 
     def get_permissions(self):
         """
