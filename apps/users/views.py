@@ -33,6 +33,14 @@ class UserViewSet(ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [AllowAny]  # Solo usuarios autenticados pueden acceder
 
+    def get_permissions(self):
+        """
+        Personalizar permisos para ciertas acciones.
+        """
+        if self.action in ['create', 'list']:
+            self.permission_classes = [AllowAny]
+        return super().get_permissions()
+    
     def perform_create(self, serializer):
         """
         Método para personalizar el proceso de creación.
@@ -78,25 +86,44 @@ class UserViewSet(ModelViewSet):
         user.save()
         return Response({"message": f"Rol '{role_name}' asignado al usuario {user.email}."}, status=status.HTTP_200_OK)
 
+
 class RegisterView(APIView):
     """
     Vista para el registro de usuarios.
     """
+    permission_classes = [AllowAny]  
+
     def post(self, request, *args, **kwargs):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()  # Guarda el nuevo usuario
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            user = serializer.save()
+            refresh = RefreshToken.for_user(user)  
+            return Response({
+                "user": serializer.data,
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     """
-    Endpoint para obtener tokens JWT.
+    Endpoint personalizado para obtener tokens JWT.
+    Incluye el rol del usuario en la respuesta.
     """
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
+
+        # Si el token se genera correctamente, agrega el rol
         if response.status_code == 200:
-            user = User.objects.get(email=request.data.get('email'))
-            response.data['role'] = user.role.name if user.role else None
+            try:
+                # Recuperar el usuario autenticado por el email
+                user = User.objects.get(email=request.data.get('email'))
+
+                # Agregar el rol a la respuesta
+                response.data['role'] = user.role.name if user.role else "No Role Assigned"
+            except User.DoesNotExist:
+                response.data['role'] = "No Role Found"
         return response
+

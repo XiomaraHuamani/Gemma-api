@@ -12,7 +12,7 @@ AUTH_PROVIDERS = {
 class Role(models.Model):
     """
     Modelo para definir roles en la aplicación.
-    """
+    """ 
     MARKETING = 'marketing'
     ASESOR = 'asesor'
     STAFF = 'staff'

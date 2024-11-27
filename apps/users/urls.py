@@ -15,3 +15,4 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # Refresco del token
     path('', include(router.urls)),  # Incluye rutas generadas automáticamente
 ]
+ 
