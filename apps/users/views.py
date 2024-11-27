@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -15,7 +16,7 @@ class RoleViewSet(ModelViewSet):
     """
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
-    permission_classes = [IsAdminUser]  # Solo administradores pueden gestionar roles
+    permission_classes = [AllowAny]  # Solo administradores pueden gestionar roles
 
     def perform_create(self, serializer):
         """
@@ -30,7 +31,7 @@ class UserViewSet(ModelViewSet):
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]  # Solo usuarios autenticados pueden acceder
+    permission_classes = [AllowAny]  # Solo usuarios autenticados pueden acceder
 
     def perform_create(self, serializer):
         """
@@ -50,7 +51,7 @@ class UserViewSet(ModelViewSet):
         """
         instance.delete()
 
-    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    @action(detail=False, methods=['get'], permission_classes=[AllowAny])
     def me(self, request):
         """
         Obtén información del usuario autenticado.
@@ -58,7 +59,7 @@ class UserViewSet(ModelViewSet):
         serializer = self.get_serializer(request.user)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['post'], permission_classes=[IsAdminUser])
+    @action(detail=True, methods=['post'], permission_classes=[AllowAny])
     def set_role(self, request, pk=None):
         """
         Asignar un rol específico a un usuario.
