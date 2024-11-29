@@ -16,34 +16,24 @@ class RoleSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     """
-    Serializador para el modelo de usuario.
+    Serializer para el modelo de usuario.
     """
-    role = serializers.PrimaryKeyRelatedField(
-        queryset=Role.objects.all(),
-        required=True,  # Asegúrate de que sea obligatorio
-        help_text="El rol asignado al usuario."
-    )
-
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'password', 'role', 'date_joined']
-        extra_kwargs = {
-            'password': {'write_only': True},
-            'date_joined': {'read_only': True},
-        }
+        extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
         """
-        Crear un usuario con contraseña encriptada y asignar rol.
+        Sobrescribe el método create para asignar un rol predeterminado si no se proporciona.
         """
-        password = validated_data.pop('password', None)
         role = validated_data.pop('role', None)
-        user = User(**validated_data)
-        if password:
-            user.set_password(password)
-        user.save()
-        if role:
-            user.role = role
-            user.save()
+        if not role:
+            # Si no se especifica un rol, asigna el rol predeterminado (por ejemplo, 'cliente')
+            role = Role.objects.get_or_create(name=Role.CLIENTE)[0]
+        
+        # Crea el usuario con el rol asignado
+        user = User.objects.create_user(**validated_data, role=role)
         return user
+
 

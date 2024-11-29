@@ -5,6 +5,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Role, User
 from .serializers import RoleSerializer, UserSerializer
@@ -107,23 +108,15 @@ class RegisterView(APIView):
 
     
 
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        user = self.user
+        
+        # Agregar el rol del usuario a la respuesta
+        data['role'] = user.role.name if user.role else None
+        return data
+
 class CustomTokenObtainPairView(TokenObtainPairView):
-    """
-    Endpoint personalizado para obtener tokens JWT.
-    Incluye el rol del usuario en la respuesta.
-    """
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-
-        # Si el token se genera correctamente, agrega el rol
-        if response.status_code == 200:
-            try:
-                # Recuperar el usuario autenticado por el email
-                user = User.objects.get(email=request.data.get('email'))
-
-                # Agregar el rol a la respuesta
-                response.data['role'] = user.role.name if user.role else "No Role Assigned"
-            except User.DoesNotExist:
-                response.data['role'] = "No Role Found"
-        return response
+    serializer_class = CustomTokenObtainPairSerializer
 

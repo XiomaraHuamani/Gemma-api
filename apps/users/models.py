@@ -9,10 +9,11 @@ AUTH_PROVIDERS = {
     'google': 'google',
 }
 
+
 class Role(models.Model):
     """
     Modelo para definir roles en la aplicación.
-    """ 
+    """
     MARKETING = 'marketing'
     ASESOR = 'asesor'
     STAFF = 'staff'
@@ -39,7 +40,7 @@ class Role(models.Model):
         verbose_name_plural = _("Roles")
 
     def __str__(self):
-        return self.get_name_display()
+        return dict(self.ROLE_CHOICES).get(self.name, self.name)
 
 
 class User(AbstractUser):
@@ -60,8 +61,8 @@ class User(AbstractUser):
         max_length=17,
         verbose_name=_("Número de Teléfono"),
         unique=True,
-        null=True,  # Temporalmente permitimos null
-        blank=True  # Temporalmente permitimos blank
+        null=True,
+        blank=True
     )
     document_number = models.CharField(
         max_length=20,
@@ -94,36 +95,21 @@ class User(AbstractUser):
         verbose_name_plural = _("Usuarios")
 
     def save(self, *args, **kwargs):
-        # Si el nombre de usuario no está definido, usar el correo electrónico como username.
         if not self.username:
             self.username = self.email
-        super(User, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.email} ({self.role.name if self.role else 'Sin Rol'})"
 
     @property
     def get_full_name(self):
-        """Devuelve el nombre completo del usuario."""
+        """
+        Devuelve el nombre completo del usuario.
+        """
         return f"{self.first_name.title()} {self.last_name.title()}"
 
     @property
-    def is_marketing(self):
-        """Verifica si el usuario pertenece al rol de marketing."""
-        return self.role and self.role.name == Role.MARKETING
-
-    @property
-    def is_asesor(self):
-        """Verifica si el usuario pertenece al rol de asesor."""
-        return self.role and self.role.name == Role.ASESOR
-
-    @property
-    def is_staff_member(self):
-        """Verifica si el usuario pertenece al rol de staff."""
-        return self.role and self.role.name == Role.STAFF
-
-    @property
-    def is_cliente(self):
-        """Verifica si el usuario pertenece al rol de cliente."""
-        return self.role and self.role.name == Role.CLIENTE
-
     def tokens(self):
         """
         Genera los tokens de acceso y refresh para el usuario.
@@ -138,12 +124,12 @@ class User(AbstractUser):
         """
         Asigna un rol al usuario.
         """
-        valid_roles = [role[0] for role in Role.ROLE_CHOICES]
-        if role_name not in valid_roles:
-            raise ValueError(f"Rol inválido. Los roles válidos son: {', '.join(valid_roles)}.")
-        role, _ = Role.objects.get_or_create(name=role_name)
-        self.role = role
-        self.save()
+        try:
+            role = Role.objects.get(name=role_name)
+            self.role = role
+            self.save()
+        except Role.DoesNotExist:
+            raise ValueError(f"El rol '{role_name}' no existe.")
 
 
 class OneTimePassword(models.Model):
@@ -152,6 +138,7 @@ class OneTimePassword(models.Model):
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name=_("Usuario"))
     otp = models.CharField(max_length=6, verbose_name=_("Código OTP"))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Creado en"))
 
     def __str__(self):
-        return f"OTP para {self.user.get_full_name}: {self.otp}"
+        return f"OTP para {self.user.email}: {self.otp}"
