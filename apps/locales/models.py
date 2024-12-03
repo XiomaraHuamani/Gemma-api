@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Sum
 from decimal import Decimal
 
+
 class Zona(models.Model):
     LINEA_BASE_CHOICES = [
         ('primera_linea', 'Primera Línea'),
@@ -64,7 +65,7 @@ class TipoDescuento(models.Model):
     categoria = models.ForeignKey(
         'Categoria',
         on_delete=models.CASCADE,
-        related_name='tipo_descuentos',  # Relación inversa específica para TipoDescuento
+        related_name='tipo_descuentos',  
         help_text="Categoría asociada al tipo de descuento"
     )
 
@@ -93,7 +94,7 @@ class Descuento(models.Model):
     id = models.AutoField(primary_key=True)
     tipo_descuento = models.ForeignKey(
         TipoDescuento,
-        on_delete=models.PROTECT,  # Evita la eliminación accidental
+        on_delete=models.PROTECT,  
         related_name='descuentos'
     )
     categoria = models.ForeignKey(
@@ -152,58 +153,58 @@ class Descuento(models.Model):
     def __str__(self):
         return f"{self.categoria.nombre} - {self.tipo_descuento.nombre} - {self.metraje.area}"
 
-
-
-
 from django.db import models
-from django.core.exceptions import ValidationError
+
+class Tipo(models.Model):
+    TIPOS_CHOICES = [
+        ("entrada segundaria grupo 1 izquierda", "Entrada secundaria grupo 1 izquierda"),
+        ("entrada segundaria grupo 1 derecha", "Entrada secundaria grupo 1 derecha"),
+        ("entrada segundaria grupo 2 izquierda", "Entrada secundaria grupo 2 izquierda"),
+        ("entrada segundaria grupo 2 derecha", "Entrada secundaria grupo 2 derecha"),
+        ("entrada segundaria grupo 3 izquierda", "Entrada secundaria grupo 3 izquierda"),
+        ("entrada segundaria grupo 3 derecha", "Entrada secundaria grupo 3 derecha"),
+        ("entrada segundaria grupo 4 izquierda", "Entrada secundaria grupo 4 izquierda"),
+        ("entrada segundaria grupo 4 derecha", "Entrada secundaria grupo 4 derecha"),
+        ("entrada segundaria grupo 5 izquierda", "Entrada secundaria grupo 5 izquierda"),
+        ("entrada segundaria grupo 5 derecha", "Entrada secundaria grupo 5 derecha"),
+        ("entrada grupo 1 larga", "Entrada grupo 1 larga"),
+        ("entrada grupo 2 larga", "Entrada grupo 2 larga"),
+    ]
+
+    nombre = models.CharField(max_length=255, choices=TIPOS_CHOICES, unique=True)
+
+    def __str__(self):
+        return self.nombre
 
 class Local(models.Model):
-    id = models.AutoField(primary_key=True)
-    zona = models.ForeignKey(Zona, on_delete=models.CASCADE, related_name='locales')
-    metraje = models.ForeignKey(Metraje, on_delete=models.CASCADE, related_name='locales')
+    zona = models.ForeignKey(
+        'Zona', on_delete=models.CASCADE, related_name='locales'
+    )
+    metraje = models.ForeignKey(
+        'Metraje', on_delete=models.CASCADE, related_name='locales'
+    )
     estado = models.CharField(
-        max_length=10,
-        choices=[('disponible', 'Disponible'), ('separado', 'Separado'), ('vendido', 'Vendido')],
+        max_length=20,
+        choices=[('disponible', 'Disponible'), ('reservado', 'Reservado'), ('vendido', 'Vendido')],
         default='disponible'
     )
     precio_base = models.ForeignKey(
-        'PrecioBase',
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='locales',
-        help_text="Relación con el precio base"
+        'PrecioBase', on_delete=models.SET_NULL, null=True, blank=True, related_name='locales'
+    )
+    tipo = models.ForeignKey(
+        Tipo, on_delete=models.CASCADE, related_name='locales', null=True, blank=True
+    )
+    parent = models.ForeignKey(
+        'self', on_delete=models.CASCADE, null=True, blank=True, related_name='subniveles'
     )
 
     class Meta:
-        # Restricción única a nivel de base de datos
         constraints = [
-            models.UniqueConstraint(
-                fields=['zona', 'metraje'],
-                name='unique_local_per_zona_metraje'
-            )
+            models.UniqueConstraint(fields=['zona', 'metraje'], name='unique_local_per_zona_metraje')
         ]
 
-    def clean(self):
-        """
-        Validación personalizada para evitar duplicados en zona y metraje.
-        """
-        if Local.objects.filter(zona=self.zona, metraje=self.metraje).exclude(id=self.id).exists():
-            raise ValidationError(
-                f"Ya existe un local registrado para la zona '{self.zona}' y el metraje '{self.metraje}'."
-            )
-
-    def save(self, *args, **kwargs):
-        # Llama a las validaciones personalizadas antes de guardar
-        self.clean()
-        super().save(*args, **kwargs)
-
     def __str__(self):
-        return f"Local ID: {self.id} - Zona: {self.zona.codigo}"
-
-
-
+        return f"Local - Zona: {self.zona.codigo} - Metraje: {self.metraje.area}"
 
 class ReciboArras(models.Model):
     id = models.AutoField(primary_key=True)  # Clave primaria auto incremental

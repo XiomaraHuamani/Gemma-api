@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -18,8 +18,15 @@ from .serializers import (
     VentaContadoSerializer, 
     PagoSerializer,
     CategoriaSerializer,
-    TipoDescuentoSerializer
+    TipoDescuentoSerializer,
+    GruposZonasSerializer,
+    SubnivelSerializer
 )
+
+from django.apps import apps
+
+Categoria = apps.get_model('locales', 'Categoria')
+
 
 
 class ZonaViewSet(viewsets.ModelViewSet):
@@ -65,9 +72,62 @@ class DescuentoViewSet(ModelViewSet):
 
 
 class LocalViewSet(ModelViewSet):
-    queryset = Local.objects.select_related('zona', 'metraje', 'precio_base').all()
+    queryset = Local.objects.all()
     serializer_class = LocalSerializer
 
+
+
+
+class GruposPlazaTecAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        try:
+            categoria = Categoria.objects.get(id=1)  # Plaza Tec
+            locales = Local.objects.filter(zona__categoria=categoria)
+
+            grupos = {}
+            for local in locales:
+                tipo_nombre = local.tipo.nombre if local.tipo else "Sin Tipo"
+                if tipo_nombre not in grupos:
+                    grupos[tipo_nombre] = []
+                grupos[tipo_nombre].append(LocalSerializer(local).data)
+
+            grupos_data = [{"tipo": tipo, "locales": locales} for tipo, locales in grupos.items()]
+
+            return Response({"grupos": grupos_data}, status=status.HTTP_200_OK)
+        except Categoria.DoesNotExist:
+            return Response(
+                {"error": "Categoría Plaza Tec no encontrada."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+    def post(self, request, *args, **kwargs):
+        """
+        Permite registrar un local, incluyendo su tipo y subniveles.
+        """
+        serializer = LocalSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LocalesPlazaTecViewSet(ModelViewSet):
+    queryset = Local.objects.filter(zona__categoria_id=1).select_related('zona', 'metraje', 'tipo', 'parent')
+    serializer_class = LocalSerializer
+
+    def create(self, request, *args, **kwargs):
+        """
+        Permite la creación de locales con subniveles y tipos definidos.
+        """
+        return super().create(request)
+
+    def list(self, request, *args, **kwargs):
+        """
+        Lista los locales filtrados por categoría Plaza Tec (ID=1).
+        """
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 class TipoDescuentoPorCategoriaView(APIView):
     def get(self, request, categoria_id):
@@ -92,6 +152,14 @@ class ReciboArrasViewSet(ModelViewSet):
         Lógica adicional al crear un recibo. Rellena campos automáticos.
         """
         serializer.save()
+
+class GruposPorZonaAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        # Lógica para manejar la solicitud GET
+        categoria = Categoria.objects.get(id=1)  # Filtrar por Plaza Tec
+        locales = Local.objects.filter(zona__categoria=categoria)
+        serializer = GruposZonasSerializer(locales, many=True)
+        return Response(serializer.data)
 
 
 class ClienteViewSet(ModelViewSet):
