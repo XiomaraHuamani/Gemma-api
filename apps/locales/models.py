@@ -25,10 +25,13 @@ class Zona(models.Model):
         default='primera_linea',
         help_text="Línea base de la zona"
     )
+    tiene_subniveles = models.BooleanField(
+        default=False,
+        help_text="Indica si la zona tiene subniveles asociados"
+    )
 
     def __str__(self):
         return f"{self.categoria.nombre} - Código: {self.codigo}"
-
 
 
 class Categoria(models.Model):
@@ -153,58 +156,73 @@ class Descuento(models.Model):
     def __str__(self):
         return f"{self.categoria.nombre} - {self.tipo_descuento.nombre} - {self.metraje.area}"
 
-from django.db import models
-
-class Tipo(models.Model):
-    TIPOS_CHOICES = [
-        ("entrada segundaria grupo 1 izquierda", "Entrada secundaria grupo 1 izquierda"),
-        ("entrada segundaria grupo 1 derecha", "Entrada secundaria grupo 1 derecha"),
-        ("entrada segundaria grupo 2 izquierda", "Entrada secundaria grupo 2 izquierda"),
-        ("entrada segundaria grupo 2 derecha", "Entrada secundaria grupo 2 derecha"),
-        ("entrada segundaria grupo 3 izquierda", "Entrada secundaria grupo 3 izquierda"),
-        ("entrada segundaria grupo 3 derecha", "Entrada secundaria grupo 3 derecha"),
-        ("entrada segundaria grupo 4 izquierda", "Entrada secundaria grupo 4 izquierda"),
-        ("entrada segundaria grupo 4 derecha", "Entrada secundaria grupo 4 derecha"),
-        ("entrada segundaria grupo 5 izquierda", "Entrada secundaria grupo 5 izquierda"),
-        ("entrada segundaria grupo 5 derecha", "Entrada secundaria grupo 5 derecha"),
-        ("entrada grupo 1 larga", "Entrada grupo 1 larga"),
-        ("entrada grupo 2 larga", "Entrada grupo 2 larga"),
-    ]
-
-    nombre = models.CharField(max_length=255, choices=TIPOS_CHOICES, unique=True)
-
-    def __str__(self):
-        return self.nombre
 
 class Local(models.Model):
     zona = models.ForeignKey(
-        'Zona', on_delete=models.CASCADE, related_name='locales'
+        'Zona',
+        on_delete=models.CASCADE,
+        related_name='locales',
+        help_text="Zona a la que pertenece este local."
     )
     metraje = models.ForeignKey(
-        'Metraje', on_delete=models.CASCADE, related_name='locales'
+        'Metraje',
+        on_delete=models.CASCADE,
+        related_name='locales',
+        help_text="Metraje asociado al local."
     )
     estado = models.CharField(
         max_length=20,
         choices=[('disponible', 'Disponible'), ('reservado', 'Reservado'), ('vendido', 'Vendido')],
-        default='disponible'
+        default='disponible',
+        help_text="Estado del local (disponible, reservado, vendido)."
     )
     precio_base = models.ForeignKey(
-        'PrecioBase', on_delete=models.SET_NULL, null=True, blank=True, related_name='locales'
+        'PrecioBase',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='locales',
+        help_text="Precio base asociado al local."
     )
-    tipo = models.ForeignKey(
-        Tipo, on_delete=models.CASCADE, related_name='locales', null=True, blank=True
+    tipo = models.CharField( 
+        max_length=36,
+        choices=[
+            ("entrada segundaria grupo 1 izquierda", "Entrada secundaria grupo 1 izquierda"),
+            ("entrada segundaria grupo 1 derecha", "Entrada secundaria grupo 1 derecha"),
+            ("entrada segundaria grupo 2 izquierda", "Entrada secundaria grupo 2 izquierda"),
+            ("entrada segundaria grupo 2 derecha", "Entrada secundaria grupo 2 derecha"),
+            ("entrada segundaria grupo 3 izquierda", "Entrada secundaria grupo 3 izquierda"),
+            ("entrada segundaria grupo 3 derecha", "Entrada secundaria grupo 3 derecha"),
+            ("entrada segundaria grupo 4 izquierda", "Entrada secundaria grupo 4 izquierda"),
+            ("entrada segundaria grupo 4 derecha", "Entrada secundaria grupo 4 derecha"),
+            ("entrada grupo 1 larga", "Entrada grupo 1 larga"),
+            ("entrada grupo 2 larga", "Entrada grupo 2 larga"),
+        ],
+        null=True,
+        blank=True,
+        help_text="Escoja el tipo"
     )
-    parent = models.ForeignKey(
-        'self', on_delete=models.CASCADE, null=True, blank=True, related_name='subniveles'
+
+    subnivel_de = models.ForeignKey(
+        'Zona',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='subniveles',
+        help_text="Zona de la que este local es un subnivel, si aplica."
     )
 
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['zona', 'metraje'], name='unique_local_per_zona_metraje')
         ]
+        verbose_name = "Local"
+        verbose_name_plural = "Locales"
 
     def __str__(self):
         return f"Local - Zona: {self.zona.codigo} - Metraje: {self.metraje.area}"
+    
+
 
 class ReciboArras(models.Model):
     id = models.AutoField(primary_key=True)  # Clave primaria auto incremental

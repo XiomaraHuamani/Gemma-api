@@ -16,7 +16,8 @@ from .views import (
     TipoDescuentoPorCategoriaView,
     GruposPorZonaAPIView,
     GruposPlazaTecAPIView,
-    LocalesPlazaTecViewSet
+    LocalesPlazaTecViewSet,
+    GruposLocalesAPIView
 )
 
 router = DefaultRouter()
@@ -32,12 +33,12 @@ router.register(r'clientes', ClienteViewSet)
 router.register(r'ventas-credito', VentaCreditoViewSet, basename='venta-credito')
 router.register(r'ventas-contado', VentaContadoViewSet, basename='venta-contado')
 router.register(r'pagos', PagoViewSet, basename='pago')
-router.register(r'grupos-plaza-tec', LocalesPlazaTecViewSet, basename='grupos-plaza-tec')
+router.register(r'grupos-tec', LocalesPlazaTecViewSet, basename='grupos-tec')
 
 
 urlpatterns = [
     path('', include(router.urls)),
     path('tipo-descuento-por-categoria/<int:categoria_id>/', TipoDescuentoPorCategoriaView.as_view(), name='tipo-descuento-por-categoria'),
-    path('grupos-zonas/', GruposPorZonaAPIView.as_view(), name='grupos-zonas'),
-    path("grupos-plaza-tec/", GruposPlazaTecAPIView.as_view(), name="grupos-plaza-tec"),
+    #path('grupos-zonas/', GruposPorZonaAPIView.as_view(), name='grupos-zonas'),
+    path('grupos/', GruposLocalesAPIView.as_view(), name='grupos-locales'),
 ]

@@ -1,18 +1,28 @@
 from rest_framework import serializers
-from .models import Zona, Metraje, TipoDescuento, PrecioBase, Descuento, Local, ReciboArras, Cliente, Pago, VentaContado, VentaCredito, Categoria, Tipo 
+from .models import Zona, Metraje, TipoDescuento, PrecioBase, Descuento, Local, ReciboArras, Cliente, Pago, VentaContado, VentaCredito, Categoria 
 from decimal import Decimal
 
 
-class ZonaSerializer(serializers.ModelSerializer):
-    categoria_nombre = serializers.CharField(source='categoria.nombre', read_only=True)
+# class ZonaSerializer(serializers.ModelSerializer):
+#     locales = serializers.SerializerMethodField()
 
+#     class Meta:
+#         model = Zona
+#         fields = ['id', 'categoria', 'codigo', 'linea_base', 'tiene_subniveles', 'locales']
+
+#     def get_locales(self, obj):
+#         # Obtener locales de una zona
+#         locales = Local.objects.filter(zona=obj)
+#         return LocalSerializer(locales, many=True).data
+
+
+class ZonaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Zona
-        fields = ['id', 'categoria', 'categoria_nombre', 'codigo', 'linea_base']
-
-    def get_display_name(self, obj):
-        return f"{obj.nombre} - Código: {obj.codigo} - Línea: {obj.get_linea_base_display()}"
-    
+        fields = ['id', 'categoria', 'codigo', 'linea_base', 'tiene_subniveles']
+        extra_kwargs = {
+            'codigo': {'required': True},
+        }
 
 class CategoriaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -73,26 +83,49 @@ class SubnivelSerializer(serializers.ModelSerializer):
             "linea_base": {"source": "zona.linea_base"},
         }
 
-class TipoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tipo
-        fields = ['id', 'nombre']
 
+
+# class LocalSerializer(serializers.ModelSerializer):
+#     zona_codigo = serializers.CharField(source='zona.codigo', read_only=True)  # Mostrar el código de la zona
+#     metraje = MetrajeSerializer(read_only=True)  # Mostrar detalles del metraje en el GET
+#     metraje_id = serializers.PrimaryKeyRelatedField(queryset=Metraje.objects.all(), source='metraje', write_only=True)  # Para proporcionar el metraje en el POST/PUT
+#     precio_base = serializers.DecimalField(source='precio_base.precio', max_digits=10, decimal_places=2, read_only=True)  # Mostrar solo el precio en el GET
+#     precio_base_id = serializers.PrimaryKeyRelatedField(queryset=PrecioBase.objects.all(), source='precio_base', write_only=True)  # Proporcionar el ID del precio base para el POST/PUT
+
+#     class Meta:
+#         model = Local
+#         fields = [
+#             'id', 'zona_codigo', 'metraje', 'metraje_id', 'estado', 'precio_base', 'precio_base_id', 'tipo'
+#         ]
+#         extra_kwargs = {
+#             'estado': {'required': True},
+#             'tipo': {'required': False, 'allow_blank': True},
+#         }
+
+#     def get_precio(self, obj):
+#         if obj.precio_base:
+#             return f"${obj.precio_base.precio:,.2f}"
+#         return None
 
 class LocalSerializer(serializers.ModelSerializer):
-    tipo = serializers.PrimaryKeyRelatedField(queryset=Tipo.objects.all(), allow_null=True, required=False)
-    tipo_nombre = serializers.StringRelatedField(source='tipo', read_only=True)
-    subniveles = serializers.SerializerMethodField()
+    zona_codigo = serializers.CharField(source='zona.codigo', read_only=True)
+    subnivel_de_codigo = serializers.CharField(source='subnivel_de.codigo', read_only=True, allow_null=True)
+    metraje = serializers.StringRelatedField(read_only=True)
+    metraje_id = serializers.PrimaryKeyRelatedField(queryset=Metraje.objects.all(), source='metraje', write_only=True)
+    precio_base = serializers.CharField(source='precio_base.precio', read_only=True)
+    precio_base_id = serializers.PrimaryKeyRelatedField(queryset=PrecioBase.objects.all(), source='precio_base', write_only=True)
 
     class Meta:
         model = Local
         fields = [
-            'id', 'zona', 'metraje', 'estado', 'precio_base', 'tipo', 'tipo_nombre', 'parent', 'subniveles'
+            'id', 'zona_codigo', 'metraje', 'metraje_id', 'estado', 'precio_base', 'precio_base_id', 'tipo', 'subnivel_de', 'subnivel_de_codigo'
         ]
+        extra_kwargs = {
+            'estado': {'required': True},
+            'tipo': {'required': False, 'allow_blank': True},
+            'subnivel_de': {'required': False, 'allow_null': True}
+        }
 
-    def get_subniveles(self, obj):
-        subniveles = obj.subniveles.all()
-        return LocalSerializer(subniveles, many=True).data
 
 class GruposPlazaTecSerializer(serializers.Serializer):
     tipo = serializers.CharField()
