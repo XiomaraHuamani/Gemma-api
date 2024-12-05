@@ -39,30 +39,27 @@ class ZonaViewSet(viewsets.ModelViewSet):
     queryset = Zona.objects.all()
     serializer_class = ZonaSerializer
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=['post'], url_path='add_subniveles')
     def add_subniveles(self, request, pk=None):
         zona = self.get_object()
         if not zona.tiene_subniveles:
-            return Response({"error": "La zona no tiene habilitada la opción de subniveles"}, status=400)
-        
-        subnivel_data = request.data.get('subniveles', [])
-        if len(subnivel_data) != 2:
-            return Response({"error": "Debe proporcionar exactamente dos subniveles"}, status=400)
+            return Response({"detail": "La zona no tiene habilitado subniveles."}, status=status.HTTP_400_BAD_REQUEST)
+
+        subniveles_data = request.data.get('subniveles', [])
+        if len(subniveles_data) != 2:
+            return Response({"detail": "Debe proporcionar exactamente dos subniveles."}, status=status.HTTP_400_BAD_REQUEST)
 
         subniveles = []
-        for subnivel in subnivel_data:
-            subnivel_instance = Local.objects.create(
-                zona=zona,
-                metraje_id=subnivel['metraje_id'],
-                estado=subnivel.get('estado', 'disponible'),
-                precio_base_id=subnivel.get('precio_base_id', None),
-                tipo=subnivel.get('tipo', None),
-                subnivel_de=zona
-            )
-            subniveles.append(subnivel_instance)
+        for subnivel_data in subniveles_data:
+            subnivel_data['subnivel_de'] = zona.id
+            subnivel_serializer = LocalSerializer(data=subnivel_data)
+            if subnivel_serializer.is_valid():
+                subnivel = subnivel_serializer.save()
+                subniveles.append(subnivel)
+            else:
+                return Response(subnivel_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(LocalSerializer(subniveles, many=True).data, status=201)
-
+        return Response({"detail": "Subniveles creados exitosamente."}, status=status.HTTP_201_CREATED)
 
 
 class CategoriaViewSet(ModelViewSet):
