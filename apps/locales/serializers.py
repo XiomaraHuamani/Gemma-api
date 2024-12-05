@@ -29,12 +29,10 @@ class CategoriaSerializer(serializers.ModelSerializer):
         model = Categoria
         fields = ['id', 'nombre']
 
-
 class MetrajeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Metraje
         fields = '__all__'
-
 
 class TipoDescuentoSerializer(serializers.ModelSerializer):
     categoria_nombre = serializers.CharField(source='categoria.nombre', read_only=True)
@@ -57,8 +55,6 @@ class DescuentoSerializer(serializers.ModelSerializer):
         model = Descuento
         fields = ['id', 'categoria', 'categoria_nombre', 'tipo_descuento', 'tipo_descuento_nombre', 
                 'metraje', 'monto', 'porcentaje', 'descuento_aplicado']
-
-
 
 class SubnivelSerializer(serializers.ModelSerializer):
     class Meta:
@@ -83,49 +79,78 @@ class SubnivelSerializer(serializers.ModelSerializer):
             "linea_base": {"source": "zona.linea_base"},
         }
 
+class RelacionarSubnivelesSerializer(serializers.Serializer):
+    zona_codigo = serializers.CharField(max_length=10)
+    subnivel_1 = serializers.IntegerField()
+    subnivel_2 = serializers.IntegerField()
 
+    def update(self, instance, validated_data):
+        # Obtener el código de la zona desde los datos validados
+        zona_codigo = validated_data.get('zona_codigo')
 
-# class LocalSerializer(serializers.ModelSerializer):
-#     zona_codigo = serializers.CharField(source='zona.codigo', read_only=True)  # Mostrar el código de la zona
-#     metraje = MetrajeSerializer(read_only=True)  # Mostrar detalles del metraje en el GET
-#     metraje_id = serializers.PrimaryKeyRelatedField(queryset=Metraje.objects.all(), source='metraje', write_only=True)  # Para proporcionar el metraje en el POST/PUT
-#     precio_base = serializers.DecimalField(source='precio_base.precio', max_digits=10, decimal_places=2, read_only=True)  # Mostrar solo el precio en el GET
-#     precio_base_id = serializers.PrimaryKeyRelatedField(queryset=PrecioBase.objects.all(), source='precio_base', write_only=True)  # Proporcionar el ID del precio base para el POST/PUT
+        # Buscar la zona utilizando el código proporcionado
+        try:
+            zona = Zona.objects.get(codigo=zona_codigo)
+        except Zona.DoesNotExist:
+            raise serializers.ValidationError({"zona_codigo": "Zona con este código no existe."})
 
-#     class Meta:
-#         model = Local
-#         fields = [
-#             'id', 'zona_codigo', 'metraje', 'metraje_id', 'estado', 'precio_base', 'precio_base_id', 'tipo'
-#         ]
-#         extra_kwargs = {
-#             'estado': {'required': True},
-#             'tipo': {'required': False, 'allow_blank': True},
-#         }
+        # Obtener los subniveles desde los datos validados
+        subnivel_1 = validated_data.get('subnivel_1')
+        subnivel_2 = validated_data.get('subnivel_2')
 
-#     def get_precio(self, obj):
-#         if obj.precio_base:
-#             return f"${obj.precio_base.precio:,.2f}"
-#         return None
+        # Establecer los subniveles para la zona
+        try:
+            local_1 = Local.objects.get(pk=subnivel_1)
+            local_2 = Local.objects.get(pk=subnivel_2)
+        except Local.DoesNotExist:
+            raise serializers.ValidationError({"subniveles": "Uno o ambos IDs de locales no existen."})
+
+        # Actualizamos los locales para que apunten a la zona como subnivel
+        local_1.subnivel_de = zona
+        local_2.subnivel_de = zona
+        local_1.save()
+        local_2.save()
+
+        return zona
+    
+class RelacionarSubnivelesSerializer(serializers.Serializer):
+    zona_codigo = serializers.CharField(max_length=10)
+    subnivel_1 = serializers.IntegerField()
+    subnivel_2 = serializers.IntegerField()
+
+    def update(self, instance, validated_data):
+        # Obtener los subniveles desde los datos validados
+        subnivel_1 = validated_data.get('subnivel_1')
+        subnivel_2 = validated_data.get('subnivel_2')
+
+        # Buscar la zona utilizando el código proporcionado
+        try:
+            zona = Zona.objects.get(codigo=validated_data['zona_codigo'])
+        except Zona.DoesNotExist:
+            raise serializers.ValidationError({"zona_codigo": "Zona con este código no existe."})
+
+        # Establecer los subniveles para la zona
+        Local.objects.filter(pk=subnivel_1).update(subnivel_de=zona)
+        Local.objects.filter(pk=subnivel_2).update(subnivel_de=zona)
+
+        return zona
+    
 
 class LocalSerializer(serializers.ModelSerializer):
     zona_codigo = serializers.CharField(source='zona.codigo', read_only=True)
-    subnivel_de_codigo = serializers.CharField(source='subnivel_de.codigo', read_only=True, allow_null=True)
-    metraje = serializers.StringRelatedField(read_only=True)
+    zona_id = serializers.PrimaryKeyRelatedField(queryset=Zona.objects.all(), source='zona', write_only=True)
     metraje_id = serializers.PrimaryKeyRelatedField(queryset=Metraje.objects.all(), source='metraje', write_only=True)
-    precio_base = serializers.CharField(source='precio_base.precio', read_only=True)
     precio_base_id = serializers.PrimaryKeyRelatedField(queryset=PrecioBase.objects.all(), source='precio_base', write_only=True)
 
     class Meta:
         model = Local
         fields = [
-            'id', 'zona_codigo', 'metraje', 'metraje_id', 'estado', 'precio_base', 'precio_base_id', 'tipo', 'subnivel_de', 'subnivel_de_codigo'
+            'id', 'zona_codigo', 'zona_id', 'metraje_id', 'estado', 'precio_base_id', 'tipo'
         ]
         extra_kwargs = {
             'estado': {'required': True},
             'tipo': {'required': False, 'allow_blank': True},
-            'subnivel_de': {'required': False, 'allow_null': True}
         }
-
 
 class GruposPlazaTecSerializer(serializers.Serializer):
     tipo = serializers.CharField()
@@ -148,7 +173,6 @@ class LocalSerializerWithSubniveles(serializers.Serializer):
     def get_image(self, obj):
         return obj.metraje.image.url if obj.metraje and obj.metraje.image else None
 
-
 class LocalSerializerWithSubniveles(serializers.Serializer):
     zona_codigo = serializers.CharField()
     precio_base = serializers.PrimaryKeyRelatedField(queryset=PrecioBase.objects.all())
@@ -160,18 +184,9 @@ class LocalSerializerWithSubniveles(serializers.Serializer):
         allow_null=True
     )
 
-
 class GruposZonasSerializer(serializers.Serializer):
     tipo = serializers.CharField()
     locales = LocalSerializerWithSubniveles(many=True)
-
-
-
-
-
-
-
-
 
 class ReciboArrasSerializer(serializers.ModelSerializer):
     zona = serializers.StringRelatedField(read_only=True)  # Zona será solo de lectura, derivada del local
@@ -216,7 +231,6 @@ class ReciboArrasSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("El monto de separación en dólares debe ser al menos 900 USD.")
         return data
 
-
 class ClienteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cliente
@@ -237,7 +251,7 @@ class ClienteSerializer(serializers.ModelSerializer):
         if value and len(value) != 8:
             raise serializers.ValidationError("El DNI del copropietario debe tener exactamente 8 dígitos.")
         return value
-    
+
 class VentaCreditoSerializer(serializers.ModelSerializer):
     total_a_pagar = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
 
@@ -245,14 +259,12 @@ class VentaCreditoSerializer(serializers.ModelSerializer):
         model = VentaCredito
         fields = ['tipo_venta', 'inicial', 'cuotas', 'monto_por_mes', 'total_a_pagar']
 
-
 class VentaContadoSerializer(serializers.ModelSerializer):
     total_a_pagar = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
 
     class Meta:
         model = VentaContado
         fields = ['tipo_venta', 'inicial', 'descuento', 'total_a_pagar']
-
 
 class PagoSerializer(serializers.ModelSerializer):
     class Meta:

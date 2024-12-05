@@ -21,18 +21,12 @@ from .serializers import (
     CategoriaSerializer,
     TipoDescuentoSerializer,
     GruposZonasSerializer,
-    SubnivelSerializer
+    SubnivelSerializer,
+    RelacionarSubnivelesSerializer
 )
 
 from django.apps import apps
-
 Categoria = apps.get_model('locales', 'Categoria')
-
-
-
-# class ZonaViewSet(viewsets.ModelViewSet):
-#     queryset = Zona.objects.all()
-#     serializer_class = ZonaSerializer
 
 
 class ZonaViewSet(viewsets.ModelViewSet):
@@ -61,7 +55,6 @@ class ZonaViewSet(viewsets.ModelViewSet):
 
         return Response({"detail": "Subniveles creados exitosamente."}, status=status.HTTP_201_CREATED)
 
-
 class CategoriaViewSet(ModelViewSet):
     queryset = Categoria.objects.all()
     serializer_class = CategoriaSerializer
@@ -78,15 +71,6 @@ class PrecioBaseViewSet(ModelViewSet):
     queryset = PrecioBase.objects.all()
     serializer_class = PrecioBaseSerializer
 
-# class DescuentoViewSet(ModelViewSet):
-#     """
-#     ViewSet para manejar las operaciones CRUD en Descuento.
-#     """
-#     queryset = Descuento.objects.select_related('categoria').all()
-#     serializer_class = DescuentoSerializer
-#     filter_backends = [DjangoFilterBackend]
-#     permission_classes = [AllowAny]
-
 class DescuentoViewSet(ModelViewSet):
     queryset = Descuento.objects.select_related('categoria', 'tipo_descuento', 'metraje').all()
     serializer_class = DescuentoSerializer
@@ -99,14 +83,26 @@ class DescuentoViewSet(ModelViewSet):
         context['request'] = self.request
         return context
 
-
-class LocalViewSet(ModelViewSet):
+class LocalViewSet(viewsets.ModelViewSet):
     queryset = Local.objects.all()
     serializer_class = LocalSerializer
 
+    def create(self, request, *args, **kwargs):
+        # Custom logic can be added here before saving the object
+        return super().create(request, *args, **kwargs)
 
+class RelacionarSubnivelesAPIView(APIView):
+    def put(self, request, *args, **kwargs):
+        serializer = RelacionarSubnivelesSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.update(None, serializer.validated_data)
+            return Response({"detail": "Subniveles relacionados con éxito."}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+    def post(self, request, *args, **kwargs):
+        # Se permite también el POST para crear la relación de subniveles
+        return self.put(request, *args, **kwargs)
+    
 class GruposPlazaTecAPIView(APIView):
     def get(self, request, *args, **kwargs):
         """
@@ -142,13 +138,9 @@ class GruposPlazaTecAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-
 class LocalesPlazaTecViewSet(ModelViewSet):
     queryset = Local.objects.filter(zona__categoria_id=1).select_related('zona', 'metraje', 'precio_base', 'parent')
     serializer_class = LocalSerializer
-
-
 
 class TipoDescuentoPorCategoriaView(APIView):
     def get(self, request, categoria_id):
@@ -158,7 +150,6 @@ class TipoDescuentoPorCategoriaView(APIView):
         tipos_descuento = TipoDescuento.objects.filter(categoria_id=categoria_id)
         serializer = TipoDescuentoSerializer(tipos_descuento, many=True)
         return Response(serializer.data)
-
 
 class ReciboArrasViewSet(ModelViewSet):
     """
@@ -181,9 +172,6 @@ class GruposPorZonaAPIView(APIView):
         locales = Local.objects.filter(zona__categoria=categoria)
         serializer = GruposZonasSerializer(locales, many=True)
         return Response(serializer.data)
-
-
-
 
 class GruposLocalesAPIView(APIView):
     def get(self, request, *args, **kwargs):
@@ -235,7 +223,6 @@ class GruposLocalesAPIView(APIView):
 
         return Response({"grupos": grupos_data})
 
-
 class ClienteViewSet(ModelViewSet):
     """
     ViewSet para manejar las operaciones CRUD en el modelo Cliente.
@@ -256,16 +243,13 @@ class ClienteViewSet(ModelViewSet):
         """
         serializer.save()
 
-
 class VentaCreditoViewSet(ModelViewSet):
     queryset = VentaCredito.objects.select_related('tipo_venta').all()
     serializer_class = VentaCreditoSerializer
 
-
 class VentaContadoViewSet(ModelViewSet):
     queryset = VentaContado.objects.select_related('tipo_venta', 'descuento').all()
     serializer_class = VentaContadoSerializer
-
 
 class PagoViewSet(ModelViewSet):
     queryset = Pago.objects.select_related('recibo_arras', 'tipo_venta').all()

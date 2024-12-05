@@ -203,15 +203,6 @@ class Local(models.Model):
         help_text="Escoja el tipo"
     )
 
-    subnivel_de = models.ForeignKey(
-        'Zona',
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='subniveles',
-        help_text="Zona de la que este local es un subnivel, si aplica."
-    )
-
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['zona', 'metraje'], name='unique_local_per_zona_metraje')
@@ -221,7 +212,6 @@ class Local(models.Model):
 
     def __str__(self):
         return f"Local - Zona: {self.zona.codigo} - Metraje: {self.metraje.area}"
-    
 
 
 class ReciboArras(models.Model):
