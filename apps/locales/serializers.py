@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Zona, Metraje, TipoDescuento, PrecioBase, Descuento, Local, ReciboArras, Cliente, Pago, VentaContado, VentaCredito, Categoria 
+from .models import Zona, Metraje, TipoDescuento, PrecioBase, Descuento, Local, ReciboArras, Cliente, Pago, VentaContado, VentaCredito, Categoria, SubnivelRelacion 
 from decimal import Decimal
 
 
@@ -79,40 +79,41 @@ class SubnivelSerializer(serializers.ModelSerializer):
             "linea_base": {"source": "zona.linea_base"},
         }
 
-class RelacionarSubnivelesSerializer(serializers.Serializer):
-    zona_codigo = serializers.CharField(max_length=10)
-    subnivel_1 = serializers.IntegerField()
-    subnivel_2 = serializers.IntegerField()
-
-    def update(self, instance, validated_data):
-        # Obtener el código de la zona desde los datos validados
-        zona_codigo = validated_data.get('zona_codigo')
-
-        # Buscar la zona utilizando el código proporcionado
-        try:
-            zona = Zona.objects.get(codigo=zona_codigo)
-        except Zona.DoesNotExist:
-            raise serializers.ValidationError({"zona_codigo": "Zona con este código no existe."})
-
-        # Obtener los subniveles desde los datos validados
-        subnivel_1 = validated_data.get('subnivel_1')
-        subnivel_2 = validated_data.get('subnivel_2')
-
-        # Establecer los subniveles para la zona
-        try:
-            local_1 = Local.objects.get(pk=subnivel_1)
-            local_2 = Local.objects.get(pk=subnivel_2)
-        except Local.DoesNotExist:
-            raise serializers.ValidationError({"subniveles": "Uno o ambos IDs de locales no existen."})
-
-        # Actualizamos los locales para que apunten a la zona como subnivel
-        local_1.subnivel_de = zona
-        local_2.subnivel_de = zona
-        local_1.save()
-        local_2.save()
-
-        return zona
     
+class SubnivelRelacionSerializer(serializers.ModelSerializer):
+    zona_codigo = serializers.CharField(source='zona.codigo')
+    subnivel_1_codigo = serializers.PrimaryKeyRelatedField(queryset=Local.objects.filter(zona__tiene_subniveles=True), source='subnivel_1')
+    subnivel_2_codigo = serializers.PrimaryKeyRelatedField(queryset=Local.objects.filter(zona__tiene_subniveles=True), source='subnivel_2')
+
+    class Meta:
+        model = SubnivelRelacion
+        fields = ['id', 'zona_codigo', 'subnivel_1_codigo', 'subnivel_2_codigo']
+
+    def validate(self, data):
+        # Validar que la zona especificada tiene `tiene_subniveles` en True
+        try:
+            zona = Zona.objects.get(codigo=data['zona']['codigo'])
+        except Zona.DoesNotExist:
+            raise serializers.ValidationError("La zona especificada no existe.")
+        
+        if not zona.tiene_subniveles:
+            raise serializers.ValidationError("La zona especificada no tiene habilitada la opción de subniveles.")
+        
+        return data
+
+    def create(self, validated_data):
+        # Asociar los subniveles a la zona
+        zona = Zona.objects.get(codigo=validated_data['zona']['codigo'])
+        subnivel_1 = validated_data['subnivel_1']
+        subnivel_2 = validated_data['subnivel_2']
+
+        subnivel_relacion = SubnivelRelacion.objects.create(
+            zona=zona,
+            subnivel_1=subnivel_1,
+            subnivel_2=subnivel_2
+        )
+        return subnivel_relacion
+
 class RelacionarSubnivelesSerializer(serializers.Serializer):
     zona_codigo = serializers.CharField(max_length=10)
     subnivel_1 = serializers.IntegerField()

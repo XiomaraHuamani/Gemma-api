@@ -5,7 +5,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
-from .models import Zona, Metraje, TipoDescuento, PrecioBase, Descuento, Local, ReciboArras, Cliente, VentaCredito, VentaContado, Pago, Categoria
+from .models import Zona, Metraje, TipoDescuento, PrecioBase, Descuento, Local, ReciboArras, Cliente, VentaCredito, VentaContado, Pago, Categoria, SubnivelRelacion
 from .serializers import (
     ZonaSerializer,
     MetrajeSerializer,
@@ -22,7 +22,8 @@ from .serializers import (
     TipoDescuentoSerializer,
     GruposZonasSerializer,
     SubnivelSerializer,
-    RelacionarSubnivelesSerializer
+    RelacionarSubnivelesSerializer,
+    SubnivelRelacionSerializer
 )
 
 from django.apps import apps
@@ -54,6 +55,33 @@ class ZonaViewSet(viewsets.ModelViewSet):
                 return Response(subnivel_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({"detail": "Subniveles creados exitosamente."}, status=status.HTTP_201_CREATED)
+
+class ZonaAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        zonas = Zona.objects.all()
+        serializer = ZonaSerializer(zonas, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        serializer = ZonaSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SubnivelRelacionAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = SubnivelRelacionSerializer(data=request.data)
+        if serializer.is_valid():
+            subnivel_relacion = serializer.save()
+            return Response(SubnivelRelacionSerializer(subnivel_relacion).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, *args, **kwargs):
+        subniveles = SubnivelRelacion.objects.all()
+        serializer = SubnivelRelacionSerializer(subniveles, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class CategoriaViewSet(ModelViewSet):
     queryset = Categoria.objects.all()
@@ -91,18 +119,6 @@ class LocalViewSet(viewsets.ModelViewSet):
         # Custom logic can be added here before saving the object
         return super().create(request, *args, **kwargs)
 
-class RelacionarSubnivelesAPIView(APIView):
-    def put(self, request, *args, **kwargs):
-        serializer = RelacionarSubnivelesSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.update(None, serializer.validated_data)
-            return Response({"detail": "Subniveles relacionados con éxito."}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def post(self, request, *args, **kwargs):
-        # Se permite también el POST para crear la relación de subniveles
-        return self.put(request, *args, **kwargs)
-    
 class GruposPlazaTecAPIView(APIView):
     def get(self, request, *args, **kwargs):
         """

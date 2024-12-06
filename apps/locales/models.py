@@ -213,6 +213,34 @@ class Local(models.Model):
     def __str__(self):
         return f"Local - Zona: {self.zona.codigo} - Metraje: {self.metraje.area}"
 
+class SubnivelRelacion(models.Model):
+    zona_principal = models.ForeignKey(
+        'Zona',
+        on_delete=models.CASCADE,
+        related_name='relaciones_subniveles',
+        help_text="Zona principal que tiene subniveles."
+    )
+    subnivel_1 = models.ForeignKey(
+        'Local',
+        on_delete=models.CASCADE,
+        related_name='relacion_subnivel_1',
+        help_text="Primer subnivel de la zona principal."
+    )
+    subnivel_2 = models.ForeignKey(
+        'Local',
+        on_delete=models.CASCADE,
+        related_name='relacion_subnivel_2',
+        help_text="Segundo subnivel de la zona principal."
+    )
+
+    class Meta:
+        unique_together = ['zona_principal', 'subnivel_1', 'subnivel_2']
+        verbose_name = "Relación de Subnivel"
+        verbose_name_plural = "Relaciones de Subniveles"
+
+    def __str__(self):
+        return f"Zona {self.zona_principal.codigo} con Subniveles: {self.subnivel_1.codigo}, {self.subnivel_2.codigo}"
+
 
 class ReciboArras(models.Model):
     id = models.AutoField(primary_key=True)  # Clave primaria auto incremental
