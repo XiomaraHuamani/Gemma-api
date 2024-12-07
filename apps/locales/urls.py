@@ -18,6 +18,8 @@ from .views import (
     GruposPlazaTecAPIView,
     LocalesPlazaTecViewSet,
     GruposLocalesAPIView,
+    SubnivelRelacionAPIView,
+    ZonaConSubnivelesAPIView,
     SubnivelRelacionViewSet
 )
 
@@ -35,12 +37,14 @@ router.register(r'ventas-credito', VentaCreditoViewSet, basename='venta-credito'
 router.register(r'ventas-contado', VentaContadoViewSet, basename='venta-contado')
 router.register(r'pagos', PagoViewSet, basename='pago')
 router.register(r'grupos-tec', LocalesPlazaTecViewSet, basename='grupos-tec')
+router.register(r'subniveles', SubnivelRelacionViewSet, basename='subniveles')
+
 
 
 urlpatterns = [
     path('', include(router.urls)),
     path('tipo-descuento-por-categoria/<int:categoria_id>/', TipoDescuentoPorCategoriaView.as_view(), name='tipo-descuento-por-categoria'),
     path('grupos/', GruposLocalesAPIView.as_view(), name='grupos-locales'),
-    path('relacionar_subniveles/', SubnivelRelacionViewSet.as_view(), name='relacionar_subniveles'),
+    path('zonas-con-subniveles/', ZonaConSubnivelesAPIView.as_view(), name='zonas-con-subniveles'),
     
 ]
