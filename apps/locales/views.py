@@ -22,7 +22,6 @@ from .serializers import (
     TipoDescuentoSerializer,
     GruposZonasSerializer,
     SubnivelSerializer,
-    SubnivelRelacionSerializer
 )
 
 from django.apps import apps
@@ -68,18 +67,7 @@ class ZonaAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class SubnivelRelacionViewSet(APIView):
-    def post(self, request, *args, **kwargs):
-        serializer = SubnivelRelacionSerializer(data=request.data)
-        if serializer.is_valid():
-            subnivel_relacion = serializer.save()
-            return Response(SubnivelRelacionSerializer(subnivel_relacion).data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request, *args, **kwargs):
-        subniveles = SubnivelRelacion.objects.all()
-        serializer = SubnivelRelacionSerializer(subniveles, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CategoriaViewSet(ModelViewSet):
@@ -188,55 +176,6 @@ class GruposPorZonaAPIView(APIView):
         serializer = GruposZonasSerializer(locales, many=True)
         return Response(serializer.data)
 
-class GruposLocalesAPIView(APIView):
-    def get(self, request, *args, **kwargs):
-        # Obtener todos los locales
-        locales = Local.objects.all()
-
-        # Crear un diccionario para agrupar los locales por tipo
-        grupos = {}
-        for local in locales:
-            tipo_nombre = local.tipo if local.tipo else "Sin Tipo"
-            if tipo_nombre not in grupos:
-                grupos[tipo_nombre] = []
-
-            # Construir la representación del local
-            local_data = {
-                "zona_codigo": local.zona.codigo,
-                "precio": f"${local.precio_base.precio:,.2f}" if local.precio_base else None,
-                "estado": local.estado,
-                "area": f"{local.metraje.area} m²" if local.metraje else None,
-                "altura": f"{local.metraje.altura} m" if local.metraje else None,
-                "perimetro": local.metraje.perimetro if local.metraje else None,
-                "image": local.metraje.image.url if local.metraje and local.metraje.image else None,
-                "linea_base": local.zona.linea_base,
-            }
-
-            # Obtener subniveles del local basados en el prefijo del código de zona
-            prefijo_zona = local.zona.codigo.split('-')[0]  # Asumimos que el prefijo es antes del guion
-            subniveles = Local.objects.filter(zona__codigo__startswith=prefijo_zona).exclude(zona=local.zona)
-            
-            if subniveles.exists():
-                subniveles_data = []
-                for subnivel in subniveles:
-                    subnivel_data = {
-                        "number": subnivel.zona.codigo,
-                        "price": f"${subnivel.precio_base.precio:,.2f}" if subnivel.precio_base else None,
-                        "status": subnivel.estado,
-                        "area": f"{subnivel.metraje.area} m²" if subnivel.metraje else None,
-                        "detalle_area": subnivel.metraje.perimetro if subnivel.metraje else None,
-                        "img": subnivel.metraje.image.url if subnivel.metraje and subnivel.metraje.image else None,
-                    }
-                    subniveles_data.append(subnivel_data)
-                local_data["subniveles"] = subniveles_data
-
-            # Agregar el local al grupo correspondiente
-            grupos[tipo_nombre].append(local_data)
-
-        # Preparar la respuesta con los grupos
-        grupos_data = [{"tipo": tipo, "locales": locales} for tipo, locales in grupos.items()]
-
-        return Response({"grupos": grupos_data})
 
 class ClienteViewSet(ModelViewSet):
     """

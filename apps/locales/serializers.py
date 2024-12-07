@@ -79,49 +79,7 @@ class SubnivelSerializer(serializers.ModelSerializer):
             "linea_base": {"source": "zona.linea_base"},
         }
 
-  
-class SubnivelRelacionSerializer(serializers.ModelSerializer):
-    zona_principal_codigo = serializers.CharField(source='zona_principal.codigo')  # Usar código en lugar de ID para la zona principal
-    subnivel_1_codigo = serializers.SlugRelatedField(
-        queryset=Local.objects.all(),
-        slug_field='codigo',  # Relacionar usando el campo `codigo` del modelo Local
-        source='subnivel_1'
-    )
-    subnivel_2_codigo = serializers.SlugRelatedField(
-        queryset=Local.objects.all(),
-        slug_field='codigo',  # Relacionar usando el campo `codigo` del modelo Local
-        source='subnivel_2'
-    )
 
-    class Meta:
-        model = SubnivelRelacion
-        fields = ['id', 'zona_principal_codigo', 'subnivel_1_codigo', 'subnivel_2_codigo']
-
-    def validate(self, data):
-        # Validar que la zona principal existe y tiene subniveles habilitados
-        try:
-            zona_principal = Zona.objects.get(codigo=data['zona_principal']['codigo'])
-        except Zona.DoesNotExist:
-            raise serializers.ValidationError("La zona principal especificada no existe.")
-
-        if not zona_principal.tiene_subniveles:
-            raise serializers.ValidationError("La zona especificada no tiene habilitada la opción de subniveles.")
-
-        return data
-
-    def create(self, validated_data):
-        # Obtener objetos de la base de datos
-        zona_principal = Zona.objects.get(codigo=validated_data['zona_principal']['codigo'])
-        subnivel_1 = validated_data['subnivel_1']
-        subnivel_2 = validated_data['subnivel_2']
-
-        # Crear la relación de subniveles
-        subnivel_relacion = SubnivelRelacion.objects.create(
-            zona_principal=zona_principal,
-            subnivel_1=subnivel_1,
-            subnivel_2=subnivel_2
-        )
-        return subnivel_relacion
 
 
 class LocalSerializer(serializers.ModelSerializer):
