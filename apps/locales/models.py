@@ -239,7 +239,8 @@ class SubnivelRelacion(models.Model):
         verbose_name_plural = "Relaciones de Subniveles"
 
     def __str__(self):
-        return f"Zona: {self.zona_principal.codigo}, Subnivel 1: {self.subnivel_1.id}, Subnivel 2: {self.subnivel_2.id}"
+        return f"Zona {self.zona_principal.codigo} con Subniveles: {self.subnivel_1.codigo}, {self.subnivel_2.codigo}"
+
 
 class ReciboArras(models.Model):
     id = models.AutoField(primary_key=True)  # Clave primaria auto incremental

@@ -68,62 +68,19 @@ class ZonaAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-class SubnivelRelacionViewSet(ModelViewSet):
-    """
-    ViewSet para manejar las relaciones de subniveles.
-    """
-    queryset = SubnivelRelacion.objects.select_related(
-        'zona_principal', 'subnivel_1', 'subnivel_2'
-    )
-    serializer_class = SubnivelRelacionSerializer
-    permission_classes = [AllowAny]
-
-    def get_queryset(self):
-        """
-        Filtra las zonas principales que tienen subniveles.
-        """
-        return SubnivelRelacion.objects.filter(
-            zona_principal__tiene_subniveles=True
-        ).select_related('zona_principal', 'subnivel_1', 'subnivel_2')
-        
-class SubnivelRelacionAPIView(APIView):
-    def get(self, request, *args, **kwargs):
-        """
-        Listar todas las relaciones de subniveles.
-        """
-        relaciones = SubnivelRelacion.objects.select_related('zona_principal', 'subnivel_1', 'subnivel_2')
-        serializer = SubnivelRelacionSerializer(relaciones, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
+class SubnivelRelacionViewSet(APIView):
     def post(self, request, *args, **kwargs):
-        """
-        Crear una nueva relación de subniveles.
-        """
         serializer = SubnivelRelacionSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            subnivel_relacion = serializer.save()
+            return Response(SubnivelRelacionSerializer(subnivel_relacion).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-class ZonaConSubnivelesAPIView(APIView):
-    """
-    Vista para devolver zonas que tienen subniveles asociados.
-    """
+
     def get(self, request, *args, **kwargs):
-        zonas_con_subniveles = Zona.objects.filter(tiene_subniveles=True).prefetch_related('relaciones_subniveles')
+        subniveles = SubnivelRelacion.objects.all()
+        serializer = SubnivelRelacionSerializer(subniveles, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-        data = []
-        for zona in zonas_con_subniveles:
-            relaciones = SubnivelRelacion.objects.filter(zona_principal=zona)
-            relaciones_serializadas = SubnivelRelacionSerializer(relaciones, many=True).data
-
-            data.append({
-                "zona": ZonaSerializer(zona).data,
-                "relaciones_subniveles": relaciones_serializadas
-            })
-
-        return Response(data, status=status.HTTP_200_OK)
 
 class CategoriaViewSet(ModelViewSet):
     queryset = Categoria.objects.all()
