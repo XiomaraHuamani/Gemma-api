@@ -22,7 +22,6 @@ from .serializers import (
     TipoDescuentoSerializer,
     GruposZonasSerializer,
     SubnivelSerializer,
-    RelacionarSubnivelesSerializer,
     SubnivelRelacionSerializer
 )
 
@@ -69,8 +68,7 @@ class ZonaAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-class SubnivelRelacionAPIView(APIView):
+class SubnivelRelacionViewSet(APIView):
     def post(self, request, *args, **kwargs):
         serializer = SubnivelRelacionSerializer(data=request.data)
         if serializer.is_valid():
@@ -82,6 +80,7 @@ class SubnivelRelacionAPIView(APIView):
         subniveles = SubnivelRelacion.objects.all()
         serializer = SubnivelRelacionSerializer(subniveles, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class CategoriaViewSet(ModelViewSet):
     queryset = Categoria.objects.all()
