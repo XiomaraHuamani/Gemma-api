@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -6,6 +6,7 @@ from rest_framework.permissions import AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from .models import Zona, Metraje, TipoDescuento, PrecioBase, Descuento, Local, ReciboArras, Cliente, VentaCredito, VentaContado, Pago, Categoria, SubnivelRelacion
+
 from .serializers import (
     ZonaSerializer,
     MetrajeSerializer,
@@ -21,7 +22,9 @@ from .serializers import (
     CategoriaSerializer,
     TipoDescuentoSerializer,
     GruposZonasSerializer,
-    SubnivelSerializer,
+    SubnivelRelacionSerializer,
+    PlazaTecSerializer,
+    GrupoSerializer
 )
 
 from django.apps import apps
@@ -31,28 +34,6 @@ Categoria = apps.get_model('locales', 'Categoria')
 class ZonaViewSet(viewsets.ModelViewSet):
     queryset = Zona.objects.all()
     serializer_class = ZonaSerializer
-
-    @action(detail=True, methods=['post'], url_path='add_subniveles')
-    def add_subniveles(self, request, pk=None):
-        zona = self.get_object()
-        if not zona.tiene_subniveles:
-            return Response({"detail": "La zona no tiene habilitado subniveles."}, status=status.HTTP_400_BAD_REQUEST)
-
-        subniveles_data = request.data.get('subniveles', [])
-        if len(subniveles_data) != 2:
-            return Response({"detail": "Debe proporcionar exactamente dos subniveles."}, status=status.HTTP_400_BAD_REQUEST)
-
-        subniveles = []
-        for subnivel_data in subniveles_data:
-            subnivel_data['subnivel_de'] = zona.id
-            subnivel_serializer = LocalSerializer(data=subnivel_data)
-            if subnivel_serializer.is_valid():
-                subnivel = subnivel_serializer.save()
-                subniveles.append(subnivel)
-            else:
-                return Response(subnivel_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response({"detail": "Subniveles creados exitosamente."}, status=status.HTTP_201_CREATED)
 
 class ZonaAPIView(APIView):
     def get(self, request, *args, **kwargs):
@@ -66,9 +47,6 @@ class ZonaAPIView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
 
 class CategoriaViewSet(ModelViewSet):
     queryset = Categoria.objects.all()
@@ -105,6 +83,43 @@ class LocalViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         # Custom logic can be added here before saving the object
         return super().create(request, *args, **kwargs)
+
+class SubnivelRelacionViewSet(viewsets.ModelViewSet):
+    queryset = SubnivelRelacion.objects.select_related(
+        'zona_principal', 'subnivel_1', 'subnivel_1__precio_base', 'subnivel_1__metraje',
+        'subnivel_2', 'subnivel_2__precio_base', 'subnivel_2__metraje'
+    )
+    serializer_class = SubnivelRelacionSerializer
+
+
+    def get_serializer_context(self):
+        """
+        Pasa el ID de la zona_principal al contexto para que el serializer
+        pueda filtrar los locales en subnivel_1 y subnivel_2.
+        """
+        context = super().get_serializer_context()
+        # Pasar zona_principal_id al contexto si está en los datos de la solicitud
+        zona_principal_id = self.request.data.get('zona_principal', None)
+        if zona_principal_id:
+            print(f"Zona Principal ID en Contexto: {zona_principal_id}")
+        context['zona_principal_id'] = zona_principal_id
+        return context
+
+
+class PlazaTecView(APIView):
+    """
+    Vista para generar el JSON estructurado para Plaza Tec.
+    """
+    def get(self, request):
+        # Agrupa los locales por tipo
+        tipos = Local.objects.values("tipo").distinct()
+
+        # Serializa los grupos
+        grupos = GrupoSerializer(tipos, many=True).data
+
+        # Retorna la respuesta JSON
+        return Response({"grupos": grupos})
+
 
 class GruposPlazaTecAPIView(APIView):
     def get(self, request, *args, **kwargs):
@@ -175,7 +190,6 @@ class GruposPorZonaAPIView(APIView):
         locales = Local.objects.filter(zona__categoria=categoria)
         serializer = GruposZonasSerializer(locales, many=True)
         return Response(serializer.data)
-
 
 class ClienteViewSet(ModelViewSet):
     """

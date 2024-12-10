@@ -204,28 +204,35 @@ class Local(models.Model):
     )
 
     class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['zona', 'metraje'], name='unique_local_per_zona_metraje')
-        ]
+        # constraints = [
+        #     models.UniqueConstraint(fields=['zona', 'metraje'], name='unique_local_per_zona_metraje')
+        # ]
         verbose_name = "Local"
         verbose_name_plural = "Locales"
 
     def __str__(self):
         return f"Local - Zona: {self.zona.codigo} - Metraje: {self.metraje.area}"
 
+
+
 class SubnivelRelacion(models.Model):
+    # Relación con la zona principal que tiene subniveles
     zona_principal = models.ForeignKey(
         'Zona',
         on_delete=models.CASCADE,
         related_name='relaciones_subniveles',
         help_text="Zona principal que tiene subniveles."
     )
+    
+    # Relación con el primer subnivel
     subnivel_1 = models.ForeignKey(
         'Local',
         on_delete=models.CASCADE,
         related_name='relacion_subnivel_1',
         help_text="Primer subnivel de la zona principal."
     )
+    
+    # Relación con el segundo subnivel
     subnivel_2 = models.ForeignKey(
         'Local',
         on_delete=models.CASCADE,
@@ -233,13 +240,46 @@ class SubnivelRelacion(models.Model):
         help_text="Segundo subnivel de la zona principal."
     )
 
+    # Nuevo campo para permitir zonas diferentes
+    permitir_zonas_diferentes = models.BooleanField(
+        default=False,
+        help_text="Permitir que los subniveles estén en zonas diferentes."
+    )
+
     class Meta:
+        # Restringe la combinación única de zona_principal con subnivel_1 y subnivel_2
         unique_together = ['zona_principal', 'subnivel_1', 'subnivel_2']
         verbose_name = "Relación de Subnivel"
         verbose_name_plural = "Relaciones de Subniveles"
 
     def __str__(self):
-        return f"Zona {self.zona_principal.codigo} con Subniveles: {self.subnivel_1.codigo}, {self.subnivel_2.codigo}"
+        # Representación legible del objeto
+        return f"Zona {self.zona_principal.codigo} con Subniveles: {self.subnivel_1.zona.codigo}, {self.subnivel_2.zona.codigo}"
+
+    def clean(self):
+        """
+        Método para realizar validaciones personalizadas antes de guardar la instancia.
+        """
+        # Validar que la zona principal tenga subniveles habilitados
+        if not self.zona_principal.tiene_subniveles:
+            raise ValidationError("La zona principal debe tener subniveles habilitados (tiene_subniveles=True).")
+        
+        # Validar que los subniveles sean diferentes
+        if self.subnivel_1 == self.subnivel_2:
+            raise ValidationError("Los subniveles deben ser diferentes.")
+        
+        # Validar zonas solo si permitir_zonas_diferentes es False
+        if not self.permitir_zonas_diferentes:
+            if self.subnivel_1.zona != self.zona_principal or self.subnivel_2.zona != self.zona_principal:
+                raise ValidationError("Ambos subniveles deben pertenecer a la misma zona principal.")
+    
+    def save(self, *args, **kwargs):
+        """
+        Sobrescribe el método save para garantizar que las validaciones personalizadas
+        en clean() sean ejecutadas antes de guardar.
+        """
+        self.clean()  # Llama al método clean para validar la instancia
+        super().save(*args, **kwargs)  # Llama al método original save para guardar
 
 
 class ReciboArras(models.Model):
