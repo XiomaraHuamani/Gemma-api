@@ -24,7 +24,10 @@ from .serializers import (
     GruposZonasSerializer,
     SubnivelRelacionSerializer,
     PlazaTecSerializer,
-    GrupoSerializer
+    GrupoSerializer,
+    LocalWithSubnivelesSerializer,
+    GruposSerializer,
+    SubnivelSerializer
 )
 
 from django.apps import apps
@@ -107,19 +110,79 @@ class SubnivelRelacionViewSet(viewsets.ModelViewSet):
 
 
 class PlazaTecView(APIView):
-    """
-    Vista para generar el JSON estructurado para Plaza Tec.
-    """
     def get(self, request):
-        # Agrupa los locales por tipo
-        tipos = Local.objects.values("tipo").distinct()
+        locales = Local.objects.all()
+        filtered_locales = []
+        
+        for local in locales:
+            serializer = LocalWithSubnivelesSerializer(local)
+            data = serializer.data
+            if data["subniveles"]:  # Agregar solo si tiene subniveles
+                filtered_locales.append(data)
+        
+        return Response(filtered_locales)
 
-        # Serializa los grupos
-        grupos = GrupoSerializer(tipos, many=True).data
+# class GruposView(APIView):
+#     def get(self, request, *args, **kwargs):
+#         # Obtenemos todos los locales
+#         locales = Local.objects.all()
 
-        # Retorna la respuesta JSON
+#         # Inicializamos los grupos
+#         grupos = [
+#             {
+#                 "tipo": "entrada segundaria grupo 1 izquierda",
+#                 "locales": []
+#             },
+#             {
+#                 "tipo": "entrada segundaria grupo 1 derecha",
+#                 "locales": []
+#             }
+#         ]
+
+#         # Procesamos los locales en base al código de zona
+#         for local in locales:
+#             local_data = {
+#                 "zona_codigo": local.zona.codigo,
+#                 "precio": f"${local.precio_base.precio:.2f}" if local.precio_base else None,
+#                 "estado": local.estado,
+#                 "area": f"{local.metraje.area} m²" if local.metraje else None,
+#                 "altura": "4.5 m",  # Valor fijo si es aplicable
+#                 "perimetro": local.metraje.perimetro if local.metraje else None,
+#                 "image": "../assets/tipos_locales/mediano.png",
+#                 "linea_base": local.zona.linea_base if local.zona else None,
+#             }
+
+#             # Verificamos si tiene subniveles
+#             subniveles = SubnivelRelacion.objects.filter(zona_principal=local.zona)
+#             if subniveles.exists():
+#                 subniveles_data = SubnivelSerializer(subniveles, many=True).data
+#                 local_data["zona_principal"] = local.zona.codigo
+#                 local_data["subniveles"] = subniveles_data
+
+#             # Clasificamos el local en un grupo basado en zona (ajusta las condiciones según lo necesario)
+#             if local.zona.codigo in ["PT 1", "PT 2", "PT 3", "PT 4", "PT 9"]:
+#                 grupos[0]["locales"].append(local_data)
+#             elif local.zona.codigo in ["PT 5", "PT 6", "PT 7", "PT 8", "PT 15"]:
+#                 grupos[1]["locales"].append(local_data)
+
+#         return Response({"grupos": grupos})
+    
+class GruposView(APIView):
+    def get(self, request, *args, **kwargs):
+        grupos = []
+        tipos = Local.objects.values_list('tipo', flat=True).distinct()
+
+        for tipo in tipos:
+            locales = Local.objects.filter(tipo=tipo)
+            serializer = LocalSerializer(locales, many=True)
+            grupos.append({
+                "tipo": tipo,
+                "locales": serializer.data
+            })
+
         return Response({"grupos": grupos})
 
+    
 
 class GruposPlazaTecAPIView(APIView):
     def get(self, request, *args, **kwargs):

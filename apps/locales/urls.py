@@ -19,6 +19,7 @@ from .views import (
     LocalesPlazaTecViewSet,
     SubnivelRelacionViewSet,
     PlazaTecView,
+    GruposView
 )
 
 router = DefaultRouter()
@@ -44,5 +45,6 @@ urlpatterns = [
     path('tipo-descuento-por-categoria/<int:categoria_id>/', TipoDescuentoPorCategoriaView.as_view(), name='tipo-descuento-por-categoria'),
     # path('grupos/', GruposLocalesAPIView.as_view(), name='grupos-locales'),
     path('plazatec/', PlazaTecView.as_view(), name='plaza-tec'), 
+    path("grupos/", GruposView.as_view(), name="grupos"),
     
 ]
