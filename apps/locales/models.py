@@ -213,6 +213,26 @@ class Local(models.Model):
     def __str__(self):
         return f"Local - Zona: {self.zona.codigo} - Metraje: {self.metraje.area}"
 
+class Subnivel(models.Model):
+    local_principal = models.ForeignKey(
+        'Local',
+        on_delete=models.CASCADE,
+        related_name='subniveles',
+        help_text="Local principal al que pertenecen los subniveles."
+    )
+    zona = models.CharField(max_length=50, help_text="Código del subnivel.")
+    precio_base = models.DecimalField(max_digits=10, decimal_places=2, help_text="Precio base del subnivel.")
+    estado = models.CharField(
+        max_length=20,
+        choices=[('disponible', 'Disponible'), ('reservado', 'Reservado'), ('vendido', 'Vendido')],
+        default='disponible',
+        help_text="Estado del subnivel (disponible, reservado, vendido)."
+    )
+    metraje = models.CharField(max_length=50, help_text="Metraje del subnivel.")
+    image = models.CharField(max_length=255, default="../assets/tipos_locales/mediano.png", help_text="Imagen del subnivel.")
+
+    def __str__(self):
+        return f"Subnivel - {self.zona} ({self.estado})"
 
 
 class SubnivelRelacion(models.Model):

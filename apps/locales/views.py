@@ -79,13 +79,19 @@ class DescuentoViewSet(ModelViewSet):
         context['request'] = self.request
         return context
 
+# class LocalViewSet(viewsets.ModelViewSet):
+#     queryset = Local.objects.all()
+#     serializer_class = LocalSerializer
+
+#     def create(self, request, *args, **kwargs):
+#         # Custom logic can be added here before saving the object
+#         return super().create(request, *args, **kwargs)
+
 class LocalViewSet(viewsets.ModelViewSet):
-    queryset = Local.objects.all()
+    queryset = Local.objects.prefetch_related('subniveles')
     serializer_class = LocalSerializer
 
-    def create(self, request, *args, **kwargs):
-        # Custom logic can be added here before saving the object
-        return super().create(request, *args, **kwargs)
+
 
 class SubnivelRelacionViewSet(viewsets.ModelViewSet):
     queryset = SubnivelRelacion.objects.select_related(

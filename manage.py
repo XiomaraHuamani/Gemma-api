@@ -2,6 +2,7 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+import locale
 
 
 def main():
@@ -20,3 +21,8 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')  # Fuerza UTF-8 en el entorno
+os.environ["PYTHONIOENCODING"] = "utf-8"  # Garantiza que la entrada/salida de Python sea UTF-8
+

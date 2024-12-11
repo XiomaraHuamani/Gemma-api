@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'apps.locales',
     'apps.blogs',
     'apps.users',
+    'apps.contac',
 ]
 
 MIDDLEWARE = [
@@ -142,6 +143,8 @@ LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
+DEFAULT_CHARSET = 'utf-8'
+
 USE_I18N = True
 
 USE_TZ = True
@@ -167,3 +170,12 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'info@ghg.com.pe'
+EMAIL_HOST_PASSWORD = 'kzrm zfon sebm vmqr'
+DEFAULT_CHARSET = 'utf-8'

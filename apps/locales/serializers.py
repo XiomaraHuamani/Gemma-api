@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Zona, Metraje, TipoDescuento, PrecioBase, Descuento, Local, ReciboArras, Cliente, Pago, VentaContado, VentaCredito, Categoria, SubnivelRelacion 
+from .models import Zona, Metraje, TipoDescuento, PrecioBase, Descuento, Local, ReciboArras, Cliente, Pago, VentaContado, VentaCredito, Categoria, SubnivelRelacion, Subnivel 
 from decimal import Decimal
 
 
@@ -149,41 +149,75 @@ class SubnivelRelacionSerializer(serializers.ModelSerializer):
 #         return data
 
 
+#---------------------serializer de subniveles-------------------------------------------
+# class SubnivelSerializer(serializers.ModelSerializer):
+#     subnivel = serializers.CharField(source="zona.codigo")
+#     precio = serializers.SerializerMethodField()
+#     estado = serializers.CharField()
+#     area = serializers.SerializerMethodField()
+#     altura = serializers.SerializerMethodField()
+#     perimetro = serializers.CharField(source="metraje.perimetro", default=None)
+#     image = serializers.SerializerMethodField()
 
-class SubnivelSerializer(serializers.ModelSerializer):
-    subnivel = serializers.CharField(source="zona.codigo")
-    precio = serializers.SerializerMethodField()
-    estado = serializers.CharField()
-    area = serializers.SerializerMethodField()
-    altura = serializers.SerializerMethodField()
-    perimetro = serializers.CharField(source="metraje.perimetro", default=None)
-    image = serializers.SerializerMethodField()
+#     class Meta:
+#         model = SubnivelRelacion
+#         fields = ["subnivel", "precio", "estado", "area", "altura", "perimetro", "image"]
 
-    class Meta:
-        model = SubnivelRelacion
-        fields = ["subnivel", "precio", "estado", "area", "altura", "perimetro", "image"]
+#     def get_precio(self, obj):
+#         # Si no existe una relación con precio_base, ajusta este método.
+#         if obj.precio_base:
+#             return f"${obj.precio_base.precio:.2f}"
+#         return None
 
-    def get_precio(self, obj):
-        # Si no existe una relación con precio_base, ajusta este método.
-        if obj.precio_base:
-            return f"${obj.precio_base.precio:.2f}"
-        return None
+#     def get_area(self, obj):
+#         if obj.metraje:
+#             return f"{obj.metraje.area} m²"
+#         return None
 
-    def get_area(self, obj):
-        if obj.metraje:
-            return f"{obj.metraje.area} m²"
-        return None
+#     def get_altura(self, obj):
+#         return "4.5 m"
 
-    def get_altura(self, obj):
-        return "4.5 m"
-
-    def get_image(self, obj):
-        return "../assets/tipos_locales/mediano.png"
+#     def get_image(self, obj):
+#         return "../assets/tipos_locales/mediano.png"
 
 # class LocalSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = Local
 #         fields = ['id', 'zona', 'metraje', 'estado', 'precio_base', 'tipo']
+#---------------------serializer de subniveles-------------------------------------------
+
+class SubnivelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subnivel
+        fields = ['zona', 'precio_base', 'estado', 'metraje', 'image']
+
+class LocalSerializer(serializers.ModelSerializer):
+    subniveles = SubnivelSerializer(many=True, required=False)
+
+    class Meta:
+        model = Local
+        fields = ['id', 'zona', 'metraje', 'estado', 'precio_base', 'tipo', 'subniveles']
+
+    def create(self, validated_data):
+        subniveles_data = validated_data.pop('subniveles', [])
+        local = Local.objects.create(**validated_data)
+        for subnivel_data in subniveles_data:
+            Subnivel.objects.create(local_principal=local, **subnivel_data)
+        return local
+
+    def update(self, instance, validated_data):
+        subniveles_data = validated_data.pop('subniveles', [])
+        instance = super().update(instance, validated_data)
+
+        # Actualizar o crear subniveles
+        for subnivel_data in subniveles_data:
+            subnivel, created = Subnivel.objects.update_or_create(
+                local_principal=instance,
+                zona=subnivel_data['zona'],
+                defaults=subnivel_data
+            )
+        return instance
+
 
 #     def validate(self, data):
 #         # Verificar si ya existe un local con la misma zona y metraje

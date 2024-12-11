@@ -8,6 +8,7 @@ urlpatterns = [
     path('locales/', include('apps.locales.urls')), 
     path('blogs/', include('apps.blogs.urls')), 
     path('users/', include('apps.users.urls')),
+    path('contac/', include('apps.contac.urls')),
 
 ]
 
