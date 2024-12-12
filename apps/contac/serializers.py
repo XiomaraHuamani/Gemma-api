@@ -10,10 +10,8 @@ class CpInversionSerializer(serializers.ModelSerializer):
             'correo_electronico',
             'numero_telefono',
             'dni',
-            'tipo_local',
             'objetivo_inversion',
             'mensaje',
-            'acepta_terminos',
             'fecha_creacion'
         ]
-        read_only_fields = ['fecha_creacion']  # Solo lectura para la fecha
+        read_only_fields = ['fecha_creacion']

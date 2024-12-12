@@ -4,6 +4,7 @@ from django.db.models import Sum
 from decimal import Decimal
 
 
+
 class Zona(models.Model):
     LINEA_BASE_CHOICES = [
         ('primera_linea', 'Primera Línea'),
@@ -42,7 +43,6 @@ class Categoria(models.Model):
         return self.nombre
 
 
-
 class Metraje(models.Model):
     id = models.AutoField(primary_key=True)
     area = models.CharField(max_length=50, help_text="Área total en metros cuadrados (ejemplo: '12.5 m²')")
@@ -57,7 +57,6 @@ class Metraje(models.Model):
 
     def __str__(self):
         return f"Área: {self.area} - Altura: {self.altura} - Perímetro: {self.perimetro}"
-
 
 
 class TipoDescuento(models.Model):
@@ -157,6 +156,7 @@ class Descuento(models.Model):
         return f"{self.categoria.nombre} - {self.tipo_descuento.nombre} - {self.metraje.area}"
 
 
+
 class Local(models.Model):
     zona = models.ForeignKey(
         'Zona',
@@ -184,17 +184,17 @@ class Local(models.Model):
         related_name='locales',
         help_text="Precio base asociado al local."
     )
-    tipo = models.CharField( 
+    tipo = models.CharField(
         max_length=36,
         choices=[
-            ("entrada segundaria grupo 1 izquierda", "Entrada secundaria grupo 1 izquierda"),
-            ("entrada segundaria grupo 1 derecha", "Entrada secundaria grupo 1 derecha"),
-            ("entrada segundaria grupo 2 izquierda", "Entrada secundaria grupo 2 izquierda"),
-            ("entrada segundaria grupo 2 derecha", "Entrada secundaria grupo 2 derecha"),
-            ("entrada segundaria grupo 3 izquierda", "Entrada secundaria grupo 3 izquierda"),
-            ("entrada segundaria grupo 3 derecha", "Entrada secundaria grupo 3 derecha"),
-            ("entrada segundaria grupo 4 izquierda", "Entrada secundaria grupo 4 izquierda"),
-            ("entrada segundaria grupo 4 derecha", "Entrada secundaria grupo 4 derecha"),
+            ("entrada segundaria grupo 1 izquierda", "Entrada segundaria grupo 1 izquierda"),
+            ("entrada segundaria grupo 1 derecha", "Entrada segundaria grupo 1 derecha"),
+            ("entrada segundaria grupo 2 izquierda", "Entrada segundaria grupo 2 izquierda"),
+            ("entrada segundaria grupo 2 derecha", "Entrada segundaria grupo 2 derecha"),
+            ("entrada segundaria grupo 3 izquierda", "Entrada segundaria grupo 3 izquierda"),
+            ("entrada segundaria grupo 3 derecha", "Entrada segundaria grupo 3 derecha"),
+            ("entrada segundaria grupo 4 izquierda", "Entrada segundaria grupo 4 izquierda"),
+            ("entrada segundaria grupo 4 derecha", "Entrada segundaria grupo 4 derecha"),
             ("entrada grupo 1 larga", "Entrada grupo 1 larga"),
             ("entrada grupo 2 larga", "Entrada grupo 2 larga"),
         ],
@@ -202,104 +202,14 @@ class Local(models.Model):
         blank=True,
         help_text="Escoja el tipo"
     )
+    subniveles = models.JSONField(blank=True, null=True, help_text="Datos JSON para subniveles de este local")
 
     class Meta:
-        # constraints = [
-        #     models.UniqueConstraint(fields=['zona', 'metraje'], name='unique_local_per_zona_metraje')
-        # ]
         verbose_name = "Local"
         verbose_name_plural = "Locales"
 
     def __str__(self):
         return f"Local - Zona: {self.zona.codigo} - Metraje: {self.metraje.area}"
-
-class Subnivel(models.Model):
-    local_principal = models.ForeignKey(
-        'Local',
-        on_delete=models.CASCADE,
-        related_name='subniveles',
-        help_text="Local principal al que pertenecen los subniveles."
-    )
-    zona = models.CharField(max_length=50, help_text="Código del subnivel.")
-    precio_base = models.DecimalField(max_digits=10, decimal_places=2, help_text="Precio base del subnivel.")
-    estado = models.CharField(
-        max_length=20,
-        choices=[('disponible', 'Disponible'), ('reservado', 'Reservado'), ('vendido', 'Vendido')],
-        default='disponible',
-        help_text="Estado del subnivel (disponible, reservado, vendido)."
-    )
-    metraje = models.CharField(max_length=50, help_text="Metraje del subnivel.")
-    image = models.CharField(max_length=255, default="../assets/tipos_locales/mediano.png", help_text="Imagen del subnivel.")
-
-    def __str__(self):
-        return f"Subnivel - {self.zona} ({self.estado})"
-
-
-class SubnivelRelacion(models.Model):
-    # Relación con la zona principal que tiene subniveles
-    zona_principal = models.ForeignKey(
-        'Zona',
-        on_delete=models.CASCADE,
-        related_name='relaciones_subniveles',
-        help_text="Zona principal que tiene subniveles."
-    )
-    
-    # Relación con el primer subnivel
-    subnivel_1 = models.ForeignKey(
-        'Local',
-        on_delete=models.CASCADE,
-        related_name='relacion_subnivel_1',
-        help_text="Primer subnivel de la zona principal."
-    )
-    
-    # Relación con el segundo subnivel
-    subnivel_2 = models.ForeignKey(
-        'Local',
-        on_delete=models.CASCADE,
-        related_name='relacion_subnivel_2',
-        help_text="Segundo subnivel de la zona principal."
-    )
-
-    # Nuevo campo para permitir zonas diferentes
-    permitir_zonas_diferentes = models.BooleanField(
-        default=False,
-        help_text="Permitir que los subniveles estén en zonas diferentes."
-    )
-
-    class Meta:
-        # Restringe la combinación única de zona_principal con subnivel_1 y subnivel_2
-        unique_together = ['zona_principal', 'subnivel_1', 'subnivel_2']
-        verbose_name = "Relación de Subnivel"
-        verbose_name_plural = "Relaciones de Subniveles"
-
-    def __str__(self):
-        # Representación legible del objeto
-        return f"Zona {self.zona_principal.codigo} con Subniveles: {self.subnivel_1.zona.codigo}, {self.subnivel_2.zona.codigo}"
-
-    def clean(self):
-        """
-        Método para realizar validaciones personalizadas antes de guardar la instancia.
-        """
-        # Validar que la zona principal tenga subniveles habilitados
-        if not self.zona_principal.tiene_subniveles:
-            raise ValidationError("La zona principal debe tener subniveles habilitados (tiene_subniveles=True).")
-        
-        # Validar que los subniveles sean diferentes
-        if self.subnivel_1 == self.subnivel_2:
-            raise ValidationError("Los subniveles deben ser diferentes.")
-        
-        # Validar zonas solo si permitir_zonas_diferentes es False
-        if not self.permitir_zonas_diferentes:
-            if self.subnivel_1.zona != self.zona_principal or self.subnivel_2.zona != self.zona_principal:
-                raise ValidationError("Ambos subniveles deben pertenecer a la misma zona principal.")
-    
-    def save(self, *args, **kwargs):
-        """
-        Sobrescribe el método save para garantizar que las validaciones personalizadas
-        en clean() sean ejecutadas antes de guardar.
-        """
-        self.clean()  # Llama al método clean para validar la instancia
-        super().save(*args, **kwargs)  # Llama al método original save para guardar
 
 
 class ReciboArras(models.Model):
