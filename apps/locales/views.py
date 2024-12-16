@@ -194,6 +194,7 @@ class GruposView(APIView):
             locales_qs = Local.objects.filter(zona__codigo__in=zona_codigos, estado__in=['Disponible', 'Reservado', 'Vendido'])
 
             locales_data = LocalSerializer(locales_qs, many=True).data
+            serializer = LocalSerializer(locales_qs, many=True, context={'request': request})
 
             # Construimos la respuesta
             grupos_response.append({

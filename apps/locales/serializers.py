@@ -90,8 +90,6 @@ class DescuentoSerializer(serializers.ModelSerializer):
 #         return representation
 
 
-from rest_framework import serializers
-
 class SimpleLocalSerializer(serializers.ModelSerializer):
     """
     Serializer que retorna solo los campos planos sin estructura anidada.
@@ -105,9 +103,14 @@ class SimpleLocalSerializer(serializers.ModelSerializer):
             'estado', 'area', 'perimetro', 'image', 'linea_base', 'tipo', 'subnivel_de'
         ]
 
+    # def get_image(self, obj):
+    #     if obj.image:
+    #         return obj.image.url  # Retorna la URL de la imagen
+    #     return None
     def get_image(self, obj):
+        request = self.context.get('request')
         if obj.image:
-            return obj.image.url  # Retorna la URL de la imagen
+            return request.build_absolute_uri(obj.image.url)
         return None
 
 
@@ -138,6 +141,15 @@ class LocalSerializer(serializers.ModelSerializer):
             'linea_base', 'tipo', 'subnivel_de'
         ]
 
+    def get_image(self, obj):
+        request = self.context.get('request', None)  # Verifica si request está en el contexto
+        if obj.metraje and obj.metraje.image:
+            if request:
+                return request.build_absolute_uri(obj.metraje.image.url)
+            return obj.metraje.image.url  # Devuelve la ruta relativa si no hay request
+        return None
+
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Filtra dinámicamente solo locales con subniveles habilitados
@@ -149,12 +161,18 @@ class LocalSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         """ Representación personalizada para incluir detalles extra sobre los campos relacionados. """
         representation = super().to_representation(instance)
+        request = self.context.get('request', None)
+
+        if instance.metraje and instance.metraje.image:
+            representation['image'] = request.build_absolute_uri(instance.metraje.image.url) if request else instance.metraje.image.url
+
+
+
         representation['zona_codigo'] = instance.zona.codigo
         representation['precio'] = f"${instance.precio_base.precio:,.2f}" if instance.precio_base else None
         representation['estado'] = instance.estado.capitalize()
         representation['area'] = instance.metraje.area if instance.metraje else None
         representation['perimetro'] = instance.metraje.perimetro if instance.metraje else None
-        representation['image'] = instance.metraje.image.url if instance.metraje and instance.metraje.image else None
         representation['linea_base'] = instance.zona.linea_base
 
         # Incluye subniveles si existen
@@ -167,7 +185,8 @@ class LocalSerializer(serializers.ModelSerializer):
                     "estado": sublocal.estado.capitalize(),
                     "area": sublocal.metraje.area if sublocal.metraje else None,
                     "perimetro": sublocal.metraje.perimetro if sublocal.metraje else None,
-                    "image": sublocal.metraje.image.url if sublocal.metraje and sublocal.metraje.image else None,
+                    #"image": sublocal.metraje.image.url if sublocal.metraje and sublocal.metraje.image else None,
+                    "image": request.build_absolute_uri(sublocal.metraje.image.url) if request and sublocal.metraje and sublocal.metraje.image else (sublocal.metraje.image.url if sublocal.metraje and sublocal.metraje.image else None),
                     "linea_base": sublocal.zona.linea_base
                 }
                 for sublocal in subniveles
@@ -183,8 +202,6 @@ class LocalSerializer(serializers.ModelSerializer):
             })
         return data
 
-
-    
 
 class SubnivelSerializer(serializers.ModelSerializer):
     zona_codigo = serializers.CharField(source='zona.codigo')
@@ -218,6 +235,8 @@ class GruposSerializer(serializers.ModelSerializer):
         fields = [
             'zona_codigo', 'precio', 'estado', 'area', 'perimetro', 'image', 'linea_base', 'subniveles'
         ]
+
+    
 
     def get_precio(self, obj):
         return f"${obj.precio_base.precio:,.2f}" if obj.precio_base else None
