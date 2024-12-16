@@ -20,6 +20,7 @@ from .views import (
 )
 
 router = DefaultRouter()
+router.register(r'locales', LocalViewSet)
 router.register(r'categorias', CategoriaViewSet, basename='categoria')
 router.register(r'zonas', ZonaViewSet, basename='zona')
 router.register(r'metrajes', MetrajeViewSet)
@@ -31,7 +32,7 @@ router.register(r'clientes', ClienteViewSet)
 router.register(r'ventas-credito', VentaCreditoViewSet, basename='venta-credito')
 router.register(r'ventas-contado', VentaContadoViewSet, basename='venta-contado')
 router.register(r'pagos', PagoViewSet, basename='pago')
-router.register(r'locales', LocalViewSet)
+
 
 
 urlpatterns = [

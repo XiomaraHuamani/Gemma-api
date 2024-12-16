@@ -155,13 +155,10 @@ class ListarLocalesAPIView(APIView):
     Endpoint para listar todos los campos de los locales en formato de array plano.
     """
     def get(self, request):
-        # Obtén todos los locales
         locales = Local.objects.all().order_by('id')
-        
-        # Serializa los datos con el serializador simple
-        locales_data = SimpleLocalSerializer(locales, many=True).data
-        
-        return Response(locales_data, status=status.HTTP_200_OK)
+        serializer = LocalSerializer(locales, many=True, context={'request': request})  # Agrega el contexto
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class EditarLocalAPIView(RetrieveUpdateAPIView):
     """
@@ -181,7 +178,8 @@ class GruposView(APIView):
         # Definimos los grupos y sus tipos
         grupos_definidos = [
             {"tipo": "entrada segundaria grupo 1 izquierda", "zona_codigos": ["PT 1", "PT 2", "PT 3", "PT 4", "PT 9", "PT 10", "PT 12", "PT 14"]},
-            {"tipo": "entrada segundaria grupo 1 derecha", "zona_codigos": ["PT 5", "PT 6", "PT 7", "PT 8", "PT 15", "PT 16", "PT 18", "PT 20"]}
+            {"tipo": "entrada segundaria grupo 1 derecha", "zona_codigos": ["PT 5", "PT 6", "PT 7", "PT 8", "PT 15", "PT 16", "PT 18", "PT 20"]},
+            {"tipo": "entrada segundaria grupo 2 izquierda", "zona_codigos": ["PT 21", "PT 22", "PT 23", "PT 24", "PT 25", "PT 26", "PT 33", "PT 34"]}
         ]
 
         grupos_response = []

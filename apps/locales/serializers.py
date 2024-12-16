@@ -142,20 +142,23 @@ class LocalSerializer(serializers.ModelSerializer):
         ]
 
     def get_image(self, obj):
-        request = self.context.get('request', None)  # Verifica si request está en el contexto
+        request = self.context.get('request', None)  # Intenta obtener el request del contexto
         if obj.metraje and obj.metraje.image:
-            if request:
-                return request.build_absolute_uri(obj.metraje.image.url)
-            return obj.metraje.image.url  # Devuelve la ruta relativa si no hay request
+        # Si request existe, devuelve la ruta completa, de lo contrario la ruta relativa
+            return request.build_absolute_uri(obj.metraje.image.url) if request else obj.metraje.image.url
         return None
 
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Filtra dinámicamente solo locales con subniveles habilitados
+        # Filtra dinámicamente solo locales disponibles con subniveles habilitados
         self.fields['subnivel_de'].queryset = Local.objects.filter(
-            subnivel_de__isnull=True, zona__tiene_subniveles=True, estado__in=['Disponible', 'Reservado', 'Vendido']
+            subnivel_de__isnull=True, 
+            zona__tiene_subniveles=True, 
+            estado='disponible'
         )
+
+        
 
 
     def to_representation(self, instance):
@@ -194,13 +197,13 @@ class LocalSerializer(serializers.ModelSerializer):
         return representation
 
     def validate(self, data):
-        """ Personaliza la validación para asegurar coherencia entre `zona` y `subnivel_de`. """
         subnivel_de = data.get('subnivel_de')
         if subnivel_de and not subnivel_de.zona.tiene_subniveles:
             raise serializers.ValidationError({
                 'subnivel_de': 'El local seleccionado no pertenece a una zona con subniveles habilitados.'
             })
         return data
+
 
 
 class SubnivelSerializer(serializers.ModelSerializer):
