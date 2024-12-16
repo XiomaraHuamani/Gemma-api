@@ -3,8 +3,10 @@ from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.generics import UpdateAPIView
 from rest_framework.permissions import AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.decorators import action
 from collections import defaultdict
 from django.apps import apps
@@ -39,6 +41,7 @@ from .serializers import (
     TipoDescuentoSerializer,
     GruposSerializer,
     SubnivelSerializer,
+    SimpleLocalSerializer,
     
 )
 Categoria = apps.get_model('locales', 'Categoria')
@@ -47,6 +50,19 @@ Categoria = apps.get_model('locales', 'Categoria')
 class ZonaViewSet(viewsets.ModelViewSet):
     queryset = Zona.objects.all()
     serializer_class = ZonaSerializer
+
+class ListarLocalesAPIView(APIView):
+    """
+    Endpoint para listar locales por ID en formato de array plano.
+    """
+    def get(self, request):
+        # Obtén todos los locales
+        locales = Local.objects.all().order_by('id')
+        
+        # Serializa los datos usando solo el ID
+        locales_data = [{'id': local.id} for local in locales]
+        
+        return Response(locales_data, status=status.HTTP_200_OK)
 
 class ZonaAPIView(APIView):
     def get(self, request, *args, **kwargs):
@@ -134,6 +150,28 @@ class LocalViewSet(viewsets.ModelViewSet):
     def perform_destroy(self, instance):
         instance.delete()
 
+class ListarLocalesAPIView(APIView):
+    """
+    Endpoint para listar todos los campos de los locales en formato de array plano.
+    """
+    def get(self, request):
+        # Obtén todos los locales
+        locales = Local.objects.all().order_by('id')
+        
+        # Serializa los datos con el serializador simple
+        locales_data = SimpleLocalSerializer(locales, many=True).data
+        
+        return Response(locales_data, status=status.HTTP_200_OK)
+
+class EditarLocalAPIView(RetrieveUpdateAPIView):
+    """
+    Endpoint para obtener y editar un local utilizando SimpleLocalSerializer.
+    """
+    queryset = Local.objects.all()
+    serializer_class = SimpleLocalSerializer
+    lookup_field = 'pk'
+
+
 
 
 
@@ -153,7 +191,8 @@ class GruposView(APIView):
             zona_codigos = grupo_def['zona_codigos']
 
             # Filtramos locales según los códigos de zona
-            locales_qs = Local.objects.filter(zona__codigo__in=zona_codigos, estado='disponible')
+            locales_qs = Local.objects.filter(zona__codigo__in=zona_codigos, estado__in=['Disponible', 'Reservado', 'Vendido'])
+
             locales_data = LocalSerializer(locales_qs, many=True).data
 
             # Construimos la respuesta

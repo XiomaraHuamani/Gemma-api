@@ -179,7 +179,7 @@ class Local(models.Model):
             ('reservado', 'Reservado'),
             ('vendido', 'Vendido')
         ],
-        default='disponible',
+        default='Disponible',
         help_text="Estado del local (disponible, reservado, vendido)."
     )
     precio_base = models.ForeignKey(

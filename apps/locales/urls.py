@@ -14,7 +14,9 @@ from .views import (
     PagoViewSet,
     TipoDescuentoPorCategoriaView,
     GruposView,
-    LocalViewSet
+    LocalViewSet,
+    ListarLocalesAPIView,
+    EditarLocalAPIView,
 )
 
 router = DefaultRouter()
@@ -35,6 +37,8 @@ router.register(r'locales', LocalViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('tipo-descuento-por-categoria/<int:categoria_id>/', TipoDescuentoPorCategoriaView.as_view(), name='tipo-descuento-por-categoria'),
+    path('locales-l/listar/', ListarLocalesAPIView.as_view(), name='listar-locales'),
+    path('locales-l/editar/<int:pk>/', EditarLocalAPIView.as_view(), name='editar-local'),
     path("grupos/", GruposView.as_view(), name="grupos"),
     
 ]

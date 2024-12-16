@@ -1,4 +1,5 @@
-from rest_framework import serializers
+from rest_framework import serializers, status
+from rest_framework.response import Response
 from .models import Zona, Metraje, TipoDescuento, PrecioBase, Descuento, Local, ReciboArras, Cliente, Pago, VentaContado, VentaCredito, Categoria 
 from decimal import Decimal
 
@@ -88,6 +89,28 @@ class DescuentoSerializer(serializers.ModelSerializer):
 #         representation['linea_base'] = instance.zona.linea_base
 #         return representation
 
+
+from rest_framework import serializers
+
+class SimpleLocalSerializer(serializers.ModelSerializer):
+    """
+    Serializer que retorna solo los campos planos sin estructura anidada.
+    """
+    image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Local
+        fields = [
+            'id', 'zona', 'zona_codigo', 'metraje', 'precio_base', 'precio',
+            'estado', 'area', 'perimetro', 'image', 'linea_base', 'tipo', 'subnivel_de'
+        ]
+
+    def get_image(self, obj):
+        if obj.image:
+            return obj.image.url  # Retorna la URL de la imagen
+        return None
+
+
 class LocalSerializer(serializers.ModelSerializer):
     subnivel_de = serializers.PrimaryKeyRelatedField(
         queryset=Local.objects.none(),  # Se inicializa vacío
@@ -119,14 +142,16 @@ class LocalSerializer(serializers.ModelSerializer):
         super().__init__(*args, **kwargs)
         # Filtra dinámicamente solo locales con subniveles habilitados
         self.fields['subnivel_de'].queryset = Local.objects.filter(
-            subnivel_de__isnull=True, zona__tiene_subniveles=True, estado='disponible'
+            subnivel_de__isnull=True, zona__tiene_subniveles=True, estado__in=['Disponible', 'Reservado', 'Vendido']
         )
+
 
     def to_representation(self, instance):
         """ Representación personalizada para incluir detalles extra sobre los campos relacionados. """
         representation = super().to_representation(instance)
         representation['zona_codigo'] = instance.zona.codigo
         representation['precio'] = f"${instance.precio_base.precio:,.2f}" if instance.precio_base else None
+        representation['estado'] = instance.estado.capitalize()
         representation['area'] = instance.metraje.area if instance.metraje else None
         representation['perimetro'] = instance.metraje.perimetro if instance.metraje else None
         representation['image'] = instance.metraje.image.url if instance.metraje and instance.metraje.image else None
@@ -158,7 +183,8 @@ class LocalSerializer(serializers.ModelSerializer):
             })
         return data
 
-from rest_framework import serializers
+
+    
 
 class SubnivelSerializer(serializers.ModelSerializer):
     zona_codigo = serializers.CharField(source='zona.codigo')
