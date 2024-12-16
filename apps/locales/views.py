@@ -1,11 +1,27 @@
 from rest_framework import viewsets, status, serializers
+from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
-from .models import Zona, Metraje, TipoDescuento, PrecioBase, Descuento, Local, ReciboArras, Cliente, VentaCredito, VentaContado, Pago, Categoria
+from collections import defaultdict
+from django.apps import apps
+from .models import (
+    Zona, 
+    Metraje, 
+    TipoDescuento, 
+    PrecioBase, 
+    Descuento, 
+    Local, 
+    ReciboArras, 
+    Cliente, 
+    VentaCredito, 
+    VentaContado, 
+    Pago, 
+    Categoria
+)
 
 from .serializers import (
     ZonaSerializer,
@@ -21,13 +37,10 @@ from .serializers import (
     PagoSerializer,
     CategoriaSerializer,
     TipoDescuentoSerializer,
-    GruposZonasSerializer,
-    GrupoSerializer,
-    GruposSerializer
+    GruposSerializer,
+    SubnivelSerializer,
     
 )
-
-from django.apps import apps
 Categoria = apps.get_model('locales', 'Categoria')
 
 
@@ -77,30 +90,79 @@ class DescuentoViewSet(ModelViewSet):
         return context
 
 
-
 class LocalViewSet(viewsets.ModelViewSet):
-    queryset = Local.objects.prefetch_related('subniveles')
+    queryset = Local.objects.all()
     serializer_class = LocalSerializer
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=False, methods=['get'], url_path='por-zona/(?P<zona_codigo>[^/.]+)')
+    def listar_por_zona(self, request, zona_codigo=None):
+        locales = Local.objects.filter(zona__codigo=zona_codigo)
+        serializer = self.get_serializer(locales, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['get'], url_path='subniveles-disponibles')
+    def subniveles_disponibles(self, request):
+        locales = Local.objects.filter(zona__tiene_subniveles=True, subnivel_de__isnull=True)
+        serializer = self.get_serializer(locales, many=True)
+        return Response(serializer.data)
+
+    def perform_create(self, serializer):
+        serializer.save()
+
+    def perform_update(self, serializer):
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        instance.delete()
 
 
-    
+
+
 class GruposView(APIView):
-    def get(self, request, *args, **kwargs):
-        grupos = []
-        tipos = Local.objects.values_list('tipo', flat=True).distinct()
 
-        for tipo in tipos:
-            locales = Local.objects.filter(tipo=tipo)
-            serializer = LocalSerializer(locales, many=True)
-            grupos.append({
+    def get(self, request):
+        # Definimos los grupos y sus tipos
+        grupos_definidos = [
+            {"tipo": "entrada segundaria grupo 1 izquierda", "zona_codigos": ["PT 1", "PT 2", "PT 3", "PT 4", "PT 9", "PT 10", "PT 12", "PT 14"]},
+            {"tipo": "entrada segundaria grupo 1 derecha", "zona_codigos": ["PT 5", "PT 6", "PT 7", "PT 8", "PT 15", "PT 16", "PT 18", "PT 20"]}
+        ]
+
+        grupos_response = []
+
+        for grupo_def in grupos_definidos:
+            tipo = grupo_def['tipo']
+            zona_codigos = grupo_def['zona_codigos']
+
+            # Filtramos locales según los códigos de zona
+            locales_qs = Local.objects.filter(zona__codigo__in=zona_codigos, estado='disponible')
+            locales_data = LocalSerializer(locales_qs, many=True).data
+
+            # Construimos la respuesta
+            grupos_response.append({
                 "tipo": tipo,
-                "locales": serializer.data
+                "locales": locales_data
             })
 
-        return Response({"grupos": grupos})
-
-    
+        return Response({"grupos": grupos_response})
 
 class GruposPlazaTecAPIView(APIView):
     def get(self, request, *args, **kwargs):
@@ -137,8 +199,6 @@ class GruposPlazaTecAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-
 class TipoDescuentoPorCategoriaView(APIView):
     def get(self, request, categoria_id):
         """
@@ -161,14 +221,6 @@ class ReciboArrasViewSet(ModelViewSet):
         Lógica adicional al crear un recibo. Rellena campos automáticos.
         """
         serializer.save()
-
-class GruposPorZonaAPIView(APIView):
-    def get(self, request, *args, **kwargs):
-        # Lógica para manejar la solicitud GET
-        categoria = Categoria.objects.get(id=1)  # Filtrar por Plaza Tec
-        locales = Local.objects.filter(zona__categoria=categoria)
-        serializer = GruposZonasSerializer(locales, many=True)
-        return Response(serializer.data)
 
 class ClienteViewSet(ModelViewSet):
     """

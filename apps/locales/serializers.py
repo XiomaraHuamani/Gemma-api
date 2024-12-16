@@ -3,19 +3,6 @@ from .models import Zona, Metraje, TipoDescuento, PrecioBase, Descuento, Local, 
 from decimal import Decimal
 
 
-# class ZonaSerializer(serializers.ModelSerializer):
-#     locales = serializers.SerializerMethodField()
-
-#     class Meta:
-#         model = Zona
-#         fields = ['id', 'categoria', 'codigo', 'linea_base', 'tiene_subniveles', 'locales']
-
-#     def get_locales(self, obj):
-#         # Obtener locales de una zona
-#         locales = Local.objects.filter(zona=obj)
-#         return LocalSerializer(locales, many=True).data
-
-
 class ZonaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Zona
@@ -57,135 +44,164 @@ class DescuentoSerializer(serializers.ModelSerializer):
                 'metraje', 'monto', 'porcentaje', 'descuento_aplicado']
 
 
+# class LocalSerializer(serializers.ModelSerializer):
+#     subnivel_de = serializers.PrimaryKeyRelatedField(
+#         queryset=Zona.objects.none(),  # Inicialización vacía
+#         required=False,
+#         allow_null=True
+#     )
 
+#     zona = serializers.PrimaryKeyRelatedField(
+#         queryset=Zona.objects.all()
+#     )
+#     precio_base = serializers.PrimaryKeyRelatedField(
+#         queryset=PrecioBase.objects.all(),
+#         required=False,
+#         allow_null=True
+#     )
+#     metraje = serializers.PrimaryKeyRelatedField(
+#         queryset=Metraje.objects.all()
+#     )
+
+#     class Meta:
+#         model = Local
+#         fields = [
+#             'id', 'zona', 'zona_codigo', 'metraje', 'precio_base',
+#             'precio', 'estado', 'area', 'perimetro', 'image',
+#             'linea_base', 'tipo', 'subnivel_de'
+#         ]
+
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         # Filtra dinámicamente solo zonas con subniveles habilitados
+#         self.fields['subnivel_de'].queryset = Zona.objects.filter(tiene_subniveles=True)
+
+
+#     def to_representation(self, instance):
+#         """ Representación personalizada para incluir detalles extra sobre los campos relacionados. """
+#         representation = super().to_representation(instance)
+#         representation['zona_codigo'] = instance.zona.codigo
+#         representation['precio'] = instance.precio_base.precio if instance.precio_base else None
+#         representation['area'] = instance.metraje.area if instance.metraje else None
+#         representation['perimetro'] = instance.metraje.perimetro if instance.metraje else None
+#         representation['image'] = instance.metraje.image.url if instance.metraje and instance.metraje.image else None
+#         representation['linea_base'] = instance.zona.linea_base
+#         return representation
 
 class LocalSerializer(serializers.ModelSerializer):
-    zona_codigo = serializers.CharField(source='zona.codigo', read_only=True)
+    subnivel_de = serializers.PrimaryKeyRelatedField(
+        queryset=Local.objects.none(),  # Se inicializa vacío
+        required=False,
+        allow_null=True
+    )
+
+    zona = serializers.PrimaryKeyRelatedField(
+        queryset=Zona.objects.all()
+    )
+    precio_base = serializers.PrimaryKeyRelatedField(
+        queryset=PrecioBase.objects.all(),
+        required=False,
+        allow_null=True
+    )
+    metraje = serializers.PrimaryKeyRelatedField(
+        queryset=Metraje.objects.all()
+    )
+
+    class Meta:
+        model = Local
+        fields = [
+            'id', 'zona', 'zona_codigo', 'metraje', 'precio_base',
+            'precio', 'estado', 'area', 'perimetro', 'image',
+            'linea_base', 'tipo', 'subnivel_de'
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Filtra dinámicamente solo locales con subniveles habilitados
+        self.fields['subnivel_de'].queryset = Local.objects.filter(
+            subnivel_de__isnull=True, zona__tiene_subniveles=True, estado='disponible'
+        )
+
+    def to_representation(self, instance):
+        """ Representación personalizada para incluir detalles extra sobre los campos relacionados. """
+        representation = super().to_representation(instance)
+        representation['zona_codigo'] = instance.zona.codigo
+        representation['precio'] = f"${instance.precio_base.precio:,.2f}" if instance.precio_base else None
+        representation['area'] = instance.metraje.area if instance.metraje else None
+        representation['perimetro'] = instance.metraje.perimetro if instance.metraje else None
+        representation['image'] = instance.metraje.image.url if instance.metraje and instance.metraje.image else None
+        representation['linea_base'] = instance.zona.linea_base
+
+        # Incluye subniveles si existen
+        subniveles = instance.subniveles.all()
+        if subniveles.exists():
+            representation['subniveles'] = [
+                {
+                    "zona_codigo": sublocal.zona.codigo,
+                    "precio": f"${sublocal.precio_base.precio:,.2f}" if sublocal.precio_base else None,
+                    "estado": sublocal.estado.capitalize(),
+                    "area": sublocal.metraje.area if sublocal.metraje else None,
+                    "perimetro": sublocal.metraje.perimetro if sublocal.metraje else None,
+                    "image": sublocal.metraje.image.url if sublocal.metraje and sublocal.metraje.image else None,
+                    "linea_base": sublocal.zona.linea_base
+                }
+                for sublocal in subniveles
+            ]
+        return representation
+
+    def validate(self, data):
+        """ Personaliza la validación para asegurar coherencia entre `zona` y `subnivel_de`. """
+        subnivel_de = data.get('subnivel_de')
+        if subnivel_de and not subnivel_de.zona.tiene_subniveles:
+            raise serializers.ValidationError({
+                'subnivel_de': 'El local seleccionado no pertenece a una zona con subniveles habilitados.'
+            })
+        return data
+
+from rest_framework import serializers
+
+class SubnivelSerializer(serializers.ModelSerializer):
+    zona_codigo = serializers.CharField(source='zona.codigo')
     precio = serializers.SerializerMethodField()
-    area = serializers.SerializerMethodField()
-    perimetro = serializers.SerializerMethodField()
-    image = serializers.SerializerMethodField()
+    area = serializers.CharField(source='metraje.area', read_only=True)
+    perimetro = serializers.CharField(source='metraje.perimetro', read_only=True)
+    image = serializers.ImageField(source='metraje.image', read_only=True)
+    linea_base = serializers.CharField(source='zona.linea_base', read_only=True)
+
+    class Meta:
+        model = Local
+        fields = [
+            'zona_codigo', 'precio', 'estado', 'area', 'perimetro', 'image', 'linea_base'
+        ]
+
+    def get_precio(self, obj):
+        return f"${obj.precio_base.precio:,.2f}" if obj.precio_base else None
+
+
+class GruposSerializer(serializers.ModelSerializer):
+    zona_codigo = serializers.CharField(source='zona.codigo')
+    precio = serializers.SerializerMethodField()
+    area = serializers.CharField(source='metraje.area', read_only=True)
+    perimetro = serializers.CharField(source='metraje.perimetro', read_only=True)
+    image = serializers.ImageField(source='metraje.image', read_only=True)
+    linea_base = serializers.CharField(source='zona.linea_base', read_only=True)
     subniveles = serializers.SerializerMethodField()
 
     class Meta:
         model = Local
         fields = [
-            'zona_codigo',
-            'estado',
-            'precio',
-            'area',
-            'perimetro',
-            'image',
-            'subniveles'
+            'zona_codigo', 'precio', 'estado', 'area', 'perimetro', 'image', 'linea_base', 'subniveles'
         ]
 
     def get_precio(self, obj):
-        return f"${obj.precio_base.precio:.2f}" if obj.precio_base else "No definido"
-
-    def get_area(self, obj):
-        return f"{obj.metraje.area} m²" if obj.metraje else "No definido"
-
-    def get_perimetro(self, obj):
-        return obj.metraje.perimetro if obj.metraje else "No definido"
-
-    def get_image(self, obj):
-        # Aquí puedes personalizar la lógica para determinar la imagen
-        return "../assets/tipos_locales/mediano.png"
+        return f"${obj.precio_base.precio:,.2f}" if obj.precio_base else None
 
     def get_subniveles(self, obj):
-        # Filtrar subniveles relacionados usando el prefijo del código de zona
-        subniveles = Local.objects.filter(
-            zona__codigo__startswith=obj.zona.codigo,
-            tipo=None  # Asume que los subniveles no tienen un tipo asignado
-        ).exclude(id=obj.id)  # Excluir el propio local
-
-        # Serializar los subniveles
-        return [
-            {
-                "subnivel": sub.zona.codigo,
-                "precio": self.get_precio(sub),
-                "estado": sub.estado,
-                "area": self.get_area(sub),
-                "perimetro": self.get_perimetro(sub),
-                "image": self.get_image(sub),
-            }
-            for sub in subniveles
-        ]
+        """ Obtener subniveles asociados """
+        subniveles = Local.objects.filter(subnivel_de=obj)
+        return SubnivelSerializer(subniveles, many=True).data
 
 
-    
-class GrupoSerializer(serializers.Serializer):
-    tipo = serializers.CharField()
-    locales = LocalSerializer(many=True)
-
-class GruposSerializer(serializers.Serializer):
-    grupos = serializers.SerializerMethodField()
-
-    def get_grupos(self, obj):
-        tipos = Local.objects.values_list("tipo", flat=True).distinct()
-        grupos = []
-        for tipo in tipos:
-            grupo = {
-                "tipo": tipo,
-                "locales": GrupoSerializer({"tipo": tipo}).data.get("locales", []),
-            }
-            grupos.append(grupo)
-        return grupos
-    
-
-
-
-
-class LocalDetailSerializer(serializers.ModelSerializer):
-    zona_codigo = serializers.CharField(source="zona.codigo", read_only=True)
-    precio = serializers.SerializerMethodField()
-    area = serializers.SerializerMethodField()
-    perimetro = serializers.SerializerMethodField()
-    linea_base = serializers.CharField(source="zona.linea_base", read_only=True)
-    image = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Local
-        fields = [
-            "zona_codigo",
-            "precio",
-            "estado",
-            "area",
-            "perimetro",
-            "image",
-            "linea_base",
-        ]
-
-    def get_precio(self, obj):
-        return f"${obj.precio_base.precio}" if obj.precio_base else "N/A"
-
-    def get_area(self, obj):
-        return f"{obj.metraje.area} m²" if obj.metraje else "N/A"
-
-    def get_perimetro(self, obj):
-        return obj.metraje.perimetro if obj.metraje else "N/A"
-
-    def get_image(self, obj):
-        return "../assets/tipos_locales/default.png"
-
-
-
-
-
-class LocalSerializerWithSubniveles(serializers.Serializer):
-    zona_codigo = serializers.CharField()
-    precio_base = serializers.PrimaryKeyRelatedField(queryset=PrecioBase.objects.all())
-    estado = serializers.CharField()
-    metraje = serializers.PrimaryKeyRelatedField(queryset=Metraje.objects.all())
-    subniveles = serializers.ListSerializer(
-        child=serializers.DictField(),
-        required=False,
-        allow_null=True
-    )
-
-class GruposZonasSerializer(serializers.Serializer):
-    tipo = serializers.CharField()
-    locales = LocalSerializerWithSubniveles(many=True)
 
 class ReciboArrasSerializer(serializers.ModelSerializer):
     zona = serializers.StringRelatedField(read_only=True)  # Zona será solo de lectura, derivada del local

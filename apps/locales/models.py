@@ -19,7 +19,11 @@ class Zona(models.Model):
         related_name='zonas',
         help_text="Categoría asociada a esta zona"
     )
-    codigo = models.CharField(max_length=10, unique=True, help_text="Código único de 10 dígitos para la zona")
+    codigo = models.CharField(
+        max_length=10, 
+        unique=True, 
+        help_text="Código único de 10 dígitos para la zona"
+    )
     linea_base = models.CharField(
         max_length=15,
         choices=LINEA_BASE_CHOICES,
@@ -90,8 +94,6 @@ class PrecioBase(models.Model):
     def __str__(self):
         return f"ID: {self.id} - Precio: {self.precio}"
 
-
-
 class Descuento(models.Model):
     id = models.AutoField(primary_key=True)
     tipo_descuento = models.ForeignKey(
@@ -156,8 +158,8 @@ class Descuento(models.Model):
         return f"{self.categoria.nombre} - {self.tipo_descuento.nombre} - {self.metraje.area}"
 
 
-
 class Local(models.Model):
+    id = models.AutoField(primary_key=True)
     zona = models.ForeignKey(
         'Zona',
         on_delete=models.CASCADE,
@@ -172,7 +174,11 @@ class Local(models.Model):
     )
     estado = models.CharField(
         max_length=20,
-        choices=[('disponible', 'Disponible'), ('reservado', 'Reservado'), ('vendido', 'Vendido')],
+        choices=[
+            ('disponible', 'Disponible'),
+            ('reservado', 'Reservado'),
+            ('vendido', 'Vendido')
+        ],
         default='disponible',
         help_text="Estado del local (disponible, reservado, vendido)."
     )
@@ -202,14 +208,54 @@ class Local(models.Model):
         blank=True,
         help_text="Escoja el tipo"
     )
-    subniveles = models.JSONField(blank=True, null=True, help_text="Datos JSON para subniveles de este local")
+    subnivel_de = models.ForeignKey(
+        'self',  # Relación a sí mismo
+        on_delete=models.CASCADE,
+        related_name='subniveles',
+        null=True,
+        blank=True,
+        help_text="Local principal que tiene subniveles."
+    )
+
+    # Propiedades adicionales para acceder a datos relacionados
+    @property
+    def zona_codigo(self):
+        return self.zona.codigo
+
+    @property
+    def precio(self):
+        return self.precio_base.precio if self.precio_base else None
+
+    @property
+    def area(self):
+        return self.metraje.area if self.metraje else None
+
+    @property
+    def perimetro(self):
+        return self.metraje.perimetro if self.metraje else None
+
+    @property
+    def image(self):
+        return self.metraje.image if self.metraje else None
+
+    @property
+    def linea_base(self):
+        return self.zona.linea_base
 
     class Meta:
         verbose_name = "Local"
         verbose_name_plural = "Locales"
 
     def __str__(self):
-        return f"Local - Zona: {self.zona.codigo} - Metraje: {self.metraje.area}"
+        return f"Local - Zona: {self.zona.codigo} - Metraje: {self.metraje.area} - PrecioBase: {self.precio_base.precio if self.precio_base else 'N/A'}"
+
+    def clean(self):
+        # Validación para asegurar que el local principal tenga subniveles habilitados
+        if self.subnivel_de and not self.subnivel_de.zona.tiene_subniveles:
+            raise ValidationError({
+                'subnivel_de': 'El local principal seleccionado no pertenece a una zona con subniveles habilitados.'
+            })
+
 
 
 class ReciboArras(models.Model):

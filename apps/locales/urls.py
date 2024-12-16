@@ -7,16 +7,14 @@ from .views import (
     TipoDescuentoViewSet,
     PrecioBaseViewSet,
     DescuentoViewSet,
-    LocalViewSet,
     ReciboArrasViewSet,
     ClienteViewSet,
     VentaCreditoViewSet, 
     VentaContadoViewSet, 
     PagoViewSet,
     TipoDescuentoPorCategoriaView,
-    GruposPorZonaAPIView,
-    GruposPlazaTecAPIView,
-    GruposView
+    GruposView,
+    LocalViewSet
 )
 
 router = DefaultRouter()
@@ -26,12 +24,12 @@ router.register(r'metrajes', MetrajeViewSet)
 router.register(r'tipo-descuento', TipoDescuentoViewSet, basename='tipo-descuento')
 router.register(r'descuentos', DescuentoViewSet)
 router.register(r'precios-base', PrecioBaseViewSet, basename='precios-base')
-router.register(r'locales', LocalViewSet, basename='local')
 router.register(r'recibos-arras', ReciboArrasViewSet)
 router.register(r'clientes', ClienteViewSet)
 router.register(r'ventas-credito', VentaCreditoViewSet, basename='venta-credito')
 router.register(r'ventas-contado', VentaContadoViewSet, basename='venta-contado')
 router.register(r'pagos', PagoViewSet, basename='pago')
+router.register(r'locales', LocalViewSet)
 
 
 urlpatterns = [
