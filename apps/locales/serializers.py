@@ -116,70 +116,65 @@ class SimpleLocalSerializer(serializers.ModelSerializer):
 
 class LocalSerializer(serializers.ModelSerializer):
     subnivel_de = serializers.PrimaryKeyRelatedField(
-        queryset=Local.objects.none(),  # Se inicializa vacío
-        required=False,
-        allow_null=True
+        queryset=Local.objects.none(), required=False, allow_null=True
     )
-
-    zona = serializers.PrimaryKeyRelatedField(
-        queryset=Zona.objects.all()
-    )
+    zona = serializers.PrimaryKeyRelatedField(queryset=Zona.objects.all())
     precio_base = serializers.PrimaryKeyRelatedField(
-        queryset=PrecioBase.objects.all(),
-        required=False,
-        allow_null=True
+        queryset=PrecioBase.objects.all(), required=False, allow_null=True
     )
-    metraje = serializers.PrimaryKeyRelatedField(
-        queryset=Metraje.objects.all()
-    )
+    metraje = serializers.PrimaryKeyRelatedField(queryset=Metraje.objects.all())
 
     class Meta:
         model = Local
         fields = [
-            'id', 'zona', 'zona_codigo', 'metraje', 'precio_base',
-            'precio', 'estado', 'area', 'perimetro', 'image',
-            'linea_base', 'tipo', 'subnivel_de'
+            'id', 'zona', 'zona_codigo', 'metraje', 'precio_base', 'precio',
+            'estado', 'area', 'perimetro', 'image', 'linea_base', 'tipo', 
+            'subnivel_de'
         ]
-
-    def get_image(self, obj):
-        request = self.context.get('request', None)  # Intenta obtener el request del contexto
-        if obj.metraje and obj.metraje.image:
-        # Si request existe, devuelve la ruta completa, de lo contrario la ruta relativa
-            return request.build_absolute_uri(obj.metraje.image.url) if request else obj.metraje.image.url
-        return None
-
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Filtra dinámicamente solo locales disponibles con subniveles habilitados
         self.fields['subnivel_de'].queryset = Local.objects.filter(
-            subnivel_de__isnull=True, 
-            zona__tiene_subniveles=True, 
-            estado='disponible'
+            subnivel_de__isnull=True, zona__tiene_subniveles=True, estado='disponible'
         )
 
-        
+    def get_image_url(self, obj):
+        if obj.metraje and obj.metraje.image:
+            request = self.context.get('request', None)
+            return request.build_absolute_uri(obj.metraje.image.url) if request else obj.metraje.image.url
+        return None
 
+    def get_subniveles(self, obj):
+        subniveles = obj.subniveles.select_related('zona', 'precio_base', 'metraje').all()
+        if subniveles.exists():
+            return [
+                {
+                    "zona_codigo": sublocal.zona.codigo,
+                    "precio": f"${sublocal.precio_base.precio:,.2f}" if sublocal.precio_base else None,
+                    "estado": sublocal.estado.capitalize(),
+                    "area": sublocal.metraje.area if sublocal.metraje else None,
+                    "perimetro": sublocal.metraje.perimetro if sublocal.metraje else None,
+                    "image": self.get_image_url(sublocal),
+                    "linea_base": sublocal.zona.linea_base
+                }
+                for sublocal in subniveles
+            ]
+        return []
 
     def to_representation(self, instance):
         """ Representación personalizada para incluir detalles extra sobre los campos relacionados. """
         representation = super().to_representation(instance)
-        request = self.context.get('request', None)
 
-        if instance.metraje and instance.metraje.image:
-            representation['image'] = request.build_absolute_uri(instance.metraje.image.url) if request else instance.metraje.image.url
-
-
-
+    # Campos personalizados
         representation['zona_codigo'] = instance.zona.codigo
         representation['precio'] = f"${instance.precio_base.precio:,.2f}" if instance.precio_base else None
-        representation['estado'] = instance.estado.capitalize()
         representation['area'] = instance.metraje.area if instance.metraje else None
         representation['perimetro'] = instance.metraje.perimetro if instance.metraje else None
+        representation['image'] = instance.metraje.image.url if instance.metraje and instance.metraje.image else None
         representation['linea_base'] = instance.zona.linea_base
 
-        # Incluye subniveles si existen
-        subniveles = instance.subniveles.all()
+    # Generación del array de subniveles
+        subniveles = instance.subniveles.all()  # Obtiene los subniveles relacionados
         if subniveles.exists():
             representation['subniveles'] = [
                 {
@@ -188,21 +183,21 @@ class LocalSerializer(serializers.ModelSerializer):
                     "estado": sublocal.estado.capitalize(),
                     "area": sublocal.metraje.area if sublocal.metraje else None,
                     "perimetro": sublocal.metraje.perimetro if sublocal.metraje else None,
-                    #"image": sublocal.metraje.image.url if sublocal.metraje and sublocal.metraje.image else None,
-                    "image": request.build_absolute_uri(sublocal.metraje.image.url) if request and sublocal.metraje and sublocal.metraje.image else (sublocal.metraje.image.url if sublocal.metraje and sublocal.metraje.image else None),
+                    "image": sublocal.metraje.image.url if sublocal.metraje and sublocal.metraje.image else None,
                     "linea_base": sublocal.zona.linea_base
                 }
                 for sublocal in subniveles
             ]
+    
         return representation
 
-    def validate(self, data):
-        subnivel_de = data.get('subnivel_de')
-        if subnivel_de and not subnivel_de.zona.tiene_subniveles:
-            raise serializers.ValidationError({
-                'subnivel_de': 'El local seleccionado no pertenece a una zona con subniveles habilitados.'
-            })
-        return data
+
+    def validate_subnivel_de(self, value):
+        if value and not value.zona.tiene_subniveles:
+            raise serializers.ValidationError(
+                'El local seleccionado no pertenece a una zona con subniveles habilitados.'
+            )
+        return value
 
 
 

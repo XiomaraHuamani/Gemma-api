@@ -156,10 +156,9 @@ class ListarLocalesAPIView(APIView):
     """
     def get(self, request):
         locales = Local.objects.all().order_by('id')
-        serializer = LocalSerializer(locales, many=True, context={'request': request})  # Agrega el contexto
+        serializer = LocalSerializer(locales, many=True, context={'request': request})  
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
+    
 class EditarLocalAPIView(RetrieveUpdateAPIView):
     """
     Endpoint para obtener y editar un local utilizando SimpleLocalSerializer.
@@ -175,11 +174,20 @@ class EditarLocalAPIView(RetrieveUpdateAPIView):
 class GruposView(APIView):
 
     def get(self, request):
-        # Definimos los grupos y sus tipos
+        
         grupos_definidos = [
             {"tipo": "entrada segundaria grupo 1 izquierda", "zona_codigos": ["PT 1", "PT 2", "PT 3", "PT 4", "PT 9", "PT 10", "PT 12", "PT 14"]},
             {"tipo": "entrada segundaria grupo 1 derecha", "zona_codigos": ["PT 5", "PT 6", "PT 7", "PT 8", "PT 15", "PT 16", "PT 18", "PT 20"]},
-            {"tipo": "entrada segundaria grupo 2 izquierda", "zona_codigos": ["PT 21", "PT 22", "PT 23", "PT 24", "PT 25", "PT 26", "PT 33", "PT 34"]}
+            {"tipo": "entrada segundaria grupo 2 izquierda", "zona_codigos": ["PT 21", "PT 22", "PT 23", "PT 24", "PT 25", "PT 26", "PT 33", "PT 34"]},
+            {"tipo": "entrada segundaria grupo 2 derecha", "zona_codigos": ["PT 27", "PT 28", "PT 29", "PT 30", "PT 31", "PT 32", "PT 37", "PT 38", "PT 93", "PT 40"]},
+            {"tipo": "entrada segundaria grupo 3 izquierda", "zona_codigos": ["PT 41", "PT 42", "PT 43", "PT 44", "PT 49", "PT 50", "PT 51", "PT 52", "PT 53", "PT 54"]},
+            {"tipo": "entrada segundaria grupo 3 derecha", "zona_codigos": ["PT 45", "PT 46", "PT 47", "PT 48", "PT 55", "PT 56", "PT 47", "PT 58", "PT 59", "PT 60"]},
+            {"tipo": "entrada segundaria grupo 4 izquierda", "zona_codigos": ["PT 61", "PT 62", "PT 63", "PT 64", "PT 65", "PT 66", "PT 73", "PT 74", "PT 75", "PT 76", "PT 77", "PT 78"]},
+            {"tipo": "entrada segundaria grupo 4 derecha", "zona_codigos": ["PT 67", "PT 68", "PT 69", "PT 70", "PT 71", "PT 72", "PT 79", "PT 80", "PT 81", "PT 82", "PT 83", "PT 84"]},
+            {"tipo": "entrada segundaria grupo 5 izquierda", "zona_codigos": ["PT 85", "PT 86", "PT 87", "PT 88", "PT 89", "PT 90", "PT 97", "PT 98", "PT 99", "PT 100"]},
+            {"tipo": "entrada segundaria grupo 5 derecha", "zona_codigos": ["PT 91", "PT 92", "PT 93", "PT 94", "PT 95", "PT 96", "PT 101", "PT 102", "PT 103", "PT 104"]},
+            {"tipo": "entrada grupo 1 larga", "zona_codigos": ["PT 61", "PT 62", "PT 63", "PT 64", "PT 65", "PT 66", "PT 73", "PT 74", "PT 75", "PT 76", "PT 77", "PT 78"]},
+            {"tipo": "entrada grupo 2 larga", "zona_codigos": ["PT 67", "PT 68", "PT 69", "PT 70", "PT 71", "PT 72", "PT 79", "PT 80", "PT 81", "PT 82", "PT 83", "PT 84"]},      
         ]
 
         grupos_response = []
@@ -188,13 +196,11 @@ class GruposView(APIView):
             tipo = grupo_def['tipo']
             zona_codigos = grupo_def['zona_codigos']
 
-            # Filtramos locales según los códigos de zona
             locales_qs = Local.objects.filter(zona__codigo__in=zona_codigos, estado__in=['Disponible', 'Reservado', 'Vendido'])
 
             locales_data = LocalSerializer(locales_qs, many=True).data
             serializer = LocalSerializer(locales_qs, many=True, context={'request': request})
 
-            # Construimos la respuesta
             grupos_response.append({
                 "tipo": tipo,
                 "locales": locales_data
