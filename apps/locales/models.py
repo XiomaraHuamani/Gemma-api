@@ -209,13 +209,12 @@ class Local(models.Model):
         help_text="Escoja el tipo"
     )
     subnivel_de = models.ForeignKey(
-        'self',  # Relación a sí mismo
+        'Zona',
         on_delete=models.CASCADE,
         related_name='subniveles',
-        null=True,
-        blank=True,
-        help_text="Local principal que tiene subniveles."
+        help_text="Zona principal que permite subniveles."
     )
+
 
     # Propiedades adicionales para acceder a datos relacionados
     @property
@@ -249,12 +248,6 @@ class Local(models.Model):
     def __str__(self):
         return f"Local - Zona: {self.zona.codigo} - Metraje: {self.metraje.area} - PrecioBase: {self.precio_base.precio if self.precio_base else 'N/A'}"
 
-    def clean(self):
-        # Validación para asegurar que el local principal tenga subniveles habilitados
-        if self.subnivel_de and not self.subnivel_de.zona.tiene_subniveles:
-            raise ValidationError({
-                'subnivel_de': 'El local principal seleccionado no pertenece a una zona con subniveles habilitados.'
-            })
 
 
 

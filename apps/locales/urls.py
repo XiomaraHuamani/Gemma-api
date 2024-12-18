@@ -17,6 +17,8 @@ from .views import (
     LocalViewSet,
     ListarLocalesAPIView,
     EditarLocalAPIView,
+    FiltroView,
+    
 )
 
 router = DefaultRouter()
@@ -41,5 +43,6 @@ urlpatterns = [
     path('locales-l/listar/', ListarLocalesAPIView.as_view(), name='listar-locales'),
     path('locales-l/editar/<int:pk>/', EditarLocalAPIView.as_view(), name='editar-local'),
     path("grupos/", GruposView.as_view(), name="grupos"),
+    path("filtros/", FiltroView.as_view(), name="filtros"),
     
 ]
