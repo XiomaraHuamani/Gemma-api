@@ -30,10 +30,6 @@ class Zona(models.Model):
         default='primera_linea',
         help_text="Línea base de la zona"
     )
-    tiene_subniveles = models.BooleanField(
-        default=False,
-        help_text="Indica si la zona tiene subniveles asociados"
-    )
 
     def __str__(self):
         return f"{self.categoria.nombre} - Código: {self.codigo}"

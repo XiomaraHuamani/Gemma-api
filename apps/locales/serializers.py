@@ -7,7 +7,7 @@ from decimal import Decimal
 class ZonaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Zona
-        fields = ['id', 'categoria', 'codigo', 'linea_base', 'tiene_subniveles']
+        fields = ['id', 'categoria', 'codigo', 'linea_base']
         extra_kwargs = {
             'codigo': {'required': True},
         }
