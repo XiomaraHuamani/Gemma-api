@@ -107,94 +107,123 @@ class DescuentoViewSet(ModelViewSet):
         return context
 
 
-
 class FiltroView(generics.GenericAPIView):
-    queryset = Local.objects.select_related(
-        'zona', 'precio_base', 'metraje'
-    ).all()
+    """
+    Vista para listar y crear locales con campos personalizados.
+    """
     serializer_class = FiltroSerializer
+
+    def get_queryset(self):
+        """
+        Consulta optimizada usando select_related para evitar consultas N+1.
+        """
+        return Local.objects.select_related(
+            'zona',           # FK a Zona
+            'precio_base',    # FK a PrecioBase
+            'metraje'         # FK a Metraje
+        )
 
     def get(self, request, *args, **kwargs):
         """
-        Devuelve todos los registros del modelo Local.
+        Retorna una lista de locales con campos personalizados.
         """
-        serializer = self.get_serializer(self.get_queryset(), many=True)
-        return Response(serializer.data)
+        locales = self.get_queryset()
+        serializer = self.get_serializer(locales, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
         """
-        Crea un nuevo registro Local.
+        Crea un nuevo local con campos personalizados.
         """
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LocalViewSet(viewsets.ModelViewSet):
     """
-    ViewSet para manejar CRUD de locales.
-    Incluye acciones personalizadas para filtrar por zona y listar subniveles disponibles.
+    ViewSet para manejar CRUD de Locales con subnivel_de como código de zona.
     """
-    queryset = Local.objects.select_related('zona', 'precio_base', 'metraje') \
-                            .prefetch_related('subniveles', 'subniveles__zona', 'subniveles__precio_base', 'subniveles__metraje')
+    queryset = Local.objects.select_related('zona', 'precio_base', 'metraje').prefetch_related('subniveles')
     serializer_class = LocalSerializer
 
     def create(self, request, *args, **kwargs):
-        """ Crea un nuevo local. """
+        """
+        Crea un nuevo Local con subnivel_de como código de zona.
+        """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+        subnivel_de_codigo = request.data.get('subnivel_de')
+        if subnivel_de_codigo:
+            self._set_subnivel_de(serializer, subnivel_de_codigo)
+        else:
+            serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def update(self, request, *args, **kwargs):
-        """ Actualiza un local existente. """
+        """
+        Actualiza un Local con subnivel_de como código de zona.
+        """
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        subnivel_de_codigo = request.data.get('subnivel_de')
+        if subnivel_de_codigo:
+            self._set_subnivel_de(serializer, subnivel_de_codigo)
+        else:
+            serializer.save()
+        return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
-        """ Elimina un local. """
+        """
+        Elimina un Local.
+        """
         instance = self.get_object()
         self.perform_destroy(instance)
-        return Response({"detail": "Local eliminado correctamente"}, status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=False, methods=['get'], url_path='por-zona/(?P<zona_codigo>[^/.]+)')
     def listar_por_zona(self, request, zona_codigo=None):
-        """ Lista los locales filtrados por el código de zona. """
-        locales = self.get_locales_por_zona(zona_codigo)
+        """
+        Lista los locales filtrados por el código de zona.
+        """
+        locales = Local.objects.filter(zona__codigo=zona_codigo)
         serializer = self.get_serializer(locales, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data)
 
     @action(detail=False, methods=['get'], url_path='subniveles-disponibles')
     def subniveles_disponibles(self, request):
-        """ Lista los locales con subniveles disponibles. """
-        locales = self.get_subniveles_disponibles()
+        """
+        Lista los locales con subniveles disponibles.
+        """
+        locales = Local.objects.filter(zona__tiene_subniveles=True, subnivel_de__isnull=True)
         serializer = self.get_serializer(locales, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def get_locales_por_zona(self, zona_codigo):
-        """ Retorna locales filtrados por zona específica. """
-        return Local.objects.filter(zona__codigo=zona_codigo).select_related('zona', 'precio_base', 'metraje')
-
-    def get_subniveles_disponibles(self):
-        """ Retorna los locales disponibles con subniveles. """
-        return Local.objects.filter(zona__tiene_subniveles=True, subnivel_de__isnull=True).select_related('zona', 'precio_base', 'metraje')
+        return Response(serializer.data)
 
     def perform_create(self, serializer):
-        """ Guarda un nuevo local. """
+        """
+        Sobrescrito para agregar soporte al campo subnivel_de.
+        """
         serializer.save()
 
     def perform_update(self, serializer):
-        """ Guarda la actualización del local. """
+        """
+        Sobrescrito para agregar soporte al campo subnivel_de.
+        """
         serializer.save()
 
-    def perform_destroy(self, instance):
-        """ Elimina un local de la base de datos. """
-        instance.delete()
+    def _set_subnivel_de(self, serializer, subnivel_de_codigo):
+        """
+        Configura el subnivel_de basado en el código de zona proporcionado.
+        """
+        subnivel_de_local = Local.objects.filter(zona__codigo=subnivel_de_codigo).first()
+        if not subnivel_de_local:
+            raise ValidationError(f"No existe un local con zona de código '{subnivel_de_codigo}'")
+        serializer.save(subnivel_de=subnivel_de_local)
+
 
 
 class ListarLocalesAPIView(APIView):

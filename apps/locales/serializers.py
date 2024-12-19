@@ -65,83 +65,128 @@ class SimpleLocalSerializer(serializers.ModelSerializer):
 
 
 
+
+
 class FiltroSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Local
-        fields = ['zona', 'metraje', 'estado', 'subnivel_de']
-
-
-
-
-class LocalSerializer(serializers.ModelSerializer):
-    subniveles = serializers.SerializerMethodField()
-    subnivel_de = serializers.PrimaryKeyRelatedField(
-        queryset=Local.objects.none(),
-        required=False,
-        allow_null=True
-    )
-    zona = serializers.PrimaryKeyRelatedField(queryset=Zona.objects.all())
-    precio_base = serializers.PrimaryKeyRelatedField(
-        queryset=PrecioBase.objects.all(), required=False, allow_null=True
-    )
-    metraje = serializers.PrimaryKeyRelatedField(queryset=Metraje.objects.all())
+    zona_codigo = serializers.SerializerMethodField()
+    precio = serializers.SerializerMethodField()
+    area = serializers.SerializerMethodField()
+    perimetro = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
+    linea_base = serializers.SerializerMethodField()
 
     class Meta:
         model = Local
         fields = [
-            'id', 'zona', 'zona_codigo', 'metraje', 'precio_base', 'precio',
-            'estado', 'area', 'perimetro', 'image', 'linea_base', 'tipo',
-            'subnivel_de', 'subniveles'
+            'zona_codigo', 
+            'precio', 
+            'estado', 
+            'area', 
+            'perimetro', 
+            'image', 
+            'linea_base'
         ]
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['subnivel_de'].queryset = Local.objects.filter(
-            subnivel_de__isnull=True, zona__tiene_subniveles=True, estado='disponible'
-        )
+    def get_zona_codigo(self, obj):
+        """ Devuelve el código de la zona """
+        return obj.zona.codigo
+
+    def get_precio(self, obj):
+        """ Devuelve el precio con formato """
+        return f"${obj.precio_base.precio:,.2f}" if obj.precio_base else None
+
+    def get_area(self, obj):
+        """ Devuelve el área del metraje """
+        return f"{obj.metraje.area} m²" if obj.metraje else None
+
+    def get_perimetro(self, obj):
+        """ Devuelve el perímetro del metraje """
+        return obj.metraje.perimetro if obj.metraje else None
+
+    def get_image(self, obj):
+        """ Devuelve la URL de la imagen """
+        return obj.metraje.image.url if obj.metraje and obj.metraje.image else None
+
+    def get_linea_base(self, obj):
+        """ Devuelve la línea base de la zona """
+        return obj.zona.linea_base
+
+class LocalSerializer(serializers.ModelSerializer):
+    subniveles = serializers.SerializerMethodField()
+    zona = serializers.PrimaryKeyRelatedField(queryset=Zona.objects.all())
+    subnivel_de = serializers.PrimaryKeyRelatedField(
+        queryset=Zona.objects.all(),  # Apunta al modelo Zona
+        required=False,
+        allow_null=True,
+        help_text="Seleccione el código de la zona para subnivel de"
+    )
+    subnivel_de_display = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Local
+        fields = [
+            'id',
+            'zona',
+            'zona_codigo',
+            'metraje',
+            'precio_base',
+            'precio',
+            'estado',
+            'area',
+            'perimetro',
+            'image',
+            'linea_base',
+            'tipo',
+            'subnivel_de',
+            'subnivel_de_display',
+            'subniveles',
+        ]
 
     def get_subniveles(self, obj):
-        """ Obtiene y formatea los subniveles relacionados. """
+        """
+        Devuelve los subniveles relacionados con el Local en formato requerido.
+        """
         subniveles = obj.subniveles.select_related('zona', 'precio_base', 'metraje').all()
-        return self.format_subniveles(subniveles)
-
-    def format_subniveles(self, subniveles):
-        """ Formatea la información de subniveles en una lista de diccionarios. """
         return [
             {
                 "zona_codigo": sublocal.zona.codigo,
                 "precio": f"${sublocal.precio_base.precio:,.2f}" if sublocal.precio_base else None,
                 "estado": sublocal.estado.capitalize(),
-                "area": sublocal.metraje.area if sublocal.metraje else None,
+                "area": f"{sublocal.metraje.area} m²" if sublocal.metraje else None,
                 "perimetro": sublocal.metraje.perimetro if sublocal.metraje else None,
-                "image": sublocal.metraje.image.url if sublocal.metraje and sublocal.metraje.image else None,
+                "image": self._get_image_url(sublocal.metraje),
                 "linea_base": sublocal.zona.linea_base
             }
             for sublocal in subniveles
         ]
 
+    def _get_image_url(self, metraje):
+        """
+        Devuelve la URL de la imagen asociada al metraje, si está disponible.
+        """
+        if metraje and metraje.image:
+            try:
+                return metraje.image.url
+            except ValueError:
+                return None
+        return None
+
     def to_representation(self, instance):
         """ Sobrescribe la representación final del objeto. """
         representation = super().to_representation(instance)
 
-        # Campos adicionales
-        representation['zona_codigo'] = instance.zona.codigo
-        representation['precio'] = f"${instance.precio_base.precio:,.2f}" if instance.precio_base else None
-        representation['area'] = instance.metraje.area if instance.metraje else None
-        representation['perimetro'] = instance.metraje.perimetro if instance.metraje else None
-        representation['image'] = instance.metraje.image.url if instance.metraje and instance.metraje.image else None
-        representation['linea_base'] = instance.zona.linea_base
+        # Validar campo 'image'
+        representation['image'] = self._get_image_url(instance.metraje)
 
         return representation
 
-    def validate_subnivel_de(self, value):
-        """ Valida que el local seleccionado tenga subniveles habilitados. """
-        if value and not value.zona.tiene_subniveles:
-            raise serializers.ValidationError(
-                'El local seleccionado no pertenece a una zona con subniveles habilitados.'
-            )
-        return value
-
+    def get_subnivel_de_display(self, obj):
+        """
+        Devuelve el código de zona relacionado con subnivel_de.
+        """
+        if obj.subnivel_de:
+            return obj.subnivel_de.zona.codigo
+        return None
 
 
 class ReciboArrasSerializer(serializers.ModelSerializer):

@@ -208,12 +208,15 @@ class Local(models.Model):
         blank=True,
         help_text="Escoja el tipo"
     )
+    # Corrige la relación a Local en lugar de Zona
     subnivel_de = models.ForeignKey(
-        'Zona',
+        'self',  # Relación con el mismo modelo Local
         on_delete=models.CASCADE,
-        related_name='subniveles',
-        help_text="Zona principal que permite subniveles."
+        related_name='subniveles',  # Relación inversa válida
+        null=True, blank=True,
+        help_text="Local principal que permite subniveles."
     )
+
 
 
     # Propiedades adicionales para acceder a datos relacionados
