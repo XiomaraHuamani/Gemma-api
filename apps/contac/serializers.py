@@ -12,6 +12,7 @@ class CpInversionSerializer(serializers.ModelSerializer):
             'dni',
             'objetivo_inversion',
             'mensaje',
+            'disponibilidad',
             'fecha_creacion'
         ]
         read_only_fields = ['fecha_creacion']

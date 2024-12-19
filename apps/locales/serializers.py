@@ -64,9 +64,6 @@ class SimpleLocalSerializer(serializers.ModelSerializer):
         return None
 
 
-
-
-
 class FiltroSerializer(serializers.ModelSerializer):
     zona_codigo = serializers.SerializerMethodField()
     precio = serializers.SerializerMethodField()
