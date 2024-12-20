@@ -30,6 +30,7 @@ class Zona(models.Model):
         default='primera_linea',
         help_text="Línea base de la zona"
     )
+    tiene_subniveles = models.BooleanField(default=False) 
 
     def __str__(self):
         return f"{self.categoria.nombre} - Código: {self.codigo}"
@@ -122,6 +123,7 @@ class Descuento(models.Model):
         null=True,
         help_text="Porcentaje de descuento opcional"
     )
+    
 
     class Meta:
         unique_together = ('categoria', 'metraje', 'tipo_descuento')  # Asegura unicidad
@@ -205,12 +207,19 @@ class Local(models.Model):
         help_text="Escoja el tipo"
     )
     # Corrige la relación a Local en lugar de Zona
+    # subnivel_de = models.ForeignKey(
+    #     'self',  # Relación con el mismo modelo Local
+    #     on_delete=models.CASCADE,
+    #     related_name='subniveles',  # Relación inversa válida
+    #     null=True, blank=True,
+    #     help_text="Local principal que permite subniveles."
+    # )
     subnivel_de = models.ForeignKey(
-        'self',  # Relación con el mismo modelo Local
-        on_delete=models.CASCADE,
-        related_name='subniveles',  # Relación inversa válida
-        null=True, blank=True,
-        help_text="Local principal que permite subniveles."
+        'self', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='subniveles'
     )
 
 

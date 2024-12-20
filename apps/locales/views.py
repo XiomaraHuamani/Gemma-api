@@ -7,6 +7,7 @@ from rest_framework.generics import UpdateAPIView
 from rest_framework.permissions import AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import RetrieveUpdateAPIView
+from rest_framework.exceptions import ValidationError
 from rest_framework.decorators import action
 from collections import defaultdict
 from rest_framework import generics
@@ -142,88 +143,147 @@ class FiltroView(generics.GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# class LocalViewSet(viewsets.ModelViewSet):
+#     """
+#     ViewSet para manejar CRUD de Locales con subnivel_de como código de zona.
+#     """
+#     queryset = Local.objects.select_related('zona', 'precio_base', 'metraje').prefetch_related('subniveles')
+#     serializer_class = LocalSerializer
+
+#     def create(self, request, *args, **kwargs):
+#         """
+#         Crea un nuevo Local con subnivel_de como código de zona.
+#         """
+#         serializer = self.get_serializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         subnivel_de_codigo = request.data.get('subnivel_de')
+#         if subnivel_de_codigo:
+#             self._set_subnivel_de(serializer, subnivel_de_codigo)
+#         else:
+#             serializer.save()
+#         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+#     def update(self, request, *args, **kwargs):
+#         """
+#         Actualiza un Local con subnivel_de como código de zona.
+#         """
+#         partial = kwargs.pop('partial', False)
+#         instance = self.get_object()
+#         serializer = self.get_serializer(instance, data=request.data, partial=partial)
+#         serializer.is_valid(raise_exception=True)
+#         subnivel_de_codigo = request.data.get('subnivel_de')
+#         if subnivel_de_codigo:
+#             self._set_subnivel_de(serializer, subnivel_de_codigo)
+#         else:
+#             serializer.save()
+#         return Response(serializer.data)
+
+#     def destroy(self, request, *args, **kwargs):
+#         """
+#         Elimina un Local.
+#         """
+#         instance = self.get_object()
+#         self.perform_destroy(instance)
+#         return Response(status=status.HTTP_204_NO_CONTENT)
+
+#     @action(detail=False, methods=['get'], url_path='por-zona/(?P<zona_codigo>[^/.]+)')
+#     def listar_por_zona(self, request, zona_codigo=None):
+#         """
+#         Lista los locales filtrados por el código de zona.
+#         """
+#         locales = Local.objects.filter(zona__codigo=zona_codigo)
+#         serializer = self.get_serializer(locales, many=True)
+#         return Response(serializer.data)
+
+#     @action(detail=False, methods=['get'], url_path='subniveles-disponibles')
+#     def subniveles_disponibles(self, request):
+#         """
+#         Lista los locales con subniveles disponibles.
+#         """
+#         locales = Local.objects.filter(zona__tiene_subniveles=True, subnivel_de__isnull=True)
+#         serializer = self.get_serializer(locales, many=True)
+#         return Response(serializer.data)
+
+#     def perform_create(self, serializer):
+#         """
+#         Sobrescrito para agregar soporte al campo subnivel_de.
+#         """
+#         serializer.save()
+
+#     def perform_update(self, serializer):
+#         """
+#         Sobrescrito para agregar soporte al campo subnivel_de.
+#         """
+#         serializer.save()
+
+#     def _set_subnivel_de(self, serializer, subnivel_de_codigo):
+#         """
+#         Configura el subnivel_de basado en el código de zona proporcionado.
+#         """
+#         subnivel_de_local = Local.objects.filter(zona__codigo=subnivel_de_codigo).first()
+#         # Se elimina la validación que lanza el error
+#         serializer.save(subnivel_de=subnivel_de_local)
+
+
 class LocalViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet para manejar CRUD de Locales con subnivel_de como código de zona.
-    """
-    queryset = Local.objects.select_related('zona', 'precio_base', 'metraje').prefetch_related('subniveles')
+    # El queryset principal sólo muestra locales que no son subniveles
+    queryset = Local.objects.filter(subnivel_de__isnull=True) \
+                           .select_related('zona', 'precio_base', 'metraje') \
+                           .prefetch_related('subniveles')
     serializer_class = LocalSerializer
 
     def create(self, request, *args, **kwargs):
-        """
-        Crea un nuevo Local con subnivel_de como código de zona.
-        """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        subnivel_de_codigo = request.data.get('subnivel_de')
-        if subnivel_de_codigo:
-            self._set_subnivel_de(serializer, subnivel_de_codigo)
-        else:
-            serializer.save()
+        serializer.save() 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def update(self, request, *args, **kwargs):
-        """
-        Actualiza un Local con subnivel_de como código de zona.
-        """
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
-        subnivel_de_codigo = request.data.get('subnivel_de')
-        if subnivel_de_codigo:
-            self._set_subnivel_de(serializer, subnivel_de_codigo)
-        else:
-            serializer.save()
+        serializer.save()
         return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
-        """
-        Elimina un Local.
-        """
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=False, methods=['get'], url_path='por-zona/(?P<zona_codigo>[^/.]+)')
     def listar_por_zona(self, request, zona_codigo=None):
-        """
-        Lista los locales filtrados por el código de zona.
-        """
-        locales = Local.objects.filter(zona__codigo=zona_codigo)
+        # Aquí mostramos todos los locales de esa zona, incluyendo subniveles
+        locales = Local.objects.filter(zona__codigo=zona_codigo) \
+                               .select_related('zona', 'precio_base', 'metraje') \
+                               .prefetch_related('subniveles')
         serializer = self.get_serializer(locales, many=True)
         return Response(serializer.data)
 
-    @action(detail=False, methods=['get'], url_path='subniveles-disponibles')
-    def subniveles_disponibles(self, request):
-        """
-        Lista los locales con subniveles disponibles.
-        """
-        locales = Local.objects.filter(zona__tiene_subniveles=True, subnivel_de__isnull=True)
-        serializer = self.get_serializer(locales, many=True)
-        return Response(serializer.data)
+    @action(detail=False, methods=['get'], url_path='agrupados')
+    def list_agrupados(self, request):
+        # Aquí mostramos todos los locales, no solo los que son padres
+        all_locales = Local.objects.select_related('zona', 'precio_base', 'metraje') \
+                                   .prefetch_related('subniveles') \
+                                   .order_by('tipo')
+        tipos = all_locales.values_list('tipo', flat=True).distinct()
+
+        grupos = []
+        for t in tipos:
+            locales_del_grupo = all_locales.filter(tipo=t)
+            serializer = self.get_serializer(locales_del_grupo, many=True)
+            grupos.append({
+                "tipo": t,
+                "locales": serializer.data
+            })
+
+        return Response({"grupos": grupos})
 
     def perform_create(self, serializer):
-        """
-        Sobrescrito para agregar soporte al campo subnivel_de.
-        """
         serializer.save()
 
     def perform_update(self, serializer):
-        """
-        Sobrescrito para agregar soporte al campo subnivel_de.
-        """
         serializer.save()
-
-    def _set_subnivel_de(self, serializer, subnivel_de_codigo):
-        """
-        Configura el subnivel_de basado en el código de zona proporcionado.
-        """
-        subnivel_de_local = Local.objects.filter(zona__codigo=subnivel_de_codigo).first()
-        if not subnivel_de_local:
-            raise ValidationError(f"No existe un local con zona de código '{subnivel_de_codigo}'")
-        serializer.save(subnivel_de=subnivel_de_local)
-
 
 
 class ListarLocalesAPIView(APIView):
@@ -243,10 +303,10 @@ class EditarLocalAPIView(RetrieveUpdateAPIView):
     serializer_class = SimpleLocalSerializer
     lookup_field = 'pk'
 
+
 class GruposView(APIView):
 
     def get(self, request):
-        
         grupos_definidos = [
             {"tipo": "entrada segundaria grupo 1 izquierda", "zona_codigos": ["PT 1", "PT 2", "PT 3", "PT 4", "PT 9", "PT 10", "PT 12", "PT 14"]},
             {"tipo": "entrada segundaria grupo 1 derecha", "zona_codigos": ["PT 5", "PT 6", "PT 7", "PT 8", "PT 15", "PT 16", "PT 18", "PT 20"]},
@@ -259,7 +319,7 @@ class GruposView(APIView):
             {"tipo": "entrada segundaria grupo 5 izquierda", "zona_codigos": ["PT 85", "PT 86", "PT 87", "PT 88", "PT 89", "PT 90", "PT 97", "PT 98", "PT 99", "PT 100"]},
             {"tipo": "entrada segundaria grupo 5 derecha", "zona_codigos": ["PT 91", "PT 92", "PT 93", "PT 94", "PT 95", "PT 96", "PT 101", "PT 102", "PT 103", "PT 104"]},
             {"tipo": "entrada grupo 1 larga", "zona_codigos": ["PT 61", "PT 62", "PT 63", "PT 64", "PT 65", "PT 66", "PT 73", "PT 74", "PT 75", "PT 76", "PT 77", "PT 78"]},
-            {"tipo": "entrada grupo 2 larga", "zona_codigos": ["PT 67", "PT 68", "PT 69", "PT 70", "PT 71", "PT 72", "PT 79", "PT 80", "PT 81", "PT 82", "PT 83", "PT 84"]},      
+            {"tipo": "entrada grupo 2 larga", "zona_codigos": ["PT 67", "PT 68", "PT 69", "PT 70", "PT 71", "PT 72", "PT 79", "PT 80", "PT 81", "PT 82", "PT 83", "PT 84"]},
         ]
 
         grupos_response = []
@@ -268,17 +328,21 @@ class GruposView(APIView):
             tipo = grupo_def['tipo']
             zona_codigos = grupo_def['zona_codigos']
 
-            locales_qs = Local.objects.filter(zona__codigo__in=zona_codigos, estado__in=['Disponible', 'Reservado', 'Vendido'])
+            # Solo locales principales
+            locales_qs = Local.objects.filter(
+                zona__codigo__in=zona_codigos,
+                estado__in=['Disponible', 'Reservado', 'Vendido'],
+                subnivel_de__isnull=True
+            ).select_related('zona', 'precio_base', 'metraje').prefetch_related('subniveles')
 
-            locales_data = LocalSerializer(locales_qs, many=True).data
             serializer = LocalSerializer(locales_qs, many=True, context={'request': request})
-
             grupos_response.append({
                 "tipo": tipo,
-                "locales": locales_data
+                "locales": serializer.data
             })
 
         return Response({"grupos": grupos_response})
+
 
 class TipoDescuentoPorCategoriaView(APIView):
     def get(self, request, categoria_id):

@@ -2,6 +2,7 @@ from rest_framework import serializers, status
 from rest_framework.response import Response
 from .models import Zona, Metraje, TipoDescuento, PrecioBase, Descuento, Local, ReciboArras, Cliente, Pago, VentaContado, VentaCredito, Categoria 
 from decimal import Decimal
+from rest_framework.exceptions import ValidationError
 
 
 class ZonaSerializer(serializers.ModelSerializer):
@@ -108,16 +109,16 @@ class FiltroSerializer(serializers.ModelSerializer):
         """ Devuelve la línea base de la zona """
         return obj.zona.linea_base
 
+
+
 class LocalSerializer(serializers.ModelSerializer):
     subniveles = serializers.SerializerMethodField()
     zona = serializers.PrimaryKeyRelatedField(queryset=Zona.objects.all())
     subnivel_de = serializers.PrimaryKeyRelatedField(
-        queryset=Zona.objects.all(),  # Apunta al modelo Zona
+        queryset=Local.objects.all(),
         required=False,
-        allow_null=True,
-        help_text="Seleccione el código de la zona para subnivel de"
+        allow_null=True
     )
-    subnivel_de_display = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Local
@@ -135,56 +136,71 @@ class LocalSerializer(serializers.ModelSerializer):
             'linea_base',
             'tipo',
             'subnivel_de',
-            'subnivel_de_display',
             'subniveles',
         ]
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['zona_codigo'] = instance.zona.codigo if instance.zona else None
+        if instance.precio_base:
+            representation['precio'] = f"${instance.precio_base.precio:,.2f}"
+        else:
+            representation['precio'] = None
+
+        if instance.estado:
+            representation['estado'] = instance.estado.capitalize()
+
+        if instance.metraje and instance.metraje.area:
+            representation['area'] = f"{instance.metraje.area} m²"
+        else:
+            representation['area'] = None
+
+        if instance.metraje and instance.metraje.perimetro:
+            representation['perimetro'] = instance.metraje.perimetro
+        else:
+            representation['perimetro'] = None
+
+        representation['image'] = self._get_image_url(instance.metraje)
+
+        # Removemos campos no deseados
+        representation.pop('id', None)
+        representation.pop('zona', None)
+        representation.pop('precio_base', None)
+        representation.pop('metraje', None)
+        representation.pop('tipo', None)
+        representation.pop('subnivel_de', None)
+
+        subniveles = self.get_subniveles(instance)
+        if not subniveles:
+            representation.pop('subniveles', None)
+        else:
+            representation['subniveles'] = subniveles
+
+        return representation
+
     def get_subniveles(self, obj):
-        """
-        Devuelve los subniveles relacionados con el Local en formato requerido.
-        """
         subniveles = obj.subniveles.select_related('zona', 'precio_base', 'metraje').all()
-        return [
-            {
-                "zona_codigo": sublocal.zona.codigo,
+        resultado = []
+        for sublocal in subniveles:
+            item = {
+                "zona_codigo": sublocal.zona.codigo if sublocal.zona else None,
                 "precio": f"${sublocal.precio_base.precio:,.2f}" if sublocal.precio_base else None,
-                "estado": sublocal.estado.capitalize(),
-                "area": f"{sublocal.metraje.area} m²" if sublocal.metraje else None,
-                "perimetro": sublocal.metraje.perimetro if sublocal.metraje else None,
+                "estado": sublocal.estado.capitalize() if sublocal.estado else None,
+                "area": f"{sublocal.metraje.area} m²" if sublocal.metraje and sublocal.metraje.area else None,
+                "perimetro": sublocal.metraje.perimetro if sublocal.metraje and sublocal.metraje.perimetro else None,
                 "image": self._get_image_url(sublocal.metraje),
-                "linea_base": sublocal.zona.linea_base
+                "linea_base": sublocal.zona.linea_base if sublocal.zona else None
             }
-            for sublocal in subniveles
-        ]
+            resultado.append(item)
+        return resultado
 
     def _get_image_url(self, metraje):
-        """
-        Devuelve la URL de la imagen asociada al metraje, si está disponible.
-        """
         if metraje and metraje.image:
             try:
                 return metraje.image.url
             except ValueError:
                 return None
         return None
-
-    def to_representation(self, instance):
-        """ Sobrescribe la representación final del objeto. """
-        representation = super().to_representation(instance)
-
-        # Validar campo 'image'
-        representation['image'] = self._get_image_url(instance.metraje)
-
-        return representation
-
-    def get_subnivel_de_display(self, obj):
-        """
-        Devuelve el código de zona relacionado con subnivel_de.
-        """
-        if obj.subnivel_de:
-            return obj.subnivel_de.zona.codigo
-        return None
-
 
 class ReciboArrasSerializer(serializers.ModelSerializer):
     zona = serializers.StringRelatedField(read_only=True)  # Zona será solo de lectura, derivada del local
