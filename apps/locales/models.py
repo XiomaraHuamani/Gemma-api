@@ -1,9 +1,8 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.db.models import Sum
 from decimal import Decimal
-
-
 
 class Zona(models.Model):
     LINEA_BASE_CHOICES = [
@@ -35,30 +34,12 @@ class Zona(models.Model):
     def __str__(self):
         return f"{self.categoria.nombre} - Código: {self.codigo}"
 
-
 class Categoria(models.Model):
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=100, unique=True, help_text="Nombre único para la categoría de zona")
 
     def __str__(self):
         return self.nombre
-
-
-class Metraje(models.Model):
-    id = models.AutoField(primary_key=True)
-    area = models.CharField(max_length=50, help_text="Área total en metros cuadrados (ejemplo: '12.5 m²')")
-    altura = models.CharField(max_length=50, help_text="Altura en metros (ejemplo: '4.5 m')")
-    perimetro = models.CharField(max_length=50, help_text="Perímetro en metros (ejemplo: '2.5 x 5')")
-    image = models.ImageField(
-        upload_to='metraje_images/',
-        blank=True,
-        null=True,
-        help_text="Cargar una imagen para el metraje"
-    )
-
-    def __str__(self):
-        return f"Área: {self.area} - Altura: {self.altura} - Perímetro: {self.perimetro}"
-
 
 class TipoDescuento(models.Model):
     id = models.AutoField(primary_key=True)
@@ -75,22 +56,6 @@ class TipoDescuento(models.Model):
     def __str__(self):
         return f"{self.nombre} - {self.categoria.nombre}"
 
-
-class PrecioBase(models.Model):
-    id = models.AutoField(primary_key=True)
-    precio = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        help_text="Coloca el monto del local"
-    )
-
-    class Meta:
-        verbose_name = "Precio Base"
-        verbose_name_plural = "Precios Base"
-
-    def __str__(self):
-        return f"ID: {self.id} - Precio: {self.precio}"
-
 class Descuento(models.Model):
     id = models.AutoField(primary_key=True)
     tipo_descuento = models.ForeignKey(
@@ -103,11 +68,6 @@ class Descuento(models.Model):
         on_delete=models.PROTECT,  # Evita eliminar categorías con descuentos asociados
         related_name='descuentos',
         help_text="Categoría asociada al descuento"
-    )
-    metraje = models.ForeignKey(
-        Metraje,
-        on_delete=models.CASCADE,
-        related_name='descuentos'
     )
     monto = models.DecimalField(
         max_digits=10,
@@ -125,10 +85,6 @@ class Descuento(models.Model):
     )
     
 
-    class Meta:
-        unique_together = ('categoria', 'metraje', 'tipo_descuento')  # Asegura unicidad
-        verbose_name = "Descuento"
-        verbose_name_plural = "Descuentos"
 
     def clean(self):
         """
@@ -139,24 +95,31 @@ class Descuento(models.Model):
         if not self.monto and not self.porcentaje:
             raise ValidationError("Debe especificar al menos un monto o un porcentaje para el descuento.")
 
-    @property
-    def descuento_aplicado(self):
-        """
-        Calcula el descuento basado en el monto o porcentaje.
-        """
-        if self.monto:
-            return self.monto
-        if self.porcentaje:
-            precio_base = PrecioBase.objects.filter(metraje=self.metraje, zona=self.categoria).first()
-            if precio_base:
-                return precio_base.precio * (self.porcentaje / 100)
-        return 0
-
     def __str__(self):
         return f"{self.categoria.nombre} - {self.tipo_descuento.nombre} - {self.metraje.area}"
 
-
 class Local(models.Model):
+    ESTADO_CHOICES = [
+        ('disponible', 'Disponible'),
+        ('reservado', 'Reservado'),
+        ('vendido', 'Vendido'),
+    ]
+
+    TIPO_CHOICES = [
+        ("entrada segundaria grupo 1 izquierda", "Entrada segundaria grupo 1 izquierda"),
+        ("entrada segundaria grupo 1 derecha", "Entrada segundaria grupo 1 derecha"),
+        ("entrada segundaria grupo 2 izquierda", "Entrada segundaria grupo 2 izquierda"),
+        ("entrada segundaria grupo 2 derecha", "Entrada segundaria grupo 2 derecha"),
+        ("entrada segundaria grupo 3 izquierda", "Entrada segundaria grupo 3 izquierda"),
+        ("entrada segundaria grupo 3 derecha", "Entrada segundaria grupo 3 derecha"),
+        ("entrada segundaria grupo 4 izquierda", "Entrada segundaria grupo 4 izquierda"),
+        ("entrada segundaria grupo 4 derecha", "Entrada segundaria grupo 4 derecha"),
+        ("entrada segundaria grupo 5 izquierda", "Entrada segundaria grupo 5 izquierda"),
+        ("entrada segundaria grupo 5 derecha", "Entrada segundaria grupo 5 derecha"),
+        ("entrada grupo 1 larga", "Entrada grupo 1 larga"),
+        ("entrada grupo 2 larga", "Entrada grupo 2 larga"),
+    ]
+
     id = models.AutoField(primary_key=True)
     zona = models.ForeignKey(
         'Zona',
@@ -164,100 +127,59 @@ class Local(models.Model):
         related_name='locales',
         help_text="Zona a la que pertenece este local."
     )
-    metraje = models.ForeignKey(
-        'Metraje',
-        on_delete=models.CASCADE,
-        related_name='locales',
-        help_text="Metraje asociado al local."
+    area = models.CharField(
+        max_length=50, 
+        help_text="Área total (puede incluir unidades, ejemplo: 15 m²)."
+    )
+    perimetro = models.CharField(
+        max_length=50, 
+        help_text="Perímetro (puede incluir unidades, ejemplo: 25 m)."
+    )
+    image = models.ImageField(
+        upload_to='metraje_images/',
+        blank=True,
+        null=True,
+        help_text="Sube una imagen del local."
     )
     estado = models.CharField(
         max_length=20,
-        choices=[
-            ('disponible', 'Disponible'),
-            ('reservado', 'Reservado'),
-            ('vendido', 'Vendido')
-        ],
-        default='Disponible',
-        help_text="Estado del local (disponible, reservado, vendido)."
+        choices=ESTADO_CHOICES,
+        default='disponible',
+        help_text="Estado del local."
     )
-    precio_base = models.ForeignKey(
-        'PrecioBase',
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='locales',
-        help_text="Precio base asociado al local."
+    precio = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(0)],
+        help_text="Precio del local en moneda local."
     )
     tipo = models.CharField(
         max_length=36,
-        choices=[
-            ("entrada segundaria grupo 1 izquierda", "Entrada segundaria grupo 1 izquierda"),
-            ("entrada segundaria grupo 1 derecha", "Entrada segundaria grupo 1 derecha"),
-            ("entrada segundaria grupo 2 izquierda", "Entrada segundaria grupo 2 izquierda"),
-            ("entrada segundaria grupo 2 derecha", "Entrada segundaria grupo 2 derecha"),
-            ("entrada segundaria grupo 3 izquierda", "Entrada segundaria grupo 3 izquierda"),
-            ("entrada segundaria grupo 3 derecha", "Entrada segundaria grupo 3 derecha"),
-            ("entrada segundaria grupo 4 izquierda", "Entrada segundaria grupo 4 izquierda"),
-            ("entrada segundaria grupo 4 derecha", "Entrada segundaria grupo 4 derecha"),
-            ("entrada grupo 1 larga", "Entrada grupo 1 larga"),
-            ("entrada grupo 2 larga", "Entrada grupo 2 larga"),
-        ],
+        choices=TIPO_CHOICES,
         null=True,
         blank=True,
-        help_text="Escoja el tipo"
+        help_text="Seleccione el tipo de local."
     )
-    # Corrige la relación a Local en lugar de Zona
-    # subnivel_de = models.ForeignKey(
-    #     'self',  # Relación con el mismo modelo Local
-    #     on_delete=models.CASCADE,
-    #     related_name='subniveles',  # Relación inversa válida
-    #     null=True, blank=True,
-    #     help_text="Local principal que permite subniveles."
-    # )
     subnivel_de = models.ForeignKey(
-        'self', 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        blank=True, 
-        related_name='subniveles'
+        'self',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='subniveles',
+        help_text="Local al que pertenece este subnivel, si aplica."
     )
-
-
-
-    # Propiedades adicionales para acceder a datos relacionados
-    @property
-    def zona_codigo(self):
-        return self.zona.codigo
-
-    @property
-    def precio(self):
-        return self.precio_base.precio if self.precio_base else None
-
-    @property
-    def area(self):
-        return self.metraje.area if self.metraje else None
-
-    @property
-    def perimetro(self):
-        return self.metraje.perimetro if self.metraje else None
-
-    @property
-    def image(self):
-        return self.metraje.image if self.metraje else None
-
-    @property
-    def linea_base(self):
-        return self.zona.linea_base
 
     class Meta:
+        ordering = ['zona', 'precio']
         verbose_name = "Local"
         verbose_name_plural = "Locales"
 
     def __str__(self):
-        return f"Local - Zona: {self.zona.codigo} - Metraje: {self.metraje.area} - PrecioBase: {self.precio_base.precio if self.precio_base else 'N/A'}"
+        return f"Local {self.id} - {self.zona} - {self.estado}"
 
-
-
+    def save(self, *args, **kwargs):
+        # Puedes agregar lógica adicional aquí si es necesario.
+        super().save(*args, **kwargs)
 
 class ReciboArras(models.Model):
     id = models.AutoField(primary_key=True)  # Clave primaria auto incremental
@@ -325,7 +247,6 @@ class ReciboArras(models.Model):
     def clean(self):
         self.validate_monto_separacion()
         self.autofill_fields()
-
 
 class Cliente(models.Model):
     id = models.AutoField(primary_key=True)
@@ -436,7 +357,6 @@ class Cliente(models.Model):
             self.autofill_from_existing()
             super().save(*args, **kwargs)
 
-
 class TipoVenta(models.Model):
     TIPO_CHOICES = [
         ('credito', 'Crédito'),
@@ -455,7 +375,6 @@ class TipoVenta(models.Model):
     def __str__(self):
         return self.tipo
 
-
 class VentaCredito(models.Model):
     tipo_venta = models.OneToOneField(TipoVenta, on_delete=models.CASCADE, related_name='venta_credito')
     inicial = models.DecimalField(max_digits=10, decimal_places=2, help_text="Monto inicial a pagar")
@@ -467,7 +386,6 @@ class VentaCredito(models.Model):
 
     def __str__(self):
         return f"Crédito: Inicial {self.inicial}, {self.cuotas} cuotas de {self.monto_por_mes}"
-
 
 class VentaContado(models.Model):
     tipo_venta = models.OneToOneField(TipoVenta, on_delete=models.CASCADE, related_name='venta_contado')
@@ -485,7 +403,6 @@ class VentaContado(models.Model):
 
     def __str__(self):
         return f"Contado: Inicial {self.inicial}, descuento {self.descuento}"
-
 
 class Pago(models.Model):
     recibo_arras = models.ForeignKey('ReciboArras', on_delete=models.CASCADE, related_name='pagos')

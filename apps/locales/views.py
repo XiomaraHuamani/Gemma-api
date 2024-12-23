@@ -1,6 +1,9 @@
 from rest_framework import viewsets, status, serializers
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
+from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, CreateModelMixin, UpdateModelMixin, DestroyModelMixin
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.generics import UpdateAPIView
@@ -15,9 +18,7 @@ from django.db.models import Q
 from django.apps import apps
 from .models import (
     Zona, 
-    Metraje, 
     TipoDescuento, 
-    PrecioBase, 
     Descuento, 
     Local, 
     ReciboArras, 
@@ -27,12 +28,9 @@ from .models import (
     Pago, 
     Categoria
 )
-
 from .serializers import (
     ZonaSerializer,
-    MetrajeSerializer,
     TipoDescuentoSerializer,
-    PrecioBaseSerializer,
     DescuentoSerializer,
     LocalSerializer,
     ReciboArrasSerializer,
@@ -44,8 +42,8 @@ from .serializers import (
     TipoDescuentoSerializer,
     SimpleLocalSerializer,
     FiltroSerializer,
-    
 )
+
 Categoria = apps.get_model('locales', 'Categoria')
 
 
@@ -83,17 +81,10 @@ class CategoriaViewSet(ModelViewSet):
     queryset = Categoria.objects.all()
     serializer_class = CategoriaSerializer
 
-class MetrajeViewSet(viewsets.ModelViewSet):
-    queryset = Metraje.objects.all()
-    serializer_class = MetrajeSerializer
 
 class TipoDescuentoViewSet(ModelViewSet):
     queryset = TipoDescuento.objects.select_related('categoria').all()
     serializer_class = TipoDescuentoSerializer
-
-class PrecioBaseViewSet(ModelViewSet):
-    queryset = PrecioBase.objects.all()
-    serializer_class = PrecioBaseSerializer
 
 class DescuentoViewSet(ModelViewSet):
     queryset = Descuento.objects.select_related('categoria', 'tipo_descuento', 'metraje').all()
@@ -143,148 +134,65 @@ class FiltroView(generics.GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# class LocalViewSet(viewsets.ModelViewSet):
-#     """
-#     ViewSet para manejar CRUD de Locales con subnivel_de como código de zona.
-#     """
-#     queryset = Local.objects.select_related('zona', 'precio_base', 'metraje').prefetch_related('subniveles')
-#     serializer_class = LocalSerializer
-
-#     def create(self, request, *args, **kwargs):
-#         """
-#         Crea un nuevo Local con subnivel_de como código de zona.
-#         """
-#         serializer = self.get_serializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         subnivel_de_codigo = request.data.get('subnivel_de')
-#         if subnivel_de_codigo:
-#             self._set_subnivel_de(serializer, subnivel_de_codigo)
-#         else:
-#             serializer.save()
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-#     def update(self, request, *args, **kwargs):
-#         """
-#         Actualiza un Local con subnivel_de como código de zona.
-#         """
-#         partial = kwargs.pop('partial', False)
-#         instance = self.get_object()
-#         serializer = self.get_serializer(instance, data=request.data, partial=partial)
-#         serializer.is_valid(raise_exception=True)
-#         subnivel_de_codigo = request.data.get('subnivel_de')
-#         if subnivel_de_codigo:
-#             self._set_subnivel_de(serializer, subnivel_de_codigo)
-#         else:
-#             serializer.save()
-#         return Response(serializer.data)
-
-#     def destroy(self, request, *args, **kwargs):
-#         """
-#         Elimina un Local.
-#         """
-#         instance = self.get_object()
-#         self.perform_destroy(instance)
-#         return Response(status=status.HTTP_204_NO_CONTENT)
-
-#     @action(detail=False, methods=['get'], url_path='por-zona/(?P<zona_codigo>[^/.]+)')
-#     def listar_por_zona(self, request, zona_codigo=None):
-#         """
-#         Lista los locales filtrados por el código de zona.
-#         """
-#         locales = Local.objects.filter(zona__codigo=zona_codigo)
-#         serializer = self.get_serializer(locales, many=True)
-#         return Response(serializer.data)
-
-#     @action(detail=False, methods=['get'], url_path='subniveles-disponibles')
-#     def subniveles_disponibles(self, request):
-#         """
-#         Lista los locales con subniveles disponibles.
-#         """
-#         locales = Local.objects.filter(zona__tiene_subniveles=True, subnivel_de__isnull=True)
-#         serializer = self.get_serializer(locales, many=True)
-#         return Response(serializer.data)
-
-#     def perform_create(self, serializer):
-#         """
-#         Sobrescrito para agregar soporte al campo subnivel_de.
-#         """
-#         serializer.save()
-
-#     def perform_update(self, serializer):
-#         """
-#         Sobrescrito para agregar soporte al campo subnivel_de.
-#         """
-#         serializer.save()
-
-#     def _set_subnivel_de(self, serializer, subnivel_de_codigo):
-#         """
-#         Configura el subnivel_de basado en el código de zona proporcionado.
-#         """
-#         subnivel_de_local = Local.objects.filter(zona__codigo=subnivel_de_codigo).first()
-#         # Se elimina la validación que lanza el error
-#         serializer.save(subnivel_de=subnivel_de_local)
-
-
-class LocalViewSet(viewsets.ModelViewSet):
-    # El queryset principal sólo muestra locales que no son subniveles
-    queryset = Local.objects.filter(subnivel_de__isnull=True) \
-                           .select_related('zona', 'precio_base', 'metraje') \
-                           .prefetch_related('subniveles')
+class LocalViewSet(ModelViewSet):
+    """
+    API optimizada para manejar locales con lógica de subniveles.
+    """
+    queryset = Local.objects.select_related('zona').prefetch_related('subniveles')
     serializer_class = LocalSerializer
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save() 
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+class LocalAPIView(APIView):
+    """
+    API para manejar locales con GET, POST, DELETE y PUT.
+    """
 
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+    def get(self, request, pk=None):
+        """
+        Obtiene una lista de todos los locales o un local específico si se proporciona un ID (pk).
+        """
+        if pk:
+            local = get_object_or_404(Local, pk=pk)
+            serializer = LocalSerializer(local)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        locales = Local.objects.all()
+        serializer = LocalSerializer(locales, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    def post(self, request):
+        """
+        Crea un nuevo local.
+        """
+        serializer = LocalSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=['get'], url_path='por-zona/(?P<zona_codigo>[^/.]+)')
-    def listar_por_zona(self, request, zona_codigo=None):
-        # Aquí mostramos todos los locales de esa zona, incluyendo subniveles
-        locales = Local.objects.filter(zona__codigo=zona_codigo) \
-                               .select_related('zona', 'precio_base', 'metraje') \
-                               .prefetch_related('subniveles')
-        serializer = self.get_serializer(locales, many=True)
-        return Response(serializer.data)
+    def put(self, request, pk=None):
+        """
+        Actualiza un local existente. Requiere el ID (pk) del local.
+        """
+        if not pk:
+            return Response({"error": "El ID del local es necesario para actualizar."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        local = get_object_or_404(Local, pk=pk)
+        serializer = LocalSerializer(local, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=['get'], url_path='agrupados')
-    def list_agrupados(self, request):
-        # Aquí mostramos todos los locales, no solo los que son padres
-        all_locales = Local.objects.select_related('zona', 'precio_base', 'metraje') \
-                                   .prefetch_related('subniveles') \
-                                   .order_by('tipo')
-        tipos = all_locales.values_list('tipo', flat=True).distinct()
-
-        grupos = []
-        for t in tipos:
-            locales_del_grupo = all_locales.filter(tipo=t)
-            serializer = self.get_serializer(locales_del_grupo, many=True)
-            grupos.append({
-                "tipo": t,
-                "locales": serializer.data
-            })
-
-        return Response({"grupos": grupos})
-
-    def perform_create(self, serializer):
-        serializer.save()
-
-    def perform_update(self, serializer):
-        serializer.save()
-
+    def delete(self, request, pk=None):
+        """
+        Elimina un local existente. Requiere el ID (pk) del local.
+        """
+        if not pk:
+            return Response({"error": "El ID del local es necesario para eliminar."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        local = get_object_or_404(Local, pk=pk)
+        local.delete()
+        return Response({"message": "Local eliminado correctamente."}, status=status.HTTP_204_NO_CONTENT)
 
 class ListarLocalesAPIView(APIView):
     """
