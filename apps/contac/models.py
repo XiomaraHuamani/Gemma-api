@@ -5,7 +5,7 @@ class CpInversion(models.Model):
     correo_electronico = models.EmailField()
     numero_telefono = models.CharField(max_length=15, blank=True, null=True)
     dni = models.CharField(max_length=20, blank=True, null=True)
-    objetivo_inversion = models.CharField(max_length=50, choices=[
+    objetivo_inversion = models.CharField(max_length=50, blank=True, choices=[
         ('comercial', 'Comercial'),
         ('inversion', 'Inversión'),
     ])
