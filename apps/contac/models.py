@@ -10,7 +10,7 @@ class CpInversion(models.Model):
         ('inversion', 'Inversión'),
     ])
     mensaje = models.TextField(blank=True, null=True)
-    disponibilidad= models.CharField(max_length=255)
+    disponibilidad= models.CharField(max_length=255, null=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
