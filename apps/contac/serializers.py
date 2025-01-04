@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CpInversion
+from .models import CpInversion, Contactform
 
 class CpInversionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -13,6 +13,19 @@ class CpInversionSerializer(serializers.ModelSerializer):
             'objetivo_inversion',
             'mensaje',
             'disponibilidad',
+            'fecha_creacion'
+        ]
+        read_only_fields = ['fecha_creacion']
+
+class ContactformSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contactform
+        fields = [
+            'id',
+            'names',
+            'last_name',
+            'email',
+            'message',
             'fecha_creacion'
         ]
         read_only_fields = ['fecha_creacion']
