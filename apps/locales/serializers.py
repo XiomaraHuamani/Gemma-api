@@ -113,44 +113,103 @@ class FiltroSerializer(serializers.ModelSerializer):
         return obj.zona.linea_base
 
 
-class LocalSerializer(serializers.ModelSerializer):
-    zona_codigo = serializers.CharField(source='zona.codigo', read_only=True)
-    zona = serializers.PrimaryKeyRelatedField(queryset=Zona.objects.all(), write_only=True)
-    subnivel_de = serializers.PrimaryKeyRelatedField(
-        queryset=Zona.objects.all(),
-        required=False,
-        allow_null=True,
-        help_text="Código de la zona a la que pertenece este subnivel."
-    )
-    linea_base = serializers.CharField(source='zona.linea_base', read_only=True)
 
+class LocalSerializer(serializers.ModelSerializer):
+    """
+    Serializer que incluye subniveles de forma anidada.
+    Utiliza un método adicional para formatear la respuesta (to_representation),
+    y otro para obtener los subniveles (get_subniveles).
+    """
+    # Creamos subniveles como un campo calculado
+    subniveles = serializers.SerializerMethodField()
+
+    # Si necesitas manejar relaciones directas, por ejemplo:
+    zona = serializers.PrimaryKeyRelatedField(queryset=Zona.objects.all())
+    subnivel_de = serializers.PrimaryKeyRelatedField(
+        queryset=Local.objects.all(),
+        required=False,
+        allow_null=True
+    )
+    
     class Meta:
         model = Local
         fields = [
-            'id', 'zona', 'zona_codigo', 'precio', 'estado', 'area',
-            'perimetro', 'image', 'linea_base', 'subnivel_de'
+            'id',
+            'zona',
+            'estado',
+            'precio',
+            'area',
+            'perimetro',
+            'image',
+            'subnivel_de',
+            'subniveles',
+            # Agrega aquí otros campos que necesites exponer, 
+            # como "tipo" si aplica, etc.
         ]
 
-    def get_zona_codigo(self, obj):
-        return obj.zona.codigo if obj.zona else None
+    def to_representation(self, instance):
+        """
+        Sobrescribimos to_representation para:
+        - Ajustar los nombres y formatos de los campos.
+        - Quitar campos que no queramos mostrar.
+        - Agregar campos calculados o con un formato más amigable.
+        """
+        representation = super().to_representation(instance)
+
+        # Ejemplo de cambiar 'estado' a mayúscula inicial
+        if instance.estado:
+            representation['estado'] = instance.estado.capitalize()
+
+        # Ejemplo de darle formato al precio (asumiendo está en 'precio')
+        if instance.precio is not None:
+            # Por ejemplo, mostrar un formato con coma y 2 decimales
+            # representation['precio'] = f"${instance.precio:,.2f}"
+            # O simplemente castearlo a str
+            representation['precio'] = str(instance.precio)
+        else:
+            representation['precio'] = None
+
+        # Ejemplo: queremos mostrar zona_codigo en lugar de 'zona' (o adicionalmente)
+        representation['zona_codigo'] = instance.zona.codigo if instance.zona else None
+
+        # Ejemplo: remover campos que no queramos en la respuesta final
+        representation.pop('id', None)
+        representation.pop('zona', None)
+        representation.pop('subnivel_de', None)
+
+        # Lógica para subniveles
+        subniveles = self.get_subniveles(instance)
+        if not subniveles:
+            # Si no hay subniveles, puedes eliminar la llave 'subniveles' para que no aparezca en la respuesta
+            representation.pop('subniveles', None)
+        else:
+            representation['subniveles'] = subniveles
+
+        return representation
 
     def get_subniveles(self, obj):
         """
-        Devuelve los subniveles relacionados en formato ligero.
+        Retorna los subniveles asociados (Local) a este local (obj).
+        Podrías usar select_related/prefetch_related para optimizar, 
+        dependiendo de tu modelo real.
         """
-        subniveles = obj.subniveles.all()
-        return [
-            {
-                "zona_codigo": subnivel.zona.codigo if subnivel.zona else None,
-                "precio": f"${subnivel.precio:,.2f}",
-                "estado": subnivel.estado,
-                "area": f"{subnivel.area} m²",
-                "perimetro": f"{subnivel.perimetro} m",
-                "image": subnivel.image.url if subnivel.image else None,
-                "linea_base": subnivel.zona.linea_base if subnivel.zona else None,
+        # Accedemos a la relación inversa definida por related_name='subniveles' en el modelo Local
+        subniveles_qs = obj.subniveles.select_related('zona').all()
+
+        resultado = []
+        for sublocal in subniveles_qs:
+            item = {
+                # Por ejemplo, estos campos. Ajusta a tu modelo real:
+                "zona_codigo": sublocal.zona.codigo if sublocal.zona else None,
+                "precio": str(sublocal.precio) if sublocal.precio is not None else None,
+                "estado": sublocal.estado.capitalize() if sublocal.estado else None,
+                "area": sublocal.area,
+                "perimetro": sublocal.perimetro,
+                # Si sublocal.image existe, lo convertimos a URL
+                "image": sublocal.image.url if sublocal.image else None,
             }
-            for subnivel in subniveles
-        ]
+            resultado.append(item)
+        return resultado
 
 
 

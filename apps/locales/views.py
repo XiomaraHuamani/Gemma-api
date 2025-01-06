@@ -241,7 +241,7 @@ class GruposView(APIView):
                 zona__codigo__in=zona_codigos,
                 estado__in=['Disponible', 'Reservado', 'Vendido'],
                 subnivel_de__isnull=True
-            ).select_related('zona', 'precio_base', 'metraje').prefetch_related('subniveles')
+            ).select_related('zona').prefetch_related('subniveles')
 
             serializer = LocalSerializer(locales_qs, many=True, context={'request': request})
             grupos_response.append({
