@@ -25,6 +25,7 @@ class ContactformSerializer(serializers.ModelSerializer):
             'names',
             'last_name',
             'email',
+            'phone',
             'message',
             'fecha_creacion'
         ]
