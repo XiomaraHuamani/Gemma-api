@@ -41,15 +41,17 @@ class UserListSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'role', 'date_joined', 'is_active']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'role', 'date_joined', 'is_active']
 
     def get_role(self, obj):
         """
         Método seguro para obtener el nombre del rol.
         """
         try:
-            return obj.role.name if obj.role else None
-        except:
+            if hasattr(obj, 'role') and obj.role:
+                return obj.role.name
+            return None
+        except Exception:
             return None
 
 

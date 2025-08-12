@@ -1,3 +1,4 @@
+import logging
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -10,6 +11,38 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Role, User
 from .serializers import RoleSerializer, RoleCreateUpdateSerializer, UserSerializer, UserListSerializer
 from rest_framework import status
+
+# Configurar logging
+logger = logging.getLogger(__name__)
+
+class TestView(APIView):
+    """
+    Vista de prueba para verificar que el routing funciona.
+    """
+    permission_classes = [AllowAny]
+    
+    def get(self, request):
+        """
+        Endpoint de prueba GET.
+        """
+        logger.info("TestView GET llamado")
+        return Response({
+            "mensaje": "TestView funcionando correctamente",
+            "method": request.method,
+            "path": request.path,
+            "user": str(request.user)
+        })
+    
+    def post(self, request):
+        """
+        Endpoint de prueba POST.
+        """
+        logger.info("TestView POST llamado")
+        return Response({
+            "mensaje": "TestView POST funcionando correctamente",
+            "data": request.data
+        })
+
 
 class RoleViewSet(ModelViewSet):
     """
@@ -135,30 +168,37 @@ class UserViewSet(ModelViewSet):
         Permite filtrar usuarios por enum de rol.
         """
         try:
+            logger.info("Obteniendo queryset de usuarios")
             queryset = super().get_queryset()
             role_enum = self.request.query_params.get('role_enum', None)
             if role_enum:
                 queryset = queryset.filter(role__name=role_enum)
+            logger.info(f"Queryset obtenido: {queryset.count()} usuarios")
             return queryset
         except Exception as e:
-            # Log del error para debugging
-            print(f"Error en get_queryset: {str(e)}")
+            logger.error(f"Error en get_queryset: {str(e)}")
             return User.objects.none()
+
+    @action(detail=False, methods=['get'])
+    def test(self, request):
+        """
+        Endpoint de prueba para verificar que el routing funciona.
+        """
+        logger.info("Endpoint de prueba llamado")
+        return Response({"mensaje": "Endpoint de prueba funcionando correctamente"})
 
     def list(self, request, *args, **kwargs):
         """
-        Sobrescribe el método list para mejor manejo de errores.
+        Sobrescribe el método list para logging y manejo de errores.
         """
         try:
+            logger.info("Método list llamado")
             queryset = self.filter_queryset(self.get_queryset())
-            page = self.paginate_queryset(queryset)
-            if page is not None:
-                serializer = self.get_serializer(page, many=True)
-                return self.get_paginated_response(serializer.data)
-            
             serializer = self.get_serializer(queryset, many=True)
+            logger.info(f"Lista de usuarios obtenida: {len(serializer.data)} usuarios")
             return Response(serializer.data)
         except Exception as e:
+            logger.error(f"Error en list: {str(e)}")
             return Response(
                 {"error": f"Error al obtener la lista de usuarios: {str(e)}"}, 
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR

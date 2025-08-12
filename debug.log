@@ -1,0 +1,11 @@
+INFO 2025-08-11 19:55:03,582 autoreload 14540 6100 Watching for file changes with StatReloader
+INFO 2025-08-11 19:55:10,770 autoreload 14540 6100 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\users\views.py changed, reloading.
+INFO 2025-08-11 19:55:13,159 autoreload 32484 27988 Watching for file changes with StatReloader
+INFO 2025-08-11 19:55:22,378 autoreload 32484 27988 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\users\urls.py changed, reloading.
+INFO 2025-08-11 19:55:23,807 autoreload 33592 31380 Watching for file changes with StatReloader
+INFO 2025-08-11 19:55:31,214 autoreload 33592 31380 C:\Users\Asus\Desktop\proyectos\Gemma-api\backend\settings.py changed, reloading.
+INFO 2025-08-11 19:55:32,670 autoreload 36352 12260 Watching for file changes with StatReloader
+INFO 2025-08-11 19:55:34,802 autoreload 36352 12260 C:\Users\Asus\Desktop\proyectos\Gemma-api\backend\settings.py changed, reloading.
+INFO 2025-08-11 19:55:36,794 autoreload 7324 2208 Watching for file changes with StatReloader
+INFO 2025-08-11 19:55:38,932 autoreload 7324 2208 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\users\urls.py changed, reloading.
+INFO 2025-08-11 19:55:40,781 autoreload 9412 31844 Watching for file changes with StatReloader
