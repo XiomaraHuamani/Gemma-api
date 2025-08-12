@@ -9,3 +9,54 @@ INFO 2025-08-11 19:55:34,802 autoreload 36352 12260 C:\Users\Asus\Desktop\proyec
 INFO 2025-08-11 19:55:36,794 autoreload 7324 2208 Watching for file changes with StatReloader
 INFO 2025-08-11 19:55:38,932 autoreload 7324 2208 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\users\urls.py changed, reloading.
 INFO 2025-08-11 19:55:40,781 autoreload 9412 31844 Watching for file changes with StatReloader
+WARNING 2025-08-11 20:05:20,030 log 9412 35740 Not Found: /docs
+WARNING 2025-08-11 20:05:20,030 basehttp 9412 35740 "GET /docs HTTP/1.1" 404 2643
+WARNING 2025-08-11 20:05:20,224 log 9412 35740 Not Found: /favicon.ico
+WARNING 2025-08-11 20:05:20,229 basehttp 9412 35740 "GET /favicon.ico HTTP/1.1" 404 2664
+INFO 2025-08-11 20:05:28,409 basehttp 9412 35740 "GET /users HTTP/1.1" 301 0
+INFO 2025-08-11 20:05:28,657 basehttp 9412 8692 "GET /users/ HTTP/1.1" 200 5409
+INFO 2025-08-11 20:05:29,064 basehttp 9412 8692 "GET /static/rest_framework/css/bootstrap.min.css HTTP/1.1" 200 121457
+INFO 2025-08-11 20:05:29,118 basehttp 9412 31880 "GET /static/rest_framework/css/default.css HTTP/1.1" 200 1152
+INFO 2025-08-11 20:05:29,132 basehttp 9412 21680 "GET /static/rest_framework/css/bootstrap-tweaks.css HTTP/1.1" 200 3426
+INFO 2025-08-11 20:05:29,132 basehttp 9412 36880 "GET /static/rest_framework/css/prettify.css HTTP/1.1" 200 817
+INFO 2025-08-11 20:05:29,200 basehttp 9412 8692 "GET /static/rest_framework/js/csrf.js HTTP/1.1" 200 1793
+INFO 2025-08-11 20:05:29,218 basehttp 9412 36880 "GET /static/rest_framework/js/default.js HTTP/1.1" 200 1268
+INFO 2025-08-11 20:05:29,247 basehttp 9412 24060 "GET /static/rest_framework/js/ajax-form.js HTTP/1.1" 200 3796
+INFO 2025-08-11 20:05:29,248 basehttp 9412 36880 "GET /static/rest_framework/img/grid.png HTTP/1.1" 200 1458
+INFO 2025-08-11 20:05:29,265 basehttp 9412 8692 "GET /static/rest_framework/js/load-ajax-form.js HTTP/1.1" 200 59
+INFO 2025-08-11 20:05:29,268 basehttp 9412 31880 "GET /static/rest_framework/js/bootstrap.min.js HTTP/1.1" 200 39680
+INFO 2025-08-11 20:05:29,292 basehttp 9412 21680 "GET /static/rest_framework/js/prettify-min.js HTTP/1.1" 200 13632
+INFO 2025-08-11 20:05:29,349 basehttp 9412 36128 "GET /static/rest_framework/js/jquery-3.7.1.min.js HTTP/1.1" 200 87533
+INFO 2025-08-11 20:05:35,144 basehttp 9412 36128 "GET /users/roles/ HTTP/1.1" 200 10978
+INFO 2025-08-11 20:18:45,384 basehttp 9412 32032 "GET /users/ HTTP/1.1" 200 5409
+INFO 2025-08-11 20:18:50,379 views 9412 32032 Método list llamado
+INFO 2025-08-11 20:18:50,383 views 9412 32032 Obteniendo queryset de usuarios
+INFO 2025-08-11 20:18:51,574 views 9412 32032 Queryset obtenido: 11 usuarios
+INFO 2025-08-11 20:18:53,802 views 9412 32032 Lista de usuarios obtenida: 11 usuarios
+INFO 2025-08-11 20:18:53,855 views 9412 32032 Obteniendo queryset de usuarios
+INFO 2025-08-11 20:18:53,950 views 9412 32032 Queryset obtenido: 11 usuarios
+INFO 2025-08-11 20:18:53,957 basehttp 9412 32032 "GET /users/users/ HTTP/1.1" 200 15314
+INFO 2025-08-11 20:19:06,853 views 9412 31124 Método list llamado
+INFO 2025-08-11 20:19:06,853 views 9412 31124 Obteniendo queryset de usuarios
+INFO 2025-08-11 20:19:07,995 views 9412 31124 Queryset obtenido: 11 usuarios
+INFO 2025-08-11 20:19:10,184 views 9412 31124 Lista de usuarios obtenida: 11 usuarios
+INFO 2025-08-11 20:19:10,203 basehttp 9412 31124 "GET /users/users/ HTTP/1.1" 200 1779
+INFO 2025-08-11 21:03:27,716 basehttp 9412 24776 "GET /users/users/7 HTTP/1.1" 301 0
+INFO 2025-08-11 21:03:27,733 views 9412 20416 Obteniendo queryset de usuarios
+INFO 2025-08-11 21:03:28,899 views 9412 20416 Queryset obtenido: 12 usuarios
+INFO 2025-08-11 21:03:29,316 basehttp 9412 20416 "GET /users/users/7/ HTTP/1.1" 200 12321
+INFO 2025-08-11 21:03:29,401 basehttp 9412 36560 "GET /static/rest_framework/css/prettify.css HTTP/1.1" 200 817
+INFO 2025-08-11 21:03:29,403 basehttp 9412 32948 "GET /static/rest_framework/css/default.css HTTP/1.1" 200 1152
+INFO 2025-08-11 21:03:29,406 basehttp 9412 35248 "GET /static/rest_framework/css/bootstrap-tweaks.css HTTP/1.1" 200 3426
+INFO 2025-08-11 21:03:29,409 basehttp 9412 20416 "GET /static/rest_framework/css/bootstrap.min.css HTTP/1.1" 200 121457
+INFO 2025-08-11 21:03:29,443 basehttp 9412 33616 "GET /static/rest_framework/js/ajax-form.js HTTP/1.1" 200 3796
+INFO 2025-08-11 21:03:29,449 basehttp 9412 36560 "GET /static/rest_framework/js/csrf.js HTTP/1.1" 200 1793
+INFO 2025-08-11 21:03:29,455 basehttp 9412 36560 "GET /static/rest_framework/img/grid.png HTTP/1.1" 200 1458
+INFO 2025-08-11 21:03:29,457 basehttp 9412 20416 "GET /static/rest_framework/js/default.js HTTP/1.1" 200 1268
+INFO 2025-08-11 21:03:29,461 basehttp 9412 35248 "GET /static/rest_framework/js/prettify-min.js HTTP/1.1" 200 13632
+INFO 2025-08-11 21:03:29,471 basehttp 9412 33616 "GET /static/rest_framework/js/load-ajax-form.js HTTP/1.1" 200 59
+INFO 2025-08-11 21:03:29,473 basehttp 9412 32948 "GET /static/rest_framework/js/bootstrap.min.js HTTP/1.1" 200 39680
+INFO 2025-08-11 21:03:29,504 basehttp 9412 27580 "GET /static/rest_framework/js/jquery-3.7.1.min.js HTTP/1.1" 200 87533
+INFO 2025-08-11 21:03:43,531 views 9412 27580 Obteniendo queryset de usuarios
+INFO 2025-08-11 21:03:44,680 views 9412 27580 Queryset obtenido: 12 usuarios
+INFO 2025-08-11 21:03:46,384 basehttp 9412 27580 "PUT /users/users/7/ HTTP/1.1" 200 12319
