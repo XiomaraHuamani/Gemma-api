@@ -26,7 +26,8 @@ from .models import (
     VentaCredito, 
     VentaContado, 
     Pago, 
-    Categoria
+    Categoria,
+    Galeria
 )
 from .serializers import (
     ZonaSerializer,
@@ -42,6 +43,7 @@ from .serializers import (
     TipoDescuentoSerializer,
     SimpleLocalSerializer,
     FiltroSerializer,
+    GaleriaSerializer,
 )
 
 Categoria = apps.get_model('locales', 'Categoria')
@@ -306,3 +308,20 @@ class VentaContadoViewSet(ModelViewSet):
 class PagoViewSet(ModelViewSet):
     queryset = Pago.objects.select_related('recibo_arras', 'tipo_venta').all()
     serializer_class = PagoSerializer
+
+
+class GaleriaViewSet(ModelViewSet):
+    """
+    ViewSet para manejar las operaciones CRUD en el modelo Galeria.
+    """
+    queryset = Galeria.objects.all().order_by('name')
+    serializer_class = GaleriaSerializer
+    permission_classes = [AllowAny]
+
+    def get_serializer_context(self):
+        """
+        Agrega el request al contexto del serializer.
+        """
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context

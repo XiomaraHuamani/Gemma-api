@@ -10,10 +10,31 @@ from .models import (
     VentaCredito, 
     VentaContado, 
     Pago, 
-    Categoria
+    Categoria,
+    Galeria
 )
 from decimal import Decimal
 from rest_framework.exceptions import ValidationError
+
+
+class GaleriaSerializer(serializers.ModelSerializer):
+    """
+    Serializer para el modelo Galeria.
+    """
+    files_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Galeria
+        fields = ['id', 'name', 'files', 'files_url']
+
+    def get_files_url(self, obj):
+        """
+        Obtiene la URL completa de la imagen.
+        """
+        request = self.context.get('request')
+        if obj.files and hasattr(obj.files, 'url'):
+            return request.build_absolute_uri(obj.files.url) if request else obj.files.url
+        return None
 
 
 class ZonaSerializer(serializers.ModelSerializer):

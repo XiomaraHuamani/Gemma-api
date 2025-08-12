@@ -60,3 +60,230 @@ INFO 2025-08-11 21:03:29,504 basehttp 9412 27580 "GET /static/rest_framework/js/
 INFO 2025-08-11 21:03:43,531 views 9412 27580 Obteniendo queryset de usuarios
 INFO 2025-08-11 21:03:44,680 views 9412 27580 Queryset obtenido: 12 usuarios
 INFO 2025-08-11 21:03:46,384 basehttp 9412 27580 "PUT /users/users/7/ HTTP/1.1" 200 12319
+INFO 2025-08-11 21:52:21,902 autoreload 9412 31844 C:\Users\Asus\Desktop\proyectos\Gemma-api\backend\settings.py changed, reloading.
+INFO 2025-08-11 21:52:25,098 autoreload 31756 8456 Watching for file changes with StatReloader
+INFO 2025-08-11 21:52:32,452 autoreload 31756 8456 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\users\urls.py changed, reloading.
+INFO 2025-08-11 21:52:34,065 autoreload 33504 4088 Watching for file changes with StatReloader
+INFO 2025-08-11 21:52:43,603 autoreload 33504 4088 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\users\urls.py changed, reloading.
+INFO 2025-08-11 21:52:45,397 autoreload 23724 29644 Watching for file changes with StatReloader
+INFO 2025-08-12 03:31:52,908 autoreload 23724 29644 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\users\urls.py changed, reloading.
+INFO 2025-08-12 03:32:02,283 autoreload 16256 31320 Watching for file changes with StatReloader
+INFO 2025-08-12 03:32:13,392 autoreload 16256 31320 C:\Users\Asus\Desktop\proyectos\Gemma-api\backend\settings.py changed, reloading.
+INFO 2025-08-12 03:32:16,115 autoreload 26084 17192 Watching for file changes with StatReloader
+INFO 2025-08-12 03:39:05,690 autoreload 26084 17192 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\locales\models.py changed, reloading.
+INFO 2025-08-12 03:39:07,741 autoreload 35056 22828 Watching for file changes with StatReloader
+INFO 2025-08-12 03:40:05,956 autoreload 35056 22828 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\locales\admin.py changed, reloading.
+INFO 2025-08-12 03:40:07,772 autoreload 33196 42328 Watching for file changes with StatReloader
+INFO 2025-08-12 03:42:34,179 autoreload 33196 42328 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\locales\serializers.py changed, reloading.
+INFO 2025-08-12 03:42:37,705 autoreload 18700 42568 Watching for file changes with StatReloader
+INFO 2025-08-12 03:43:37,990 autoreload 18700 42568 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\locales\views.py changed, reloading.
+INFO 2025-08-12 03:43:40,465 autoreload 37140 36020 Watching for file changes with StatReloader
+INFO 2025-08-12 03:46:26,797 autoreload 37140 36020 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\locales\views.py changed, reloading.
+INFO 2025-08-12 03:46:35,365 autoreload 37176 29980 Watching for file changes with StatReloader
+INFO 2025-08-12 03:47:23,379 autoreload 37176 29980 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\locales\urls.py changed, reloading.
+INFO 2025-08-12 03:47:27,168 autoreload 26460 33592 Watching for file changes with StatReloader
+INFO 2025-08-12 04:17:42,304 autoreload 26460 33592 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\locales\models.py changed, reloading.
+INFO 2025-08-12 04:17:44,676 autoreload 27240 36104 Watching for file changes with StatReloader
+INFO 2025-08-12 04:26:03,450 autoreload 27240 36104 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\locales\models.py changed, reloading.
+INFO 2025-08-12 04:26:05,310 autoreload 39968 17540 Watching for file changes with StatReloader
+INFO 2025-08-12 04:31:22,568 autoreload 32920 7240 Watching for file changes with StatReloader
+ERROR 2025-08-12 04:34:15,316 log 32920 26200 Internal Server Error: /locales/galerias/activas/
+Traceback (most recent call last):
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\mssql\base.py", line 677, in execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pyodbc.ProgrammingError: ('42S02', "[42S02] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Invalid object name 'locales_galeria'. (208) (SQLExecDirectW); [42S02] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Statement(s) could not be prepared. (8180)")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\views\decorators\csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\rest_framework\viewsets.py", line 124, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\locales\views.py", line 351, in activas
+    return Response(serializer.data)
+                    ^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\rest_framework\serializers.py", line 795, in data
+    ret = super().data
+          ^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\rest_framework\serializers.py", line 249, in data
+    self._data = self.to_representation(self.instance)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\rest_framework\serializers.py", line 713, in to_representation
+    return [
+           ^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\db\models\query.py", line 398, in __iter__
+    self._fetch_all()
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\db\models\query.py", line 1881, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\db\models\query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\db\backends\utils.py", line 102, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\db\backends\utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\db\backends\utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\db\backends\utils.py", line 84, in _execute
+    with self.db.wrap_database_errors:
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\mssql\base.py", line 677, in execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.ProgrammingError: ('42S02', "[42S02] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Invalid object name 'locales_galeria'. (208) (SQLExecDirectW); [42S02] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Statement(s) could not be prepared. (8180)")
+ERROR 2025-08-12 04:34:15,329 basehttp 32920 26200 "GET /locales/galerias/activas/ HTTP/1.1" 500 177329
+ERROR 2025-08-12 04:35:33,376 log 32920 26200 Internal Server Error: /locales/imagenes-galeria/
+Traceback (most recent call last):
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\mssql\base.py", line 677, in execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pyodbc.ProgrammingError: ('42S02', "[42S02] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Invalid object name 'locales_imagengaleria'. (208) (SQLExecDirectW)")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\views\decorators\csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\rest_framework\viewsets.py", line 124, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\rest_framework\mixins.py", line 40, in list
+    page = self.paginate_queryset(queryset)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\rest_framework\generics.py", line 175, in paginate_queryset
+    return self.paginator.paginate_queryset(queryset, self.request, view=self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\rest_framework\pagination.py", line 211, in paginate_queryset
+    self.page = paginator.page(page_number)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\core\paginator.py", line 72, in page
+    number = self.validate_number(number)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\core\paginator.py", line 53, in validate_number
+    if number > self.num_pages:
+                ^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\utils\functional.py", line 57, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\core\paginator.py", line 99, in num_pages
+    if self.count == 0 and not self.allow_empty_first_page:
+       ^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\utils\functional.py", line 57, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\core\paginator.py", line 93, in count
+    return c()
+           ^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\db\models\query.py", line 608, in count
+    return self.query.get_count(using=self.db)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\db\models\sql\query.py", line 568, in get_count
+    return obj.get_aggregation(using, {"__count": Count("*")})["__count"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\db\models\sql\query.py", line 554, in get_aggregation
+    result = compiler.execute_sql(SINGLE)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\db\backends\utils.py", line 102, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\db\backends\utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\db\backends\utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\db\backends\utils.py", line 84, in _execute
+    with self.db.wrap_database_errors:
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Asus\Desktop\proyectos\Gemma-api\venv\Lib\site-packages\mssql\base.py", line 677, in execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.ProgrammingError: ('42S02', "[42S02] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Invalid object name 'locales_imagengaleria'. (208) (SQLExecDirectW)")
+ERROR 2025-08-12 04:35:33,391 basehttp 32920 26200 "GET /locales/imagenes-galeria/ HTTP/1.1" 500 196464
+INFO 2025-08-12 04:38:00,140 autoreload 30200 29564 Watching for file changes with StatReloader
+INFO 2025-08-12 04:38:15,576 basehttp 30200 37224 "GET /locales/imagenes-galeria/ HTTP/1.1" 200 12051
+INFO 2025-08-12 04:38:15,898 basehttp 30200 37224 "GET /static/rest_framework/fonts/glyphicons-halflings-regular.woff2 HTTP/1.1" 200 18028
+INFO 2025-08-12 04:44:13,457 autoreload 30200 29564 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\locales\models.py changed, reloading.
+INFO 2025-08-12 04:44:16,996 autoreload 36072 26492 Watching for file changes with StatReloader
+INFO 2025-08-12 04:45:42,958 autoreload 36072 26492 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\locales\models.py changed, reloading.
+INFO 2025-08-12 04:45:44,697 autoreload 36700 25284 Watching for file changes with StatReloader
+INFO 2025-08-12 04:45:54,737 autoreload 36700 25284 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\locales\models.py changed, reloading.
+INFO 2025-08-12 04:45:56,796 autoreload 21604 41912 Watching for file changes with StatReloader
+INFO 2025-08-12 05:09:08,708 autoreload 9372 33412 Watching for file changes with StatReloader
+INFO 2025-08-12 05:12:24,939 autoreload 33852 25972 Watching for file changes with StatReloader
+INFO 2025-08-12 05:12:57,286 basehttp 33852 39856 "GET /locales/galerias/ HTTP/1.1" 200 9105
+INFO 2025-08-12 05:13:37,709 autoreload 33852 25972 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\locales\models.py changed, reloading.
+INFO 2025-08-12 05:13:39,920 autoreload 42692 41884 Watching for file changes with StatReloader
+INFO 2025-08-12 05:13:48,342 autoreload 42692 41884 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\locales\serializers.py changed, reloading.
+INFO 2025-08-12 05:13:50,735 autoreload 41888 32600 Watching for file changes with StatReloader
+INFO 2025-08-12 05:13:56,403 autoreload 41888 32600 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\locales\views.py changed, reloading.
+INFO 2025-08-12 05:13:58,709 autoreload 35688 3848 Watching for file changes with StatReloader
+INFO 2025-08-12 05:14:42,784 autoreload 35688 3848 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\locales\views.py changed, reloading.
+INFO 2025-08-12 05:14:45,078 autoreload 40352 1316 Watching for file changes with StatReloader
+INFO 2025-08-12 05:18:54,705 autoreload 40352 1316 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\locales\models.py changed, reloading.
+INFO 2025-08-12 05:18:56,365 autoreload 9368 18452 Watching for file changes with StatReloader
+INFO 2025-08-12 05:19:12,197 autoreload 33852 35904 Watching for file changes with StatReloader
+INFO 2025-08-12 05:19:57,611 basehttp 33852 42372 "GET /locales/galerias/ HTTP/1.1" 200 9079
+INFO 2025-08-12 05:20:59,363 basehttp 33852 42372 "POST /locales/galerias/ HTTP/1.1" 201 9452
+INFO 2025-08-12 05:21:21,613 basehttp 33852 42372 "GET /media/galeria_images/PT-25_m2.png HTTP/1.1" 200 1142189
+INFO 2025-08-12 05:26:34,165 autoreload 33852 35904 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\locales\views.py changed, reloading.
+INFO 2025-08-12 05:26:36,945 autoreload 31824 7620 Watching for file changes with StatReloader

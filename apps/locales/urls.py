@@ -17,7 +17,7 @@ from .views import (
     EditarLocalAPIView,
     FiltroView,
     LocalAPIView,
-    
+    GaleriaViewSet,
 )
 
 router = DefaultRouter()
@@ -31,7 +31,7 @@ router.register(r'ventas-credito', VentaCreditoViewSet, basename='venta-credito'
 router.register(r'ventas-contado', VentaContadoViewSet, basename='venta-contado')
 router.register(r'pagos', PagoViewSet, basename='pago')
 router.register(r'locales', LocalViewSet, basename='local')
-
+router.register(r'galerias', GaleriaViewSet, basename='galeria')
 
 
 urlpatterns = [

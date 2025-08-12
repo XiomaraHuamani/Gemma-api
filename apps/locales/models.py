@@ -404,6 +404,23 @@ class VentaContado(models.Model):
     def __str__(self):
         return f"Contado: Inicial {self.inicial}, descuento {self.descuento}"
 
+class Galeria(models.Model):
+    """
+    Modelo simplificado para galerías.
+    """
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=255, help_text="Nombre de la galería")
+    files = models.ImageField(
+        upload_to='galeria_images/',
+        help_text="Imagen de la galería",
+        null=True,
+        blank=True
+    )
+
+    def __str__(self):
+        return self.name
+
+
 class Pago(models.Model):
     recibo_arras = models.ForeignKey('ReciboArras', on_delete=models.CASCADE, related_name='pagos')
     tipo_venta = models.ForeignKey(TipoVenta, on_delete=models.PROTECT, related_name='pagos')
