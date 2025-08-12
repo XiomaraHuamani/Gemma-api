@@ -8,7 +8,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Role, User
-from .serializers import RoleSerializer, RoleCreateUpdateSerializer, UserSerializer
+from .serializers import RoleSerializer, RoleCreateUpdateSerializer, UserSerializer, UserListSerializer
 from rest_framework import status
 
 class RoleViewSet(ModelViewSet):
@@ -114,6 +114,14 @@ class UserViewSet(ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [AllowAny]  
 
+    def get_serializer_class(self):
+        """
+        Usa diferentes serializers según la acción.
+        """
+        if self.action == 'list':
+            return UserListSerializer
+        return UserSerializer
+
     def get_permissions(self):
         """
         Personalizar permisos para ciertas acciones.
@@ -126,11 +134,35 @@ class UserViewSet(ModelViewSet):
         """
         Permite filtrar usuarios por enum de rol.
         """
-        queryset = super().get_queryset()
-        role_enum = self.request.query_params.get('role_enum', None)
-        if role_enum:
-            queryset = queryset.filter(role__name=role_enum)
-        return queryset
+        try:
+            queryset = super().get_queryset()
+            role_enum = self.request.query_params.get('role_enum', None)
+            if role_enum:
+                queryset = queryset.filter(role__name=role_enum)
+            return queryset
+        except Exception as e:
+            # Log del error para debugging
+            print(f"Error en get_queryset: {str(e)}")
+            return User.objects.none()
+
+    def list(self, request, *args, **kwargs):
+        """
+        Sobrescribe el método list para mejor manejo de errores.
+        """
+        try:
+            queryset = self.filter_queryset(self.get_queryset())
+            page = self.paginate_queryset(queryset)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
+            
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response(
+                {"error": f"Error al obtener la lista de usuarios: {str(e)}"}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     def perform_create(self, serializer):
         """
@@ -157,7 +189,7 @@ class UserViewSet(ModelViewSet):
         """
         try:
             users = User.objects.filter(role__name=role_enum)
-            serializer = self.get_serializer(users, many=True)
+            serializer = UserListSerializer(users, many=True)
             return Response(serializer.data)
         except Exception as e:
             return Response(
@@ -170,67 +202,97 @@ class UserViewSet(ModelViewSet):
         """
         Obtén información del usuario autenticado.
         """
-        serializer = self.get_serializer(request.user)
-        return Response(serializer.data)
+        try:
+            if request.user.is_authenticated:
+                serializer = self.get_serializer(request.user)
+                return Response(serializer.data)
+            else:
+                return Response(
+                    {"error": "Usuario no autenticado"}, 
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
+        except Exception as e:
+            return Response(
+                {"error": f"Error al obtener información del usuario: {str(e)}"}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     @action(detail=True, methods=['post'], permission_classes=[AllowAny])
     def asignar_rol(self, request, pk=None):
         """
         Asignar un rol específico a un usuario.
         """
-        user = self.get_object()
-        role_name = request.data.get('role_name')
-        if not role_name:
-            return Response({"error": "El campo 'role_name' es obligatorio."}, status=status.HTTP_400_BAD_REQUEST)
-
         try:
-            role = Role.objects.get(name=role_name)
-        except Role.DoesNotExist:
-            return Response({"error": f"El rol '{role_name}' no existe."}, status=status.HTTP_404_NOT_FOUND)
+            user = self.get_object()
+            role_name = request.data.get('role_name')
+            if not role_name:
+                return Response({"error": "El campo 'role_name' es obligatorio."}, status=status.HTTP_400_BAD_REQUEST)
 
-        user.role = role
-        user.save()
-        return Response({"mensaje": f"Rol '{role_name}' asignado al usuario {user.email}."}, status=status.HTTP_200_OK)
+            try:
+                role = Role.objects.get(name=role_name)
+            except Role.DoesNotExist:
+                return Response({"error": f"El rol '{role_name}' no existe."}, status=status.HTTP_404_NOT_FOUND)
+
+            user.role = role
+            user.save()
+            return Response({"mensaje": f"Rol '{role_name}' asignado al usuario {user.email}."}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {"error": f"Error al asignar rol: {str(e)}"}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     @action(detail=True, methods=['post'], permission_classes=[AllowAny])
     def cambiar_password(self, request, pk=None):
         """
         Cambiar la contraseña de un usuario.
         """
-        user = self.get_object()
-        nueva_password = request.data.get('nueva_password')
-        password_actual = request.data.get('password_actual')
-        
-        if not nueva_password:
-            return Response({"error": "El campo 'nueva_password' es obligatorio."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Si se proporciona la contraseña actual, verificar que sea correcta
-        if password_actual:
-            if not user.check_password(password_actual):
-                return Response({"error": "La contraseña actual es incorrecta."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Cambiar la contraseña
-        user.set_password(nueva_password)
-        user.save()
-        
-        return Response({"mensaje": "Contraseña actualizada exitosamente."}, status=status.HTTP_200_OK)
+        try:
+            user = self.get_object()
+            nueva_password = request.data.get('nueva_password')
+            password_actual = request.data.get('password_actual')
+            
+            if not nueva_password:
+                return Response({"error": "El campo 'nueva_password' es obligatorio."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Si se proporciona la contraseña actual, verificar que sea correcta
+            if password_actual:
+                if not user.check_password(password_actual):
+                    return Response({"error": "La contraseña actual es incorrecta."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Cambiar la contraseña
+            user.set_password(nueva_password)
+            user.save()
+            
+            return Response({"mensaje": "Contraseña actualizada exitosamente."}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {"error": f"Error al cambiar contraseña: {str(e)}"}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     @action(detail=True, methods=['post'], permission_classes=[AllowAny])
     def reset_password(self, request, pk=None):
         """
         Resetear la contraseña de un usuario (sin verificar contraseña actual).
         """
-        user = self.get_object()
-        nueva_password = request.data.get('nueva_password')
-        
-        if not nueva_password:
-            return Response({"error": "El campo 'nueva_password' es obligatorio."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Cambiar la contraseña
-        user.set_password(nueva_password)
-        user.save()
-        
-        return Response({"mensaje": "Contraseña reseteada exitosamente."}, status=status.HTTP_200_OK)
+        try:
+            user = self.get_object()
+            nueva_password = request.data.get('nueva_password')
+            
+            if not nueva_password:
+                return Response({"error": "El campo 'nueva_password' es obligatorio."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Cambiar la contraseña
+            user.set_password(nueva_password)
+            user.save()
+            
+            return Response({"mensaje": "Contraseña reseteada exitosamente."}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {"error": f"Error al resetear contraseña: {str(e)}"}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 class RegisterView(APIView):

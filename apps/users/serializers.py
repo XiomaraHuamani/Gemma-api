@@ -33,17 +33,46 @@ class RoleCreateUpdateSerializer(serializers.ModelSerializer):
         return value
 
 
+class UserListSerializer(serializers.ModelSerializer):
+    """
+    Serializer simplificado para listar usuarios.
+    """
+    role = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'role', 'date_joined', 'is_active']
+
+    def get_role(self, obj):
+        """
+        Método seguro para obtener el nombre del rol.
+        """
+        try:
+            return obj.role.name if obj.role else None
+        except:
+            return None
+
+
 class UserSerializer(serializers.ModelSerializer):
     """
     Serializer para el modelo de usuario.
     """
-    role = serializers.CharField(source='role.name', read_only=True)
+    role = serializers.SerializerMethodField()
     role_enum = serializers.CharField(write_only=True, required=False, help_text="Nombre del rol (marketing, asesor, staff, cliente)")
     
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'password', 'role', 'role_enum', 'date_joined']
         extra_kwargs = {'password': {'write_only': True}}
+
+    def get_role(self, obj):
+        """
+        Método seguro para obtener el nombre del rol.
+        """
+        try:
+            return obj.role.name if obj.role else None
+        except:
+            return None
 
     def create(self, validated_data):
         """
