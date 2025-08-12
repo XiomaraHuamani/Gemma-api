@@ -287,3 +287,9 @@ INFO 2025-08-12 05:20:59,363 basehttp 33852 42372 "POST /locales/galerias/ HTTP/
 INFO 2025-08-12 05:21:21,613 basehttp 33852 42372 "GET /media/galeria_images/PT-25_m2.png HTTP/1.1" 200 1142189
 INFO 2025-08-12 05:26:34,165 autoreload 33852 35904 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\locales\views.py changed, reloading.
 INFO 2025-08-12 05:26:36,945 autoreload 31824 7620 Watching for file changes with StatReloader
+INFO 2025-08-12 08:03:11,477 autoreload 30072 20476 Watching for file changes with StatReloader
+INFO 2025-08-12 08:03:27,686 basehttp 30072 35264 "GET /locales/galerias/ HTTP/1.1" 200 9569
+INFO 2025-08-12 08:03:32,233 basehttp 30072 35264 "GET /locales/galerias/ HTTP/1.1" 200 9569
+INFO 2025-08-12 08:11:28,772 basehttp 30072 19592 "GET /locales/galerias/ HTTP/1.1" 200 9569
+INFO 2025-08-12 08:11:47,892 basehttp 30072 19592 "POST /locales/galerias/ HTTP/1.1" 201 9492
+INFO 2025-08-12 08:11:55,273 basehttp 30072 19592 "GET /locales/galerias/ HTTP/1.1" 200 10075
