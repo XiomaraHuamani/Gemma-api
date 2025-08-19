@@ -347,3 +347,4 @@ INFO 2025-08-19 15:05:06,298 basehttp 26852 27972 "POST /locales/galerias/ HTTP/
 INFO 2025-08-19 15:05:22,939 basehttp 26852 27972 "POST /locales/galerias/ HTTP/1.1" 201 9478
 INFO 2025-08-19 15:38:13,472 autoreload 26852 32176 C:\Users\Asus\Desktop\proyectos\Gemma-api\backend\settings.py changed, reloading.
 INFO 2025-08-19 15:38:15,572 autoreload 39276 24224 Watching for file changes with StatReloader
+INFO 2025-08-19 15:45:50,739 autoreload 37536 33492 Watching for file changes with StatReloader
