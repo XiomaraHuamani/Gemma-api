@@ -1,0 +1,38 @@
+# Entornos
+venv/
+.venv/
+.env
+.env.*
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.pytest_cache/
+.cache/
+
+# Logs y temporales
+*.log
+*.tmp
+
+# Django
+media/
+staticfiles/
+*.sqlite3
+db.sqlite3
+
+# IDE/OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Node (si aplica)
+node_modules/
+*.tsbuildinfo
+
+# PIDs/sockets
+*.pid
+*.sock
