@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import RegexValidator
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.validators import UnicodeUsernameValidator
 
 AUTH_PROVIDERS = {
     'email': 'email',
@@ -27,8 +28,7 @@ class Role(models.Model):
     ]
 
     name = models.CharField(
-        max_length=50,
-        choices=ROLE_CHOICES,
+        max_length=80,
         unique=True,
         help_text="Tipo de rol asignado al usuario"
     )
@@ -47,6 +47,21 @@ class User(AbstractUser):
     """
     Modelo personalizado de Usuario que utiliza un correo electrónico como username.
     """
+    username_validator = UnicodeUsernameValidator()
+    
+    username = models.CharField(
+        _('username'),
+        max_length=150,
+        unique=True,
+        blank=True,
+        null=True,
+        help_text=_('150 caracteres o menos. Letras, dígitos y @/./+/-/_ permitidos.'),
+        validators=[],  # Sin validadores restrictivos
+        error_messages={
+            'unique': _("Ya existe un usuario con ese nombre."),
+        },
+    )
+    
     email = models.EmailField(
         max_length=255,
         verbose_name=_("Correo Electrónico"),
@@ -88,7 +103,7 @@ class User(AbstractUser):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Fecha de Creación"))
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'first_name', 'last_name', 'phone_number', 'document_number']
+    REQUIRED_FIELDS = ['first_name', 'last_name']
 
     class Meta:
         verbose_name = _("Usuario")

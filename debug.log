@@ -348,3 +348,460 @@ INFO 2025-08-19 15:05:22,939 basehttp 26852 27972 "POST /locales/galerias/ HTTP/
 INFO 2025-08-19 15:38:13,472 autoreload 26852 32176 C:\Users\Asus\Desktop\proyectos\Gemma-api\backend\settings.py changed, reloading.
 INFO 2025-08-19 15:38:15,572 autoreload 39276 24224 Watching for file changes with StatReloader
 INFO 2025-08-19 15:45:50,739 autoreload 37536 33492 Watching for file changes with StatReloader
+INFO 2025-09-30 21:58:31,076 autoreload 34692 28284 Watching for file changes with StatReloader
+WARNING 2025-09-30 21:58:39,227 log 34692 12708 Not Found: /
+WARNING 2025-09-30 21:58:39,228 basehttp 34692 12708 "GET / HTTP/1.1" 404 179
+WARNING 2025-09-30 21:58:39,629 log 34692 12708 Not Found: /favicon.ico
+WARNING 2025-09-30 21:58:39,633 basehttp 34692 12708 "GET /favicon.ico HTTP/1.1" 404 179
+INFO 2025-09-30 21:59:38,559 views 34692 22516 Obteniendo queryset de usuarios
+INFO 2025-09-30 21:59:39,695 views 34692 22516 Queryset obtenido: 8 usuarios
+INFO 2025-09-30 21:59:40,477 basehttp 34692 22516 "GET /users/users/14/ HTTP/1.1" 200 13009
+WARNING 2025-09-30 21:59:40,568 log 34692 22516 Not Found: /static/rest_framework/css/bootstrap.min.css
+WARNING 2025-09-30 21:59:40,573 basehttp 34692 22516 "GET /static/rest_framework/css/bootstrap.min.css HTTP/1.1" 404 179
+WARNING 2025-09-30 21:59:40,584 log 34692 5284 Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+WARNING 2025-09-30 21:59:40,587 basehttp 34692 5284 "GET /static/rest_framework/css/bootstrap-tweaks.css HTTP/1.1" 404 179
+WARNING 2025-09-30 21:59:40,595 log 34692 36556 Not Found: /static/rest_framework/css/prettify.css
+WARNING 2025-09-30 21:59:40,602 log 34692 41876 Not Found: /static/rest_framework/css/default.css
+WARNING 2025-09-30 21:59:40,603 basehttp 34692 36556 "GET /static/rest_framework/css/prettify.css HTTP/1.1" 404 179
+WARNING 2025-09-30 21:59:40,607 log 34692 36400 Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+WARNING 2025-09-30 21:59:40,609 basehttp 34692 41876 "GET /static/rest_framework/css/default.css HTTP/1.1" 404 179
+WARNING 2025-09-30 21:59:40,612 log 34692 22516 Not Found: /static/rest_framework/js/csrf.js
+WARNING 2025-09-30 21:59:40,631 basehttp 34692 22516 "GET /static/rest_framework/js/csrf.js HTTP/1.1" 404 179
+WARNING 2025-09-30 21:59:40,620 log 34692 36556 Not Found: /static/rest_framework/js/prettify-min.js
+WARNING 2025-09-30 21:59:40,628 log 34692 34868 Not Found: /static/rest_framework/js/ajax-form.js
+WARNING 2025-09-30 21:59:40,630 log 34692 41876 Not Found: /static/rest_framework/js/default.js
+WARNING 2025-09-30 21:59:40,631 basehttp 34692 36400 "GET /static/rest_framework/js/jquery-3.7.1.min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 21:59:40,615 log 34692 5284 Not Found: /static/rest_framework/js/bootstrap.min.js
+WARNING 2025-09-30 21:59:40,637 log 34692 22516 Not Found: /static/rest_framework/js/load-ajax-form.js
+WARNING 2025-09-30 21:59:40,651 basehttp 34692 22516 "GET /static/rest_framework/js/load-ajax-form.js HTTP/1.1" 404 179
+WARNING 2025-09-30 21:59:40,645 basehttp 34692 41876 "GET /static/rest_framework/js/default.js HTTP/1.1" 404 179
+WARNING 2025-09-30 21:59:40,640 basehttp 34692 36556 "GET /static/rest_framework/js/prettify-min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 21:59:40,651 basehttp 34692 5284 "GET /static/rest_framework/js/bootstrap.min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 21:59:40,644 basehttp 34692 34868 "GET /static/rest_framework/js/ajax-form.js HTTP/1.1" 404 179
+INFO 2025-09-30 22:00:35,823 autoreload 37524 41808 Watching for file changes with StatReloader
+INFO 2025-09-30 22:00:57,204 views 37524 8944 Obteniendo queryset de usuarios
+INFO 2025-09-30 22:00:58,384 views 37524 8944 Queryset obtenido: 8 usuarios
+INFO 2025-09-30 22:00:58,894 basehttp 37524 8944 "GET /users/users/14/ HTTP/1.1" 200 13009
+WARNING 2025-09-30 22:00:58,947 log 37524 8944 Not Found: /static/rest_framework/css/bootstrap.min.css
+WARNING 2025-09-30 22:00:58,961 log 37524 40436 Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+WARNING 2025-09-30 22:00:58,970 basehttp 37524 8944 "GET /static/rest_framework/css/bootstrap.min.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:00:58,996 log 37524 8944 Not Found: /static/rest_framework/js/csrf.js
+WARNING 2025-09-30 22:00:58,998 basehttp 37524 40436 "GET /static/rest_framework/css/bootstrap-tweaks.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:00:59,009 log 37524 20476 Not Found: /static/rest_framework/css/prettify.css
+WARNING 2025-09-30 22:00:59,017 log 37524 40436 Not Found: /static/rest_framework/js/bootstrap.min.js
+WARNING 2025-09-30 22:00:59,026 basehttp 37524 8944 "GET /static/rest_framework/js/csrf.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:00:59,104 basehttp 37524 20476 "GET /static/rest_framework/css/prettify.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:00:59,148 basehttp 37524 40436 "GET /static/rest_framework/js/bootstrap.min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:00:59,164 log 37524 14696 Not Found: /static/rest_framework/css/default.css
+WARNING 2025-09-30 22:00:59,174 log 37524 8944 Not Found: /static/rest_framework/js/prettify-min.js
+WARNING 2025-09-30 22:00:59,259 log 37524 20476 Not Found: /static/rest_framework/js/default.js
+WARNING 2025-09-30 22:00:59,276 log 37524 41412 Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+WARNING 2025-09-30 22:00:59,304 log 37524 25712 Not Found: /static/rest_framework/js/ajax-form.js
+WARNING 2025-09-30 22:00:59,305 log 37524 40436 Not Found: /static/rest_framework/js/load-ajax-form.js
+WARNING 2025-09-30 22:00:59,316 basehttp 37524 14696 "GET /static/rest_framework/css/default.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:00:59,420 basehttp 37524 8944 "GET /static/rest_framework/js/prettify-min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:00:59,472 basehttp 37524 20476 "GET /static/rest_framework/js/default.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:00:59,531 basehttp 37524 41412 "GET /static/rest_framework/js/jquery-3.7.1.min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:00:59,556 basehttp 37524 25712 "GET /static/rest_framework/js/ajax-form.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:00:59,577 basehttp 37524 40436 "GET /static/rest_framework/js/load-ajax-form.js HTTP/1.1" 404 179
+INFO 2025-09-30 22:01:44,524 views 37524 20220 Obteniendo queryset de usuarios
+INFO 2025-09-30 22:01:45,194 views 37524 20220 Queryset obtenido: 8 usuarios
+INFO 2025-09-30 22:01:45,583 basehttp 37524 20220 "GET /users/users/14/ HTTP/1.1" 200 13009
+WARNING 2025-09-30 22:01:45,654 log 37524 20220 Not Found: /static/rest_framework/css/bootstrap.min.css
+WARNING 2025-09-30 22:01:45,654 basehttp 37524 20220 "GET /static/rest_framework/css/bootstrap.min.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:01:45,689 log 37524 9128 Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+WARNING 2025-09-30 22:01:45,691 log 37524 25900 Not Found: /static/rest_framework/css/prettify.css
+WARNING 2025-09-30 22:01:45,692 log 37524 20220 Not Found: /static/rest_framework/css/default.css
+WARNING 2025-09-30 22:01:45,694 log 37524 20164 Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+WARNING 2025-09-30 22:01:45,697 log 37524 38664 Not Found: /static/rest_framework/js/ajax-form.js
+WARNING 2025-09-30 22:01:45,698 basehttp 37524 9128 "GET /static/rest_framework/css/bootstrap-tweaks.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:01:45,701 log 37524 20128 Not Found: /static/rest_framework/js/csrf.js
+WARNING 2025-09-30 22:01:45,702 basehttp 37524 25900 "GET /static/rest_framework/css/prettify.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:01:45,703 basehttp 37524 20220 "GET /static/rest_framework/css/default.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:01:45,705 log 37524 9128 Not Found: /static/rest_framework/js/bootstrap.min.js
+WARNING 2025-09-30 22:01:45,706 basehttp 37524 20164 "GET /static/rest_framework/js/jquery-3.7.1.min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:01:45,706 basehttp 37524 38664 "GET /static/rest_framework/js/ajax-form.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:01:45,710 log 37524 35916 Not Found: /static/rest_framework/js/prettify-min.js
+INFO 2025-09-30 22:01:45,714 basehttp 37524 25900 - Broken pipe from ('127.0.0.1', 61050)
+WARNING 2025-09-30 22:01:45,716 basehttp 37524 20128 "GET /static/rest_framework/js/csrf.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:01:45,718 log 37524 20220 Not Found: /static/rest_framework/js/default.js
+WARNING 2025-09-30 22:01:45,722 log 37524 20164 Not Found: /static/rest_framework/js/load-ajax-form.js
+WARNING 2025-09-30 22:01:45,723 basehttp 37524 9128 "GET /static/rest_framework/js/bootstrap.min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:01:45,726 basehttp 37524 35916 "GET /static/rest_framework/js/prettify-min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:01:45,730 basehttp 37524 20220 "GET /static/rest_framework/js/default.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:01:45,732 basehttp 37524 20164 "GET /static/rest_framework/js/load-ajax-form.js HTTP/1.1" 404 179
+INFO 2025-09-30 22:06:13,996 autoreload 40888 28180 Watching for file changes with StatReloader
+INFO 2025-09-30 22:06:16,760 autoreload 40888 28180 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\users\serializers.py changed, reloading.
+INFO 2025-09-30 22:06:20,912 autoreload 21228 24092 Watching for file changes with StatReloader
+INFO 2025-09-30 22:07:30,135 views 21228 2416 Obteniendo queryset de usuarios
+INFO 2025-09-30 22:07:31,373 views 21228 2416 Queryset obtenido: 4 usuarios
+INFO 2025-09-30 22:07:31,821 basehttp 21228 2416 "GET /users/users/14/?username=gsiesquen&email=gsiesquen%40ghg.com.pe&password=75520281&first_name=ghiara&last_name=siesquen&role_enum=staff&date_joined=2025-09-30T21%3A12 HTTP/1.1" 200 14409
+WARNING 2025-09-30 22:07:32,176 log 21228 2416 Not Found: /static/rest_framework/css/bootstrap.min.css
+WARNING 2025-09-30 22:07:32,178 log 21228 35824 Not Found: /static/rest_framework/css/prettify.css
+WARNING 2025-09-30 22:07:32,180 basehttp 21228 35824 "GET /static/rest_framework/css/prettify.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:07:32,180 basehttp 21228 2416 "GET /static/rest_framework/css/bootstrap.min.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:07:32,184 log 21228 21992 Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+WARNING 2025-09-30 22:07:32,186 log 21228 12384 Not Found: /static/rest_framework/css/default.css
+WARNING 2025-09-30 22:07:32,188 log 21228 35824 Not Found: /static/rest_framework/js/bootstrap.min.js
+WARNING 2025-09-30 22:07:32,198 basehttp 21228 35824 "GET /static/rest_framework/js/bootstrap.min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:07:32,193 log 21228 2416 Not Found: /static/rest_framework/js/csrf.js
+WARNING 2025-09-30 22:07:32,197 log 21228 38828 Not Found: /static/rest_framework/js/ajax-form.js
+WARNING 2025-09-30 22:07:32,191 log 21228 21184 Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+WARNING 2025-09-30 22:07:32,199 basehttp 21228 21992 "GET /static/rest_framework/css/bootstrap-tweaks.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:07:32,199 basehttp 21228 12384 "GET /static/rest_framework/css/default.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:07:32,203 basehttp 21228 2416 "GET /static/rest_framework/js/csrf.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:07:32,204 log 21228 35824 Not Found: /static/rest_framework/js/default.js
+WARNING 2025-09-30 22:07:32,204 basehttp 21228 38828 "GET /static/rest_framework/js/ajax-form.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:07:32,209 basehttp 21228 21184 "GET /static/rest_framework/js/jquery-3.7.1.min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:07:32,212 log 21228 21992 Not Found: /static/rest_framework/js/prettify-min.js
+WARNING 2025-09-30 22:07:32,213 log 21228 12384 Not Found: /static/rest_framework/js/load-ajax-form.js
+WARNING 2025-09-30 22:07:32,215 basehttp 21228 35824 "GET /static/rest_framework/js/default.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:07:32,220 basehttp 21228 21992 "GET /static/rest_framework/js/prettify-min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:07:32,223 basehttp 21228 12384 "GET /static/rest_framework/js/load-ajax-form.js HTTP/1.1" 404 179
+INFO 2025-09-30 22:08:39,101 autoreload 39064 37980 Watching for file changes with StatReloader
+INFO 2025-09-30 22:08:45,756 views 39064 26536 Obteniendo queryset de usuarios
+INFO 2025-09-30 22:08:47,000 views 39064 26536 Queryset obtenido: 4 usuarios
+INFO 2025-09-30 22:08:47,457 basehttp 39064 26536 "GET /users/users/14/?username=gsiesquen&email=gsiesquen%40ghg.com.pe&password=75520281&first_name=ghiara&last_name=siesquen&role_enum=staff&date_joined=2025-09-30T21%3A12 HTTP/1.1" 200 14409
+WARNING 2025-09-30 22:08:47,551 log 39064 26536 Not Found: /static/rest_framework/css/bootstrap.min.css
+WARNING 2025-09-30 22:08:47,558 basehttp 39064 26536 "GET /static/rest_framework/css/bootstrap.min.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:08:47,566 log 39064 24656 Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+WARNING 2025-09-30 22:08:47,569 log 39064 26536 Not Found: /static/rest_framework/css/prettify.css
+WARNING 2025-09-30 22:08:47,572 log 39064 10784 Not Found: /static/rest_framework/css/default.css
+WARNING 2025-09-30 22:08:47,573 basehttp 39064 24656 "GET /static/rest_framework/css/bootstrap-tweaks.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:08:47,573 basehttp 39064 26536 "GET /static/rest_framework/css/prettify.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:08:47,576 log 39064 37372 Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+WARNING 2025-09-30 22:08:47,578 log 39064 39468 Not Found: /static/rest_framework/js/ajax-form.js
+WARNING 2025-09-30 22:08:47,581 basehttp 39064 10784 "GET /static/rest_framework/css/default.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:08:47,584 log 39064 11188 Not Found: /static/rest_framework/js/csrf.js
+WARNING 2025-09-30 22:08:47,584 basehttp 39064 37372 "GET /static/rest_framework/js/jquery-3.7.1.min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:08:47,591 basehttp 39064 39468 "GET /static/rest_framework/js/ajax-form.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:08:47,596 basehttp 39064 11188 "GET /static/rest_framework/js/csrf.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:08:47,607 log 39064 24656 Not Found: /static/rest_framework/js/bootstrap.min.js
+WARNING 2025-09-30 22:08:47,610 log 39064 10784 Not Found: /static/rest_framework/js/default.js
+WARNING 2025-09-30 22:08:47,612 log 39064 26536 Not Found: /static/rest_framework/js/prettify-min.js
+WARNING 2025-09-30 22:08:47,627 log 39064 37372 Not Found: /static/rest_framework/js/load-ajax-form.js
+WARNING 2025-09-30 22:08:47,640 basehttp 39064 24656 "GET /static/rest_framework/js/bootstrap.min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:08:47,641 basehttp 39064 10784 "GET /static/rest_framework/js/default.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:08:47,642 basehttp 39064 26536 "GET /static/rest_framework/js/prettify-min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:08:47,652 basehttp 39064 37372 "GET /static/rest_framework/js/load-ajax-form.js HTTP/1.1" 404 179
+INFO 2025-09-30 22:12:03,950 autoreload 39064 37980 C:\Users\Asus\Desktop\proyectos\Gemma-api\backend\settings.py changed, reloading.
+INFO 2025-09-30 22:12:06,869 autoreload 12856 18428 Watching for file changes with StatReloader
+INFO 2025-09-30 22:12:11,017 autoreload 12856 18428 C:\Users\Asus\Desktop\proyectos\Gemma-api\backend\settings.py changed, reloading.
+INFO 2025-09-30 22:12:13,266 autoreload 6620 20740 Watching for file changes with StatReloader
+INFO 2025-09-30 22:12:18,159 views 6620 41796 Obteniendo queryset de usuarios
+INFO 2025-09-30 22:12:19,400 views 6620 41796 Queryset obtenido: 4 usuarios
+INFO 2025-09-30 22:12:19,796 basehttp 6620 41796 "GET /users/users/14/?username=gsiesquen&email=gsiesquen%40ghg.com.pe&password=75520281&first_name=ghiara&last_name=siesquen&role_enum=staff&date_joined=2025-09-30T21%3A12 HTTP/1.1" 200 143
+INFO 2025-09-30 22:12:27,390 autoreload 6620 20740 C:\Users\Asus\Desktop\proyectos\Gemma-api\backend\settings.py changed, reloading.
+INFO 2025-09-30 22:12:29,056 autoreload 14888 10120 Watching for file changes with StatReloader
+INFO 2025-09-30 22:13:06,172 views 14888 33452 Obteniendo queryset de usuarios
+INFO 2025-09-30 22:13:07,439 views 14888 33452 Queryset obtenido: 4 usuarios
+INFO 2025-09-30 22:13:07,917 basehttp 14888 33452 "GET /users/users/14/?username=gsiesquen&email=gsiesquen%40ghg.com.pe&password=75520281&first_name=ghiara&last_name=siesquen&role_enum=staff&date_joined=2025-09-30T21%3A12 HTTP/1.1" 200 14409
+WARNING 2025-09-30 22:13:07,989 log 14888 33452 Not Found: /static/rest_framework/css/bootstrap.min.css
+WARNING 2025-09-30 22:13:07,990 basehttp 14888 33452 "GET /static/rest_framework/css/bootstrap.min.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:13:08,020 log 14888 37748 Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+WARNING 2025-09-30 22:13:08,021 basehttp 14888 37748 "GET /static/rest_framework/css/bootstrap-tweaks.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:13:08,024 log 14888 1384 Not Found: /static/rest_framework/css/prettify.css
+WARNING 2025-09-30 22:13:08,030 log 14888 37748 Not Found: /static/rest_framework/js/bootstrap.min.js
+WARNING 2025-09-30 22:13:08,032 log 14888 3360 Not Found: /static/rest_framework/css/default.css
+WARNING 2025-09-30 22:13:08,034 log 14888 33452 Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+WARNING 2025-09-30 22:13:08,036 log 14888 13008 Not Found: /static/rest_framework/js/ajax-form.js
+WARNING 2025-09-30 22:13:08,038 basehttp 14888 37748 "GET /static/rest_framework/js/bootstrap.min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:13:08,041 log 14888 31968 Not Found: /static/rest_framework/js/csrf.js
+WARNING 2025-09-30 22:13:08,042 basehttp 14888 1384 "GET /static/rest_framework/css/prettify.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:13:08,046 log 14888 37748 Not Found: /static/rest_framework/js/prettify-min.js
+WARNING 2025-09-30 22:13:08,047 basehttp 14888 33452 "GET /static/rest_framework/js/jquery-3.7.1.min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:13:08,049 basehttp 14888 31968 "GET /static/rest_framework/js/csrf.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:13:08,049 basehttp 14888 3360 "GET /static/rest_framework/css/default.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:13:08,052 basehttp 14888 13008 "GET /static/rest_framework/js/ajax-form.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:13:08,058 log 14888 1384 Not Found: /static/rest_framework/js/default.js
+WARNING 2025-09-30 22:13:08,060 log 14888 25852 Not Found: /static/rest_framework/js/load-ajax-form.js
+WARNING 2025-09-30 22:13:08,060 basehttp 14888 37748 "GET /static/rest_framework/js/prettify-min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:13:08,075 basehttp 14888 25852 "GET /static/rest_framework/js/load-ajax-form.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:13:08,075 basehttp 14888 1384 "GET /static/rest_framework/js/default.js HTTP/1.1" 404 179
+INFO 2025-09-30 22:13:08,073 basehttp 14888 3360 - Broken pipe from ('127.0.0.1', 50413)
+INFO 2025-09-30 22:14:01,321 autoreload 22792 1200 Watching for file changes with StatReloader
+INFO 2025-09-30 22:14:45,886 autoreload 22792 1200 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\users\models.py changed, reloading.
+INFO 2025-09-30 22:14:47,548 autoreload 41080 40488 Watching for file changes with StatReloader
+INFO 2025-09-30 22:14:53,287 autoreload 41080 40488 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\users\models.py changed, reloading.
+INFO 2025-09-30 22:14:55,029 autoreload 39704 10800 Watching for file changes with StatReloader
+INFO 2025-09-30 22:28:50,958 basehttp 39704 42696 "GET /users/users HTTP/1.1" 301 0
+INFO 2025-09-30 22:28:51,007 views 39704 42212 Método list llamado
+INFO 2025-09-30 22:28:51,043 views 39704 42212 Obteniendo queryset de usuarios
+INFO 2025-09-30 22:28:52,366 views 39704 42212 Queryset obtenido: 8 usuarios
+INFO 2025-09-30 22:28:54,096 views 39704 42212 Lista de usuarios obtenida: 8 usuarios
+INFO 2025-09-30 22:28:54,238 views 39704 42212 Obteniendo queryset de usuarios
+INFO 2025-09-30 22:28:54,335 views 39704 42212 Queryset obtenido: 8 usuarios
+INFO 2025-09-30 22:28:54,567 basehttp 39704 42212 "GET /users/users/ HTTP/1.1" 200 14572
+WARNING 2025-09-30 22:28:54,736 log 39704 42212 Not Found: /static/rest_framework/css/bootstrap.min.css
+WARNING 2025-09-30 22:28:54,746 basehttp 39704 42212 "GET /static/rest_framework/css/bootstrap.min.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:28:54,751 log 39704 42212 Not Found: /static/rest_framework/js/csrf.js
+WARNING 2025-09-30 22:28:54,781 log 39704 42304 Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+WARNING 2025-09-30 22:28:54,787 basehttp 39704 42212 "GET /static/rest_framework/js/csrf.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:28:54,779 log 39704 42132 Not Found: /static/rest_framework/css/prettify.css
+WARNING 2025-09-30 22:28:54,798 log 39704 22996 Not Found: /static/rest_framework/css/default.css
+WARNING 2025-09-30 22:28:54,799 basehttp 39704 42304 "GET /static/rest_framework/css/bootstrap-tweaks.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:28:54,808 log 39704 42212 Not Found: /static/rest_framework/js/bootstrap.min.js
+WARNING 2025-09-30 22:28:54,809 basehttp 39704 42132 "GET /static/rest_framework/css/prettify.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:28:54,809 basehttp 39704 22996 "GET /static/rest_framework/css/default.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:28:54,816 log 39704 42304 Not Found: /static/rest_framework/js/prettify-min.js
+WARNING 2025-09-30 22:28:54,835 basehttp 39704 42304 "GET /static/rest_framework/js/prettify-min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:28:54,825 log 39704 40420 Not Found: /static/rest_framework/js/ajax-form.js
+WARNING 2025-09-30 22:28:54,848 basehttp 39704 40420 "GET /static/rest_framework/js/ajax-form.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:28:54,833 log 39704 14944 Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+WARNING 2025-09-30 22:28:54,835 log 39704 22996 Not Found: /static/rest_framework/js/load-ajax-form.js
+WARNING 2025-09-30 22:28:54,820 basehttp 39704 42212 "GET /static/rest_framework/js/bootstrap.min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:28:54,829 log 39704 42132 Not Found: /static/rest_framework/js/default.js
+WARNING 2025-09-30 22:28:54,865 basehttp 39704 14944 "GET /static/rest_framework/js/jquery-3.7.1.min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:28:54,872 basehttp 39704 22996 "GET /static/rest_framework/js/load-ajax-form.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:28:54,884 basehttp 39704 42132 "GET /static/rest_framework/js/default.js HTTP/1.1" 404 179
+INFO 2025-09-30 22:29:46,487 autoreload 39704 10800 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\users\models.py changed, reloading.
+INFO 2025-09-30 22:29:48,607 autoreload 28272 32296 Watching for file changes with StatReloader
+INFO 2025-09-30 22:34:01,804 views 28272 36928 Método list llamado
+INFO 2025-09-30 22:34:01,805 views 28272 36928 Obteniendo queryset de usuarios
+INFO 2025-09-30 22:34:02,967 views 28272 36928 Queryset obtenido: 8 usuarios
+INFO 2025-09-30 22:34:04,598 views 28272 36928 Lista de usuarios obtenida: 8 usuarios
+INFO 2025-09-30 22:34:04,629 views 28272 36928 Obteniendo queryset de usuarios
+INFO 2025-09-30 22:34:04,726 views 28272 36928 Queryset obtenido: 8 usuarios
+INFO 2025-09-30 22:34:04,760 basehttp 28272 36928 "GET /users/users/ HTTP/1.1" 200 14572
+WARNING 2025-09-30 22:34:04,851 log 28272 36928 Not Found: /static/rest_framework/css/bootstrap.min.css
+WARNING 2025-09-30 22:34:04,852 basehttp 28272 36928 "GET /static/rest_framework/css/bootstrap.min.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:34:04,883 log 28272 36928 Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+WARNING 2025-09-30 22:34:04,884 log 28272 36424 Not Found: /static/rest_framework/css/prettify.css
+WARNING 2025-09-30 22:34:04,886 log 28272 39564 Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+WARNING 2025-09-30 22:34:04,889 log 28272 31200 Not Found: /static/rest_framework/css/default.css
+WARNING 2025-09-30 22:34:04,891 log 28272 41904 Not Found: /static/rest_framework/js/ajax-form.js
+WARNING 2025-09-30 22:34:04,896 log 28272 40756 Not Found: /static/rest_framework/js/csrf.js
+WARNING 2025-09-30 22:34:04,897 basehttp 28272 36424 "GET /static/rest_framework/css/prettify.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:34:04,897 basehttp 28272 36928 "GET /static/rest_framework/css/bootstrap-tweaks.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:34:04,898 basehttp 28272 31200 "GET /static/rest_framework/css/default.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:34:04,899 basehttp 28272 39564 "GET /static/rest_framework/js/jquery-3.7.1.min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:34:04,904 basehttp 28272 41904 "GET /static/rest_framework/js/ajax-form.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:34:04,905 basehttp 28272 40756 "GET /static/rest_framework/js/csrf.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:34:04,907 log 28272 36424 Not Found: /static/rest_framework/js/bootstrap.min.js
+WARNING 2025-09-30 22:34:04,911 log 28272 36928 Not Found: /static/rest_framework/js/prettify-min.js
+WARNING 2025-09-30 22:34:04,921 log 28272 31200 Not Found: /static/rest_framework/js/load-ajax-form.js
+WARNING 2025-09-30 22:34:04,924 log 28272 39564 Not Found: /static/rest_framework/js/default.js
+WARNING 2025-09-30 22:34:04,926 basehttp 28272 36424 "GET /static/rest_framework/js/bootstrap.min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:34:04,926 basehttp 28272 36928 "GET /static/rest_framework/js/prettify-min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:34:04,929 basehttp 28272 31200 "GET /static/rest_framework/js/load-ajax-form.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:34:04,930 basehttp 28272 39564 "GET /static/rest_framework/js/default.js HTTP/1.1" 404 179
+INFO 2025-09-30 22:38:12,134 autoreload 26752 15168 Watching for file changes with StatReloader
+INFO 2025-09-30 22:38:22,701 views 26752 27612 Método list llamado
+INFO 2025-09-30 22:38:22,702 views 26752 27612 Obteniendo queryset de usuarios
+INFO 2025-09-30 22:38:23,852 views 26752 27612 Queryset obtenido: 8 usuarios
+INFO 2025-09-30 22:38:25,477 views 26752 27612 Lista de usuarios obtenida: 8 usuarios
+INFO 2025-09-30 22:38:25,570 views 26752 27612 Obteniendo queryset de usuarios
+INFO 2025-09-30 22:38:25,665 views 26752 27612 Queryset obtenido: 8 usuarios
+INFO 2025-09-30 22:38:25,833 basehttp 26752 27612 "GET /users/users/ HTTP/1.1" 200 14572
+WARNING 2025-09-30 22:38:25,976 log 26752 27612 Not Found: /static/rest_framework/css/bootstrap.min.css
+WARNING 2025-09-30 22:38:25,977 basehttp 26752 27612 "GET /static/rest_framework/css/bootstrap.min.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:38:25,992 log 26752 27612 Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+WARNING 2025-09-30 22:38:25,994 log 26752 37356 Not Found: /static/rest_framework/css/prettify.css
+WARNING 2025-09-30 22:38:25,996 log 26752 42676 Not Found: /static/rest_framework/css/default.css
+WARNING 2025-09-30 22:38:26,005 basehttp 26752 27612 "GET /static/rest_framework/css/bootstrap-tweaks.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:38:26,005 basehttp 26752 37356 "GET /static/rest_framework/css/prettify.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:38:26,005 basehttp 26752 42676 "GET /static/rest_framework/css/default.css HTTP/1.1" 404 179
+WARNING 2025-09-30 22:38:26,007 log 26752 42188 Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+WARNING 2025-09-30 22:38:26,009 log 26752 30908 Not Found: /static/rest_framework/js/ajax-form.js
+WARNING 2025-09-30 22:38:26,012 log 26752 27612 Not Found: /static/rest_framework/js/prettify-min.js
+WARNING 2025-09-30 22:38:26,014 log 26752 37356 Not Found: /static/rest_framework/js/default.js
+INFO 2025-09-30 22:38:26,017 basehttp 26752 42676 - Broken pipe from ('127.0.0.1', 64751)
+WARNING 2025-09-30 22:38:26,019 log 26752 37340 Not Found: /static/rest_framework/js/bootstrap.min.js
+WARNING 2025-09-30 22:38:26,023 log 26752 37984 Not Found: /static/rest_framework/js/csrf.js
+WARNING 2025-09-30 22:38:26,024 basehttp 26752 30908 "GET /static/rest_framework/js/ajax-form.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:38:26,024 basehttp 26752 37356 "GET /static/rest_framework/js/default.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:38:26,026 basehttp 26752 27612 "GET /static/rest_framework/js/prettify-min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:38:26,027 basehttp 26752 42188 "GET /static/rest_framework/js/jquery-3.7.1.min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:38:26,029 basehttp 26752 37340 "GET /static/rest_framework/js/bootstrap.min.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:38:26,031 basehttp 26752 37984 "GET /static/rest_framework/js/csrf.js HTTP/1.1" 404 179
+WARNING 2025-09-30 22:38:26,038 log 26752 42188 Not Found: /static/rest_framework/js/load-ajax-form.js
+WARNING 2025-09-30 22:38:26,039 basehttp 26752 42188 "GET /static/rest_framework/js/load-ajax-form.js HTTP/1.1" 404 179
+INFO 2025-09-30 22:39:31,269 autoreload 26752 15168 C:\Users\Asus\Desktop\proyectos\Gemma-api\backend\settings.py changed, reloading.
+INFO 2025-09-30 22:39:33,360 autoreload 9300 25236 Watching for file changes with StatReloader
+INFO 2025-09-30 22:39:37,242 autoreload 9300 25236 C:\Users\Asus\Desktop\proyectos\Gemma-api\backend\settings.py changed, reloading.
+INFO 2025-09-30 22:39:45,372 autoreload 2868 25536 Watching for file changes with StatReloader
+INFO 2025-09-30 22:40:14,705 views 2868 37756 Método list llamado
+INFO 2025-09-30 22:40:14,717 views 2868 37756 Obteniendo queryset de usuarios
+INFO 2025-09-30 22:40:15,956 views 2868 37756 Queryset obtenido: 8 usuarios
+INFO 2025-09-30 22:40:17,639 views 2868 37756 Lista de usuarios obtenida: 8 usuarios
+INFO 2025-09-30 22:40:17,718 views 2868 37756 Obteniendo queryset de usuarios
+INFO 2025-09-30 22:40:17,814 views 2868 37756 Queryset obtenido: 8 usuarios
+INFO 2025-09-30 22:40:17,903 basehttp 2868 37756 "GET /users/users/ HTTP/1.1" 200 14572
+INFO 2025-09-30 22:40:18,207 basehttp 2868 35212 "GET /static/rest_framework/css/bootstrap-tweaks.css HTTP/1.1" 200 3426
+INFO 2025-09-30 22:40:18,231 basehttp 2868 35212 "GET /static/rest_framework/js/csrf.js HTTP/1.1" 200 1793
+INFO 2025-09-30 22:40:18,235 basehttp 2868 37756 "GET /static/rest_framework/css/bootstrap.min.css HTTP/1.1" 200 121457
+INFO 2025-09-30 22:40:18,244 basehttp 2868 35212 "GET /static/rest_framework/js/bootstrap.min.js HTTP/1.1" 200 39680
+INFO 2025-09-30 22:40:18,253 basehttp 2868 35212 "GET /static/rest_framework/js/default.js HTTP/1.1" 200 1268
+INFO 2025-09-30 22:40:18,254 basehttp 2868 37756 "GET /static/rest_framework/js/prettify-min.js HTTP/1.1" 200 13632
+INFO 2025-09-30 22:40:18,264 basehttp 2868 35212 "GET /static/rest_framework/js/load-ajax-form.js HTTP/1.1" 200 59
+INFO 2025-09-30 22:40:18,265 basehttp 2868 20356 "GET /static/rest_framework/js/ajax-form.js HTTP/1.1" 200 3796
+INFO 2025-09-30 22:40:18,270 basehttp 2868 40076 "GET /static/rest_framework/js/jquery-3.7.1.min.js HTTP/1.1" 200 87533
+INFO 2025-09-30 22:40:18,336 basehttp 2868 5744 "GET /static/rest_framework/css/prettify.css HTTP/1.1" 200 817
+INFO 2025-09-30 22:40:18,338 basehttp 2868 39076 "GET /static/rest_framework/css/default.css HTTP/1.1" 200 1152
+INFO 2025-09-30 22:40:18,376 basehttp 2868 39076 "GET /static/rest_framework/img/grid.png HTTP/1.1" 200 1458
+INFO 2025-09-30 22:47:20,889 basehttp 2868 41656 "GET /users/users/14 HTTP/1.1" 301 0
+INFO 2025-09-30 22:47:20,902 views 2868 39964 Obteniendo queryset de usuarios
+INFO 2025-09-30 22:47:22,085 views 2868 39964 Queryset obtenido: 8 usuarios
+INFO 2025-09-30 22:47:22,504 basehttp 2868 39964 "GET /users/users/14/ HTTP/1.1" 200 13003
+INFO 2025-09-30 22:47:22,568 basehttp 2868 39964 "GET /static/rest_framework/css/bootstrap.min.css HTTP/1.1" 304 0
+INFO 2025-09-30 22:47:22,580 basehttp 2868 39964 "GET /static/rest_framework/css/default.css HTTP/1.1" 304 0
+INFO 2025-09-30 22:47:22,584 basehttp 2868 37100 "GET /static/rest_framework/css/bootstrap-tweaks.css HTTP/1.1" 304 0
+INFO 2025-09-30 22:47:22,598 basehttp 2868 39964 "GET /static/rest_framework/js/bootstrap.min.js HTTP/1.1" 304 0
+INFO 2025-09-30 22:47:22,601 basehttp 2868 23228 "GET /static/rest_framework/js/jquery-3.7.1.min.js HTTP/1.1" 304 0
+INFO 2025-09-30 22:47:22,603 basehttp 2868 35044 "GET /static/rest_framework/js/ajax-form.js HTTP/1.1" 304 0
+INFO 2025-09-30 22:47:22,606 basehttp 2868 37636 "GET /static/rest_framework/css/prettify.css HTTP/1.1" 304 0
+INFO 2025-09-30 22:47:22,606 basehttp 2868 37100 "GET /static/rest_framework/js/prettify-min.js HTTP/1.1" 304 0
+INFO 2025-09-30 22:47:22,617 basehttp 2868 39964 "GET /static/rest_framework/js/default.js HTTP/1.1" 304 0
+INFO 2025-09-30 22:47:22,626 basehttp 2868 23228 "GET /static/rest_framework/js/load-ajax-form.js HTTP/1.1" 304 0
+INFO 2025-09-30 22:47:22,632 basehttp 2868 9584 "GET /static/rest_framework/js/csrf.js HTTP/1.1" 304 0
+INFO 2025-09-30 22:47:22,666 basehttp 2868 39964 "GET /static/rest_framework/img/grid.png HTTP/1.1" 304 0
+INFO 2025-09-30 22:48:13,736 views 2868 39964 Obteniendo queryset de usuarios
+INFO 2025-09-30 22:48:14,794 views 2868 39964 Queryset obtenido: 8 usuarios
+INFO 2025-09-30 22:48:16,276 basehttp 2868 39964 "PUT /users/users/14/ HTTP/1.1" 200 13045
+INFO 2025-09-30 22:54:49,026 views 2868 20220 Método list llamado
+INFO 2025-09-30 22:54:49,040 views 2868 20220 Obteniendo queryset de usuarios
+INFO 2025-09-30 22:54:50,417 views 2868 20220 Queryset obtenido: 9 usuarios
+INFO 2025-09-30 22:54:52,372 views 2868 20220 Lista de usuarios obtenida: 9 usuarios
+INFO 2025-09-30 22:54:52,433 views 2868 20220 Obteniendo queryset de usuarios
+INFO 2025-09-30 22:54:52,529 views 2868 20220 Queryset obtenido: 9 usuarios
+INFO 2025-09-30 22:54:52,575 basehttp 2868 20220 "GET /users/users/ HTTP/1.1" 200 15017
+INFO 2025-09-30 22:54:52,697 basehttp 2868 20220 "GET /static/rest_framework/css/bootstrap.min.css HTTP/1.1" 304 0
+INFO 2025-09-30 22:54:52,704 basehttp 2868 22040 "GET /static/rest_framework/css/bootstrap-tweaks.css HTTP/1.1" 304 0
+INFO 2025-09-30 22:54:52,710 basehttp 2868 41112 "GET /static/rest_framework/css/prettify.css HTTP/1.1" 304 0
+INFO 2025-09-30 22:54:52,715 basehttp 2868 23700 "GET /static/rest_framework/css/default.css HTTP/1.1" 304 0
+INFO 2025-09-30 22:54:52,716 basehttp 2868 20220 "GET /static/rest_framework/js/csrf.js HTTP/1.1" 304 0
+INFO 2025-09-30 22:54:52,717 basehttp 2868 28732 "GET /static/rest_framework/js/ajax-form.js HTTP/1.1" 304 0
+INFO 2025-09-30 22:54:52,721 basehttp 2868 22040 "GET /static/rest_framework/js/bootstrap.min.js HTTP/1.1" 304 0
+INFO 2025-09-30 22:54:52,722 basehttp 2868 35576 "GET /static/rest_framework/js/jquery-3.7.1.min.js HTTP/1.1" 304 0
+INFO 2025-09-30 22:54:52,724 basehttp 2868 41112 "GET /static/rest_framework/js/prettify-min.js HTTP/1.1" 304 0
+INFO 2025-09-30 22:54:52,724 basehttp 2868 23700 "GET /static/rest_framework/js/default.js HTTP/1.1" 304 0
+INFO 2025-09-30 22:54:52,724 basehttp 2868 20220 "GET /static/rest_framework/js/load-ajax-form.js HTTP/1.1" 304 0
+INFO 2025-09-30 22:54:52,743 basehttp 2868 20220 "GET /static/rest_framework/img/grid.png HTTP/1.1" 304 0
+INFO 2025-09-30 22:55:48,235 autoreload 2868 25536 C:\Users\Asus\Desktop\proyectos\Gemma-api\backend\settings.py changed, reloading.
+INFO 2025-09-30 22:55:50,580 autoreload 39060 7852 Watching for file changes with StatReloader
+WARNING 2025-09-30 23:47:17,312 log 39060 20756 Not Found: /units/plazatec
+WARNING 2025-09-30 23:47:17,369 basehttp 39060 20756 "GET /units/plazatec HTTP/1.1" 404 2673
+WARNING 2025-09-30 23:47:19,282 log 39060 20756 Not Found: /units/plazatec
+WARNING 2025-09-30 23:47:19,285 basehttp 39060 20756 "GET /units/plazatec HTTP/1.1" 404 2673
+WARNING 2025-10-01 00:17:38,572 log 39060 36180 Unauthorized: /users/users/
+WARNING 2025-10-01 00:17:38,599 basehttp 39060 36180 "POST /users/users/ HTTP/1.1" 401 183
+INFO 2025-10-01 00:24:54,133 basehttp 39060 316 "OPTIONS /users/token/ HTTP/1.1" 200 0
+INFO 2025-10-01 00:24:56,873 basehttp 39060 316 "POST /users/token/ HTTP/1.1" 200 520
+INFO 2025-10-01 00:25:03,826 views 39060 37540 Método list llamado
+INFO 2025-10-01 00:25:03,870 views 39060 37540 Obteniendo queryset de usuarios
+INFO 2025-10-01 00:25:04,679 views 39060 37540 Queryset obtenido: 9 usuarios
+INFO 2025-10-01 00:25:06,917 views 39060 37540 Lista de usuarios obtenida: 9 usuarios
+INFO 2025-10-01 00:25:06,920 basehttp 39060 37540 "GET /users/users/ HTTP/1.1" 200 1483
+INFO 2025-10-01 00:25:11,050 basehttp 39060 37540 "OPTIONS /users/users/24/ HTTP/1.1" 200 0
+INFO 2025-10-01 00:25:11,197 views 39060 37540 Obteniendo queryset de usuarios
+INFO 2025-10-01 00:25:11,934 views 39060 37540 Queryset obtenido: 9 usuarios
+INFO 2025-10-01 00:25:13,659 basehttp 39060 37540 "DELETE /users/users/24/ HTTP/1.1" 204 0
+INFO 2025-10-01 00:25:27,542 basehttp 39060 22924 "OPTIONS /users/users/ HTTP/1.1" 200 0
+INFO 2025-10-01 00:25:29,748 basehttp 39060 22924 "POST /users/users/ HTTP/1.1" 201 146
+INFO 2025-10-01 00:27:42,158 basehttp 39060 21368 "OPTIONS /users/users/25/ HTTP/1.1" 200 0
+INFO 2025-10-01 00:27:42,167 views 39060 21368 Obteniendo queryset de usuarios
+INFO 2025-10-01 00:27:43,438 views 39060 21368 Queryset obtenido: 9 usuarios
+INFO 2025-10-01 00:27:45,074 basehttp 39060 21368 "DELETE /users/users/25/ HTTP/1.1" 204 0
+INFO 2025-10-01 00:27:54,626 views 39060 20940 Método list llamado
+INFO 2025-10-01 00:27:54,629 views 39060 20940 Obteniendo queryset de usuarios
+INFO 2025-10-01 00:27:55,696 basehttp 39060 25528 "POST /users/users/ HTTP/1.1" 201 146
+INFO 2025-10-01 00:27:55,771 views 39060 20940 Queryset obtenido: 9 usuarios
+INFO 2025-10-01 00:27:57,608 views 39060 20940 Lista de usuarios obtenida: 9 usuarios
+INFO 2025-10-01 00:27:57,630 basehttp 39060 20940 - Broken pipe from ('127.0.0.1', 56869)
+INFO 2025-10-01 00:28:02,528 views 39060 21264 Método list llamado
+INFO 2025-10-01 00:28:02,529 views 39060 21264 Obteniendo queryset de usuarios
+INFO 2025-10-01 00:28:03,681 views 39060 21264 Queryset obtenido: 9 usuarios
+INFO 2025-10-01 00:28:05,509 views 39060 21264 Lista de usuarios obtenida: 9 usuarios
+INFO 2025-10-01 00:28:05,515 basehttp 39060 21264 "GET /users/users/ HTTP/1.1" 200 1483
+INFO 2025-10-01 00:28:31,612 views 39060 21264 Método list llamado
+INFO 2025-10-01 00:28:31,612 views 39060 21264 Obteniendo queryset de usuarios
+INFO 2025-10-01 00:28:32,419 views 39060 21264 Queryset obtenido: 9 usuarios
+INFO 2025-10-01 00:28:34,268 views 39060 21264 Lista de usuarios obtenida: 9 usuarios
+INFO 2025-10-01 00:28:34,274 basehttp 39060 21264 "GET /users/users/ HTTP/1.1" 200 1483
+INFO 2025-10-01 00:29:28,341 autoreload 39060 7852 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\users\serializers.py changed, reloading.
+INFO 2025-10-01 00:29:31,962 autoreload 31328 41412 Watching for file changes with StatReloader
+INFO 2025-10-01 00:29:36,961 autoreload 31328 41412 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\users\serializers.py changed, reloading.
+INFO 2025-10-01 00:29:39,102 autoreload 35124 36236 Watching for file changes with StatReloader
+INFO 2025-10-01 00:29:45,714 autoreload 35124 36236 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\users\serializers.py changed, reloading.
+INFO 2025-10-01 00:29:47,919 autoreload 38900 29832 Watching for file changes with StatReloader
+INFO 2025-10-01 00:30:04,218 basehttp 38900 25212 "OPTIONS /users/users/26/ HTTP/1.1" 200 0
+INFO 2025-10-01 00:30:04,238 views 38900 25212 Obteniendo queryset de usuarios
+INFO 2025-10-01 00:30:05,409 views 38900 25212 Queryset obtenido: 9 usuarios
+INFO 2025-10-01 00:30:07,024 basehttp 38900 25212 "DELETE /users/users/26/ HTTP/1.1" 204 0
+INFO 2025-10-01 00:30:15,577 basehttp 38900 38012 "POST /users/users/ HTTP/1.1" 201 144
+INFO 2025-10-01 00:30:23,301 basehttp 38900 29376 "OPTIONS /users/users/14/ HTTP/1.1" 200 0
+INFO 2025-10-01 00:30:23,303 views 38900 29376 Obteniendo queryset de usuarios
+INFO 2025-10-01 00:30:24,438 views 38900 29376 Queryset obtenido: 9 usuarios
+INFO 2025-10-01 00:30:26,043 basehttp 38900 29376 "DELETE /users/users/14/ HTTP/1.1" 204 0
+WARNING 2025-10-01 00:30:41,459 log 38900 29376 Bad Request: /users/users/
+WARNING 2025-10-01 00:30:41,459 basehttp 38900 29376 "POST /users/users/ HTTP/1.1" 400 119
+INFO 2025-10-01 00:30:45,929 views 38900 29376 Método list llamado
+INFO 2025-10-01 00:30:45,931 views 38900 29376 Obteniendo queryset de usuarios
+INFO 2025-10-01 00:30:46,501 views 38900 29376 Queryset obtenido: 8 usuarios
+INFO 2025-10-01 00:30:48,115 views 38900 29376 Lista de usuarios obtenida: 8 usuarios
+INFO 2025-10-01 00:30:48,122 basehttp 38900 29376 "GET /users/users/ HTTP/1.1" 200 1306
+INFO 2025-10-01 00:31:25,192 basehttp 38900 29376 "OPTIONS /users/users/27/ HTTP/1.1" 200 0
+INFO 2025-10-01 00:31:25,197 views 38900 29376 Obteniendo queryset de usuarios
+INFO 2025-10-01 00:31:25,771 views 38900 29376 Queryset obtenido: 8 usuarios
+INFO 2025-10-01 00:31:27,391 basehttp 38900 29376 "DELETE /users/users/27/ HTTP/1.1" 204 0
+INFO 2025-10-01 00:31:32,150 autoreload 38900 29832 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\users\serializers.py changed, reloading.
+INFO 2025-10-01 00:31:34,565 autoreload 7616 23764 Watching for file changes with StatReloader
+INFO 2025-10-01 00:31:39,190 autoreload 7616 23764 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\users\serializers.py changed, reloading.
+INFO 2025-10-01 00:31:49,269 autoreload 29100 20508 Watching for file changes with StatReloader
+INFO 2025-10-01 00:31:54,263 autoreload 29100 20508 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\users\models.py changed, reloading.
+INFO 2025-10-01 00:31:56,491 autoreload 30740 8516 Watching for file changes with StatReloader
+INFO 2025-10-01 00:32:20,856 basehttp 30740 29212 "POST /users/users/ HTTP/1.1" 201 151
+INFO 2025-10-01 00:32:26,928 views 30740 3424 Método list llamado
+INFO 2025-10-01 00:32:26,928 views 30740 3424 Obteniendo queryset de usuarios
+INFO 2025-10-01 00:32:27,631 views 30740 3424 Queryset obtenido: 8 usuarios
+INFO 2025-10-01 00:32:29,268 views 30740 3424 Lista de usuarios obtenida: 8 usuarios
+INFO 2025-10-01 00:32:29,271 basehttp 30740 3424 "GET /users/users/ HTTP/1.1" 200 1313
+INFO 2025-10-01 00:32:41,208 basehttp 30740 37616 "OPTIONS /users/users/28/ HTTP/1.1" 200 0
+INFO 2025-10-01 00:32:41,213 views 30740 37616 Obteniendo queryset de usuarios
+INFO 2025-10-01 00:32:41,900 views 30740 37616 Queryset obtenido: 8 usuarios
+INFO 2025-10-01 00:32:43,372 basehttp 30740 37616 "PUT /users/users/28/ HTTP/1.1" 200 150
+INFO 2025-10-01 00:33:41,046 basehttp 30740 37616 "POST /users/users/ HTTP/1.1" 201 144
+INFO 2025-10-01 00:33:43,612 autoreload 30740 8516 C:\Users\Asus\Desktop\proyectos\Gemma-api\apps\users\models.py changed, reloading.
+INFO 2025-10-01 00:33:46,584 autoreload 31548 37776 Watching for file changes with StatReloader
+INFO 2025-10-01 00:33:48,932 views 31548 39332 Método list llamado
+INFO 2025-10-01 00:33:48,932 views 31548 39332 Obteniendo queryset de usuarios
+INFO 2025-10-01 00:33:50,070 views 31548 39332 Queryset obtenido: 9 usuarios
+INFO 2025-10-01 00:33:51,855 views 31548 39332 Lista de usuarios obtenida: 9 usuarios
+INFO 2025-10-01 00:33:51,884 views 31548 39332 Obteniendo queryset de usuarios
+INFO 2025-10-01 00:33:51,978 views 31548 39332 Queryset obtenido: 9 usuarios
+INFO 2025-10-01 00:33:52,024 basehttp 31548 39332 "GET /users/users/ HTTP/1.1" 200 15008
+INFO 2025-10-01 00:33:52,126 basehttp 31548 39332 "GET /static/rest_framework/css/bootstrap.min.css HTTP/1.1" 304 0
+INFO 2025-10-01 00:33:52,140 basehttp 31548 14884 "GET /static/rest_framework/css/prettify.css HTTP/1.1" 304 0
+INFO 2025-10-01 00:33:52,140 basehttp 31548 39332 "GET /static/rest_framework/css/bootstrap-tweaks.css HTTP/1.1" 304 0
+INFO 2025-10-01 00:33:52,146 basehttp 31548 20180 "GET /static/rest_framework/css/default.css HTTP/1.1" 304 0
+INFO 2025-10-01 00:33:52,149 basehttp 31548 38408 "GET /static/rest_framework/js/jquery-3.7.1.min.js HTTP/1.1" 304 0
+INFO 2025-10-01 00:33:52,151 basehttp 31548 41040 "GET /static/rest_framework/js/ajax-form.js HTTP/1.1" 304 0
+INFO 2025-10-01 00:33:52,153 basehttp 31548 39568 "GET /static/rest_framework/js/csrf.js HTTP/1.1" 304 0
+INFO 2025-10-01 00:33:52,154 basehttp 31548 14884 "GET /static/rest_framework/js/prettify-min.js HTTP/1.1" 304 0
+INFO 2025-10-01 00:33:52,154 basehttp 31548 39332 "GET /static/rest_framework/js/bootstrap.min.js HTTP/1.1" 304 0
+INFO 2025-10-01 00:33:52,155 basehttp 31548 20180 "GET /static/rest_framework/js/default.js HTTP/1.1" 304 0
+INFO 2025-10-01 00:33:52,159 basehttp 31548 38408 "GET /static/rest_framework/js/load-ajax-form.js HTTP/1.1" 304 0
+INFO 2025-10-01 00:33:52,164 basehttp 31548 38408 "GET /static/rest_framework/img/grid.png HTTP/1.1" 304 0
+INFO 2025-10-01 00:34:29,944 basehttp 31548 2448 "OPTIONS /users/users/29/ HTTP/1.1" 200 0
+INFO 2025-10-01 00:34:29,950 views 31548 2448 Obteniendo queryset de usuarios
+INFO 2025-10-01 00:34:31,117 views 31548 2448 Queryset obtenido: 9 usuarios
+INFO 2025-10-01 00:34:32,721 basehttp 31548 2448 "DELETE /users/users/29/ HTTP/1.1" 204 0
+INFO 2025-10-01 00:34:50,755 basehttp 31548 23352 "OPTIONS /users/users/3/ HTTP/1.1" 200 0
+INFO 2025-10-01 00:34:50,757 views 31548 23352 Obteniendo queryset de usuarios
+INFO 2025-10-01 00:34:51,445 views 31548 23352 Queryset obtenido: 8 usuarios
+INFO 2025-10-01 00:34:52,790 basehttp 31548 23352 "PUT /users/users/3/ HTTP/1.1" 200 150
+INFO 2025-10-01 00:35:06,113 views 31548 8696 Obteniendo queryset de usuarios
+INFO 2025-10-01 00:35:06,769 views 31548 8696 Queryset obtenido: 8 usuarios
+INFO 2025-10-01 00:35:08,204 basehttp 31548 8696 "PUT /users/users/3/ HTTP/1.1" 200 152
+INFO 2025-10-01 00:35:26,078 views 31548 9784 Obteniendo queryset de usuarios
+INFO 2025-10-01 00:35:26,742 views 31548 9784 Queryset obtenido: 8 usuarios
+INFO 2025-10-01 00:35:28,169 basehttp 31548 9784 "PUT /users/users/3/ HTTP/1.1" 200 151
+INFO 2025-10-01 00:35:31,779 views 31548 9784 Método list llamado
+INFO 2025-10-01 00:35:31,780 views 31548 9784 Obteniendo queryset de usuarios
+INFO 2025-10-01 00:35:32,346 views 31548 9784 Queryset obtenido: 8 usuarios
+INFO 2025-10-01 00:35:33,990 views 31548 9784 Lista de usuarios obtenida: 8 usuarios
+INFO 2025-10-01 00:35:33,992 basehttp 31548 9784 "GET /users/users/ HTTP/1.1" 200 1313
+INFO 2025-10-01 00:35:42,992 views 31548 39688 Obteniendo queryset de usuarios
+INFO 2025-10-01 00:35:43,645 views 31548 39688 Queryset obtenido: 8 usuarios
+INFO 2025-10-01 00:35:44,978 basehttp 31548 39688 "PUT /users/users/3/ HTTP/1.1" 200 150
+INFO 2025-10-01 00:36:16,367 basehttp 31548 27392 "POST /users/users/ HTTP/1.1" 201 148
